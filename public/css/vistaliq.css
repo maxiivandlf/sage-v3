@@ -1,0 +1,9 @@
+/* Estilo para los iconos de paginación */
+.page-item .page-link {
+    font-size: 0.875rem; /* Ajusta el tamaño de fuente */
+    padding: 0.5rem 0.75rem; /* Ajusta el padding de los enlaces */
+}
+
+.page-item .page-link i {
+    font-size: 1rem; /* Ajusta el tamaño de los iconos */
+}

@@ -1,0 +1,253 @@
+/* Estilos generales para la tabla */
+#POFMH {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+    /*border: 1px solid #ccc;  Borde general */
+}
+
+/* Fijar el encabezado de la tabla */
+#POFMH thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1; /* Encabezado siempre encima de las filas */
+    background-color: #cdc2ee; /* Fondo fijo para encabezados */
+    /*border: 1px solid black; Borde de los encabezados */
+    text-align: center;
+}
+
+/* Fijar la cuarta columna */
+#POFMH td:nth-child(4),
+#POFMH th:nth-child(4) {
+    position: sticky;
+    left: 0; /* Fija la columna a la izquierda */
+    z-index: 2; /* Asegura que la columna esté por encima de otras celdas */
+    background-color: inherit; /* Usa el color dinámico definido por el script */
+    /*border: 1px solid black;  Borde fijo */
+    /* box-shadow: 1px 0 0 0 rgba(0, 0, 0, 0.7);*/
+}
+#POFMH th:nth-child(4) {
+    background-color: #c8d9fa;
+}
+
+/* Estilo para celdas y encabezados */
+#POFMH th,
+#POFMH td {
+    /*border: 1px solid black;*/
+    padding: 5px;
+    text-align: center;
+    overflow: hidden; /* Evita desbordes */
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+    border-radius: 2px;
+}
+
+/* Colores dinámicos para filas, sincronizados con el script */
+#POFMH tbody tr[data-bg-color="rosado-claro"] {
+    background-color: #ffb6c1; /* Color de fondo rosado claro */
+}
+
+#POFMH tbody tr[data-bg-color="azul-claro"] {
+    background-color: #7bc0d4; /* Color de fondo azul claro */
+}
+
+#POFMH tbody tr[data-bg-color="default"] {
+    background-color: #f1f2f7; /* Color por defecto */
+}
+
+/* Fila activa */
+#POFMH tbody tr.active {
+    background-color: #c8d9fa; /* Fondo azul claro */
+    /*border: 1px solid #0060c6;  Borde azul oscuro */
+}
+
+/* Hover en las filas */
+#POFMH tbody tr:hover {
+    background-color: #cdc2ee; /* Fondo al pasar el ratón */
+    /*border: 1px solid #5b46fa;  Borde al pasar el ratón */
+}
+
+/* Hover en la cuarta columna */
+#POFMH td:nth-child(4):hover,
+#POFMH tr:hover td:nth-child(4) {
+    background-color: #cdc2ee; /* Color de fondo claro */
+    color: #4836cf; /* Color del texto al hacer hover */
+    /*border: 1px saddlebrown solid;  Cambia el borde */
+}
+
+/* Efectos en el encabezado al hacer hover */
+#POFMH th:hover {
+    background-color: #cdc2ee; /* Fondo fijo al pasar el ratón */
+    /*border: 1px solid #5b46fa;  Borde al pasar el ratón */
+}
+
+/* Ajustes de botones y controles */
+textarea {
+    width: 100%;
+    height: 100%;
+}
+
+input {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.add-row,
+.delete-row,
+.confirm-row,
+.confirm-dni,
+.ir-al-izquierda-btn,
+.confirmarFilaCompleta {
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.delete-row {
+    color: red;
+    margin-left: 10px;
+}
+
+.confirm-row,
+.confirmarFilaCompleta {
+    color: green;
+    margin-left: 10px;
+}
+
+.confirm-btn,
+.add-first-row-btn,
+.add-ultimo-row-btn,
+.ir-al-ultimo-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: green;
+    color: #333333;
+    cursor: pointer;
+    border: none;
+    margin-right: 10px;
+}
+
+.ir-al-ultimo-btn {
+    background-color: lightsalmon;
+}
+
+.add-first-row-btn {
+    background-color: lightseagreen;
+}
+
+.add-ultimo-row-btn {
+    background-color: lightgreen;
+}
+
+/* Personalización de celdas dinámicas */
+.custom-5rem {
+    width: 5rem;
+}
+.custom-8rem {
+    width: 8rem;
+}
+.custom-9rem {
+    width: 9rem;
+}
+.custom-13rem {
+    width: 13rem;
+}
+.custom-15rem {
+    width: 15rem;
+}
+.custom-30rem {
+    width: 30rem;
+}
+.custom-18rem {
+    width: 18rem;
+}
+.custom-20rem {
+    width: 20rem;
+}
+.custom-33rem {
+    width: 33rem;
+}
+.custom-25rem {
+    width: 25rem;
+}
+.custom-35rem {
+    width: 35rem;
+}
+
+/* Estilos para el menú contextual */
+#menuContextual {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    z-index: 9999; /* Asegurar que el menú esté por encima de otros elementos */
+    width: 150px;
+    padding: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+}
+
+#menuContextual ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#menuContextual li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+#menuContextual li:hover {
+    background-color: #ddd;
+}
+
+/* Otros estilos secundarios
+.highlight {
+    border: 2px solid red;
+} */
+
+.input-editable {
+    border: 2px solid red;
+    outline: none;
+}
+
+.bg-verdeSI {
+    background-color: green;
+    color: white;
+}
+
+/* Estilos adicionales para la card y el cuerpo */
+.card {
+    overflow: hidden;
+    max-height: 80vh;
+    overflow-y: auto; /* Permite desplazamiento vertical */
+    overflow-x: auto;
+}
+
+.card-header {
+    background-color: #f7f7f7;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tr-border-red {
+    border: 2px solid red;
+}
+
+.abrirAulas {
+    padding: 0; /* Sin relleno adicional */
+    margin: 0; /* Sin margen adicional */
+    border: none; /* Sin borde */
+    background: transparent; /* Sin fondo */
+    cursor: pointer; /* Cambiar el cursor a mano */
+    display: inline-flex; /* Mantener en línea */
+    align-items: center; /* Centrar verticalmente el contenido */
+}
+
+.abrirAulas i {
+    transition: transform 0.2s; /* Añadir transición para suavizar el cambio de ícono */
+}
+
+.abrirAulas:hover {
+    opacity: 0.8; /* Cambiar la opacidad al pasar el mouse */
+}

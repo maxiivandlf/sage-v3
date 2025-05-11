@@ -1,0 +1,40 @@
+:root{
+    --punta-flecha:10px;
+    --h-w-flecha:30px;
+    --h-box:100px;
+    --w-box:200px;
+    --bg-st:#f0ad4e;
+}
+
+.bg-Suplente{background-color: #fae278;}
+.bg-Titular{background-color: #cffc93;}
+.bg-Volante{background-color: #40dacb;}
+.bg-Interino{background-color: #379ad3;}
+.bg-Desdoblamiento{background-color: #a86bfd;}
+.bg-Planta{background-color: #fdb96b;}
+.bg-Contratado{background-color: #ff6c6c;}
+.st0{
+    width: 0; 
+    height: 0; 
+    border-left: var(--punta-flecha) solid transparent;
+    border-top: var(--h-w-flecha) solid var(--bg-st);
+    border-bottom: var(--h-w-flecha) solid var(--bg-st);
+}
+
+/*.st1
+{width: var(--w-box); height: var(--h-box); background-color: var(--bg-st); float:left; flex-wrap: nowrap;}*/
+
+.st2
+{       
+    width: 0; 
+    height: 0; 
+    border-left: var(--punta-flecha) solid var(--bg-st);
+    border-top: var(--h-w-flecha) solid transparent;
+    border-bottom: var(--h-w-flecha) solid transparent; 
+}
+
+.bg{background-color: #f5de5e!important;}
+
+#SegundaVentana{
+    display: none;
+}

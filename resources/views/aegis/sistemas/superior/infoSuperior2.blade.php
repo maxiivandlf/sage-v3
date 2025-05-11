@@ -1,0 +1,415 @@
+@extends('layout.app')
+
+@section('Titulo', 'Sage2.0 - Legajo Docente y F2')
+
+@section('ContenidoPrincipal')
+<style>
+    input:hover{
+        background-color: rgb(231, 199, 199);
+    }
+    .form-group {
+    display: flex;
+    align-items: center; 
+}
+label {
+    margin-right: 10px;
+    width: 75px;
+}
+.inforecibo{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+    align-content: stretch;
+    align-items: center;
+}
+/* .position-relative img:hover {
+    transform: scale(1.3);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    opacity: 0.9;
+} */
+.position-relative {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    will-change: transform;
+}
+
+.position-relative:hover {
+    transform: scale(1.3); /* Aumenta un 10% */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Asegura que la imagen mantiene su nitidez */
+.position-relative img {
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease-in-out;
+}
+</style>
+@section('LinkCSS')
+  <link rel="stylesheet" href="{{ asset('css/pofmh.css') }}">
+@endsection
+<section id="container" >
+    <section id="main-content">
+        <section class="content-wrapper">
+           
+            <div class="row">
+                <h2 class="text-center mb-4">Formulario de Convocatoria Docente</h2>
+       <!-- Formulario para subir imágenes -->
+       <form action="#" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="mb-3">
+            <label for="imagen" class="form-label">Subir Imagen de Perfil:</label>
+            <input type="file" class="form-control" name="imagen" id="imagen">
+        </div>
+        <button type="submit" class="btn btn-primary">Subir Imagen</button>
+    </form>
+                <form id="convocatoriaForm" class="col-md-6 offset-md-3">
+                    <div class="form-group">
+                        <label for="zona">Zona</label>
+                        <select class="form-control" id="zona" required>
+                            <option value="">Selecciona una zona</option>
+                            <option value="I">I</option>
+                            <option value="II">II</option>
+                            <option value="III">III</option>
+                        </select>
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="institucion">Institución</label>
+                        <input type="text" class="form-control" id="institucion" placeholder="Nombre de la institución" required>
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="unidadCurricular">Unidad Curricular</label>
+                        <input type="text" class="form-control" id="unidadCurricular" placeholder="Nombre de la unidad curricular" required>
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="horasCatedra">Horas Cátedras</label>
+                        <input type="number" class="form-control" id="horasCatedra" placeholder="Cantidad de horas" required>
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="horario">Horario</label>
+                        <input type="text" class="form-control" id="horario" placeholder="Días y horarios" required>
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="perfil">Perfil</label>
+                        <input type="text" class="form-control" id="perfil" placeholder="Perfil requerido" required>
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="inicio">Fecha de Inicio</label>
+                        <input type="datetime-local" class="form-control" id="inicio" required>
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="cierre">Fecha de Cierre</label>
+                        <input type="datetime-local" class="form-control" id="cierre" required>
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="inscriptos">Cantidad de Inscriptos</label>
+                        <input type="number" class="form-control" id="inscriptos" placeholder="Número de inscriptos" required>
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="estado">Estado</label>
+                        <select class="form-control" id="estado" required>
+                            <option value="">Selecciona el estado</option>
+                            <option value="Abierto">Abierto</option>
+                            <option value="Cerrado">Cerrado</option>
+                        </select>
+                    </div>
+            
+                    <button type="submit" class="btn btn-primary btn-block">Enviar</button>
+                </form>
+            
+                <!-- Simulación de Envío -->
+                <script>
+                    document.getElementById('convocatoriaForm').addEventListener('submit', function(event) {
+                        event.preventDefault(); // Evita el envío real del formulario
+                        alert('Formulario enviado correctamente (simulado)');
+                    });
+                </script>
+            </div>
+        </section>   
+    </section>
+</section>
+
+@endsection
+
+@section('Script')
+
+
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $('#titulosTab').dataTable( {
+                "aaSorting": [[ 0, "desc" ]],
+                "oLanguage": {
+                    "sLengthMenu": "Ob _MENU_ por página",
+                    "search": "Buscar:",
+                    "oPaginate": {
+                        "sPrevious": "Anterior",
+                        "sNext": "Siguiente"
+                    }
+                }
+            } );
+        } );
+        $(document).ready(function() {
+            $('#certificadosTab').dataTable( {
+                "aaSorting": [[ 0, "desc" ]],
+                "oLanguage": {
+                    "sLengthMenu": "Ob _MENU_ por página",
+                    "search": "Buscar:",
+                    "oPaginate": {
+                        "sPrevious": "Anterior",
+                        "sNext": "Siguiente"
+                    }
+                }
+            } );
+        } );
+  </script>
+
+
+<script src="{{ asset('js/funcionesvarias.js') }}"></script>
+        @if (session('ConfirmarAgregarTitCer')=='OK')
+            <script>
+            Swal.fire(
+                'Registro guardado',
+                'Se cargo correctamente un nuevo titulo/certificado',
+                'success'
+                    )
+            </script>
+        @endif
+    <script>
+
+    $('.formularioTituloYCertificado').submit(function(e){
+        if($("#DNI").val()=="" ||
+        $("#Apellido").val()=="" ||
+        $("#Nombre").val() == ""){
+        console.log("error")
+         e.preventDefault();
+          Swal.fire(
+            'Error',
+            'No se pudo agregar, hay datos incompletos',
+            'error'
+                )
+      }else{
+        e.preventDefault();
+        Swal.fire({
+            title: 'Esta seguro de querer agregar un Titulo?',
+            text: "Recuerde colocar datos verdaderos",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, guardo el registro!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.submit();
+            }
+          })
+        }
+    })
+    
+    
+</script>
+ <script src="{{ asset('js/funcionesvarias.js') }}"></script>
+        @if (session('ConfirmarEliminarDivision')=='OK')
+            <script>
+            Swal.fire(
+                'Registro Eliminado Exitosamente',
+                'Se desvinculo correctamente',
+                'success'
+                    )
+            </script>
+        @endif
+        @if (session('ConfirmarEliminarDivisionFallida')=='OK')
+        <script>
+        Swal.fire(
+            'Error al borrar Registro',
+            'No se puede borrar, debido a que esta vinculado a docente/s',
+            'error'
+                )
+        </script>
+    @endif
+    <script>
+        function validarFecha() {
+            var fechaInput = document.getElementById('fecha').value;
+            var regex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!regex.test(fechaInput)) {
+                //alert('Formato de fecha inválido. Por favor, ingrese una fecha válida en el formato YYYY-MM-DD.');
+                document.getElementById('fecha').focus();
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Formato de fecha inválido. Por favor, ingrese una fecha válida en el formato Día-Mes-Año",
+      
+                });
+                return false; // Retorna false si el formato de fecha es inválido
+            }
+      
+            // Dividir la fecha en sus componentes
+            var partesFecha = fechaInput.split("-");
+            var año = parseInt(partesFecha[0]);
+            var mes = parseInt(partesFecha[1]);
+            var dia = parseInt(partesFecha[2]);
+      
+            // Verificar si el año es válido (entre 1000 y 9999)
+            if (año < 1000 || año > 9999) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Año inválido. Por favor, ingrese un año válido entre 1000 y 9999",
+      
+                });
+                return false;
+            }
+      
+            // Verificar si el mes es válido (entre 1 y 12)
+            if (mes < 1 || mes > 12) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Mes inválido. Por favor, ingrese un mes válido entre 01 y 12",
+      
+                });
+                return false;
+            }
+      
+            // Verificar si el día es válido
+            var diasEnMes = new Date(año, mes, 0).getDate();
+            if (dia < 1 || dia > diasEnMes) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Día inválido para el mes y año especificados. Por favor, ingrese un día válido",
+      
+                });
+                return false;
+            }
+      
+            // Si pasa todas las validaciones, retorna true
+            return true;
+        }
+        function validarFecha2() {
+            var fechaInput = document.getElementById('fechaEgreso').value;
+            var regex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!regex.test(fechaInput)) {
+                //alert('Formato de fecha inválido. Por favor, ingrese una fecha válida en el formato YYYY-MM-DD.');
+                document.getElementById('fechaEgreso').focus();
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Formato de fecha inválido. Por favor, ingrese una fecha válida en el formato Día-Mes-Año",
+      
+                });
+                return false; // Retorna false si el formato de fecha es inválido
+            }
+      
+            // Dividir la fecha en sus componentes
+            var partesFecha = fechaInput.split("-");
+            var año = parseInt(partesFecha[0]);
+            var mes = parseInt(partesFecha[1]);
+            var dia = parseInt(partesFecha[2]);
+      
+            // Verificar si el año es válido (entre 1000 y 9999)
+            if (año < 1000 || año > 9999) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Año inválido. Por favor, ingrese un año válido entre 1000 y 9999",
+      
+                });
+                return false;
+            }
+      
+            // Verificar si el mes es válido (entre 1 y 12)
+            if (mes < 1 || mes > 12) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Mes inválido. Por favor, ingrese un mes válido entre 01 y 12",
+      
+                });
+                return false;
+            }
+      
+            // Verificar si el día es válido
+            var diasEnMes = new Date(año, mes, 0).getDate();
+            if (dia < 1 || dia > diasEnMes) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Día inválido para el mes y año especificados. Por favor, ingrese un día válido",
+      
+                });
+                return false;
+            }
+      
+            // Si pasa todas las validaciones, retorna true
+            return true;
+        }
+        document.getElementById('fecha').addEventListener('blur', validarFecha);
+        document.getElementById('fechaEgreso').addEventListener('blur', validarFecha2);
+      </script>
+<script>
+$(document).ready(function() {
+    $(document).on('click', '.btnActualizar', function(e) {
+        e.preventDefault(); 
+
+        let form = $(this).closest('form');
+
+        let formData = {
+            _token: form.find('input[name="_token"]').val(),
+            codliq: form.find('#codliq').val(),
+            descescuela: form.find('#descescuela').val(),
+            codtrabajo: form.find('#codtrabajo').val(),
+            codarea: form.find('#codarea').val(),
+            idPof: form.find('#idPof').val()
+        };
+
+        function padLeft(value, length) {
+            if (isNaN(value)) {
+                return value; // Si no es numérico, devuelve el valor sin cambios
+            }
+            return value.toString().padStart(length, '0');
+        }
+
+        $.ajax({
+            url: "{{ route('ActualizarPofmhRecibo') }}",
+            method: "POST",
+            data: formData,
+            success: function(response) {
+                Swal.fire(
+                'Registro Actualizado Exitosamente',
+                'Periodicamente controle estos datos, hasta que queden sincronizados. Gracias',
+                'success'
+                    )
+                
+                let codliqValue = form.find('#codliq').val(); 
+                let codtrabajoValue = form.find('#codtrabajo').val(); 
+
+                let formattedCodliq = padLeft(codliqValue, 3); 
+                let formattedCodtrabajo = padLeft(codtrabajoValue, 3); 
+
+                
+                form.find('#codliq').val(formattedCodliq);
+                form.find('#codtrabajo').val(formattedCodtrabajo);
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    alert("Errores: " + Object.values(errors).join("\n"));
+                } else {
+                    alert("Error al actualizar los datos.");
+                }
+            }
+        });
+    });
+});
+</script>
+
+@endsection

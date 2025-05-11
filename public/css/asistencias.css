@@ -1,0 +1,55 @@
+#POFMHAsistencia {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+#POFMHAsistencia th, #POFMHAsistencia td {
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+#POFMHAsistencia th {
+    background-color: #f2f2f2;
+}
+  .attendance-P {
+    background-color: #c8e6c9; /* Verde */
+}
+.attendance-FJ {
+    background-color: #b2f09a; /* VERDE CLARO */
+    color:brown;
+}
+.attendance-FI {
+    background-color: #ffcdd2; /* Rojo */
+}
+.attendance-R, .attendance-L {
+    background-color: #bbdefb; /* Azul */
+}
+.attendance-O {
+    background-color: darkslategray; /* gris oscuro */
+}
+.attendance-A {
+    background-color: #f4f6f9; /* gris oscuro */
+}
+
+#finde{
+    background-color: #ffcdd2;
+    cursor: pointer;
+}
+#nolaboral{
+    background-color: #85686a;
+    color: white;
+    cursor: pointer;
+}
+#laboral{
+    
+    cursor: pointer;
+}
+.highlighted-cell {
+    background-color: #dcb6f5; /* Cambia el color de fondo según tus preferencias */
+    cursor: pointer;
+}
+#POFMHAsistencia th{
+    font-size: 13px;
+}
+#POFMHAsistencia td{
+    font-size: 11px;
+}

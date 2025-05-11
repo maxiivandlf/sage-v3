@@ -1,0 +1,33 @@
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff; /* Fondo blanco */
+    z-index: 9999; /* Z-index alto para mostrar encima de todo */
+}
+
+.preloader-img {
+    text-align: center;
+    margin-top: 20%; /* Ajusta la posición vertical de la imagen */
+}
+
+.progress {
+    width: 70%;
+    margin: 0 auto; /* Centra la barra de progreso horizontalmente */
+}
+
+.progress-bar {
+    background-color: #007bff; /* Color de la barra de progreso */
+    width: 0%; /* Ancho inicial de la barra de progreso */
+    height: 5px; /* Altura de la barra de progreso */
+}
+
+/*Colors GOB*/
+.gb-trabajo {background-color:#fec90a;animation-delay: 0.1s}
+.gb-energia {background-color:#7a00e5;animation-delay: 0.2s}
+.gb-conectividad {background-color:#d300c9;animation-delay: 0.3s}
+.gb-sostenibilidad {background-color:#41ac3f;animation-delay: 0.4s}
+.gb-pan {background-color:#e62138;animation-delay: 0.5s}
+.gb-agua-claro{background-color:#2c8cff;}

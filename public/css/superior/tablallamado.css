@@ -1,0 +1,421 @@
+.content-wrapper {
+    padding: 20px !important;
+    background-color: #f8f9fa !important;
+}
+.dt-buttons .dt-button {
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+    color: #ffffff; /* Texto blanco */
+    background-color: #28a745; /* Fondo verde */
+    border: none; /* Sin bordes */
+    padding: 8px 15px; /* Espaciado */
+    border-radius: 5px; /* Bordes redondeados */
+    font-weight: bold; /* Texto en negrita */
+    cursor: pointer; /* Manito para el puntero */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Transiciones suaves */
+}
+
+.dt-buttons .dt-button:hover {
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+    background-color: #218838; /* Color verde más oscuro en hover */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Sombra más intensa en hover */
+}
+
+.btn-custom {
+    color: #ffffff;
+    background-color: #28a745;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.btn-custom:hover {
+    background-color: #218838;
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+    color: #ffffff;
+}
+
+.table-wrapper {
+    overflow-x: auto; /* Habilitar desplazamiento horizontal si la tabla es demasiado ancha */
+    -webkit-overflow-scrolling: touch;/* Mejora en dispositivos móviles */
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    margin-bottom: 20px; 
+}
+.table {
+    width: 100%;
+    table-layout: auto;
+    word-wrap: break-word;
+    font-size: 14px; /* Ajustar tamaño de fuente para móviles */
+}
+.perfil-columna {
+    width: 150px;
+    max-width: 150px;
+    white-space: normal;
+    font-size: 0.93em;
+}
+.espacio-columna {
+    width: 250px; /* Ajusta a un valor específico si max-width no funciona */
+    max-width: 250px; /* Limita el ancho máximo */
+    overflow: hidden; /* Evita que el contenido se desborde */
+    white-space: normal; /* Permite que el contenido se rompa en varias líneas */
+    text-overflow: ellipsis; /* Añade '...' si el contenido excede el ancho */
+}
+
+
+.espacio-cargo{
+    margin-bottom: 0.03em!important; /* Espaciado inferior */
+}
+.espacio-contenedor .badge-verde-claro {
+    background-color: #d6eab5;
+    color: #045a31;
+    font-size: 0.8em!important;
+    padding: 0.1em 0.4em!important;
+    border-radius: 0.25rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 0.04em!important; /* Espaciado inferior */
+}
+
+
+.espacio-contenedor .badge-turno {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    padding: 0.1em 0.4em!important;
+    border-radius: 0.25rem;
+    font-size:  0.8em!important;
+    display: inline-block;
+    margin-bottom: 0.04em!important; /* Espaciado inferior */
+}
+
+.espacio-contenedor .badge-horario {
+    background-color: hsl(357, 62%, 94%);
+    color: #744449;
+    padding: 0.1em 0.4em!important;
+    border-radius: 0.25rem;
+    font-size: 0.8em!important;
+    display: inline-block;
+    margin-bottom: 0.04em!important; /* Espaciado inferior */    
+    word-wrap: break-word !important; 
+    white-space: normal;    
+}
+.espacio-contenedor .badge-periodo {
+    background-color: hsl(196, 73%, 87%);
+    color: #035565;
+    padding: 0.1em 0.4em!important;
+    border-radius: 0.25rem;
+    font-size: 0.8em!important;
+    display: inline-block;
+    margin-bottom: 0.04em!important; /* Espaciado inferior */   
+    word-wrap: break-word !important; 
+    white-space: normal;
+}
+.d-flex {
+    display: flex;
+}
+
+.justify-content-between {
+    justify-content: space-between;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+#buttons-container {
+    display: flex;
+    gap: 10px; /* Espaciado entre los botones */
+    flex-wrap: wrap; /* Permitir que los botones se ajusten en varias líneas */
+    justify-content: center; /* Centrar botones en vista móvil */
+}
+.table.dataTable {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto; /* Ajuste automático */
+}
+.table.dataTable th {
+    background-color: #a3d78b; /* Color de fondo para los encabezados */
+    text-align: center;
+    padding: 8px; /* Ajustar espacio para los encabezados */
+}
+.table.dataTable td {
+    text-align: center;
+    white-space: normal; /* Permitir que el texto haga saltos de línea */
+    word-wrap: break-word; /* Permitir cortar palabras largas */
+    vertical-align: middle; /* Centrar verticalmente el contenido */
+    padding: 8px; /* Ajustar el espacio dentro de las celdas */
+}
+.table.dataTable td, table.dataTable th {
+    text-align: center !important;
+    vertical-align: middle !important;
+    word-wrap: break-word !important;
+    white-space: normal !important; /* Permitir que el texto se divida */
+    padding: 8px !important;
+    border: hsl(150, 1%, 59%) 0.1px solid; /* Borde verde */
+}
+.fech{
+    width: 10%;
+    max-width: 10%;   
+}
+.my-link {
+    color: #ffffff;
+    background-color: #007bff;
+    padding: 7px 7px 7px 7px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, box-shadow 0.3s;
+    
+}
+
+.my-link:hover {
+    color: #ffffff;
+    background-color: #0056b3;
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+  
+}
+.badge {
+    padding: 2px 10px 0px;
+    font-size: 14px !important; /* Tamaño de fuente más pequeño para pantallas pequeñas */  
+    margin-bottom: 10px; /* Espaciado inferior */
+    border-radius: 5px; /* Bordes redondeados */
+}
+.form-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.row > .col-md-4 {
+    margin-bottom: 15px; /* Espaciado entre columnas */
+}
+
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    transition: box-shadow 0.3s, border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 5px;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+.alert {
+    margin: 15px auto; /* Centra el div horizontalmente */
+    max-width: 800px; /* Ancho máximo en pantallas grandes */
+    padding: 20px;
+    border-radius: 10px; /* Bordes redondeados */
+    font-size: 16px; /* Tamaño base de fuente */
+}
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.modal-content {
+    position: relative;
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    max-width: 90%;
+    width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.modal-close {
+    position: absolute;
+    top: 0px;
+    right: 50px;
+    background: rgb(222, 77, 77);
+    border: none;
+    border-radius: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+.iframe-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 90vh; /* Altura del modal */
+    overflow: hidden;
+    max-width: 900px;
+    box-sizing: border-box;
+    padding: 10px;
+    margin: 0 auto;
+}
+.iframe-container iframe {
+    position: absolute;
+    top: 5%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+* Detalles colapsables del datatable en móviles */
+table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
+    background-color: #007bff;
+    top: 14px;
+    left: 14px;
+    border-radius: 50%;
+    color: white;
+    font-size: 14px;
+    height: 16px;
+    line-height: 16px;
+    width: 16px;
+    text-align: center;
+}
+
+/* Suaviza transiciones en apertura/cierre de detalles */
+table.dataTable tbody td.child {
+    padding: 10px 20px !important;
+    background-color: #f9f9f9;
+    font-size: 12px;
+}
+
+
+@media screen and (max-width: 768px) {
+    .alert {
+        font-size: 14px; /* Reduce el tamaño de fuente en móviles */
+        padding: 15px; /* Ajusta el padding en pantallas pequeñas */
+    }
+
+    .alert h4, .alert h5 {
+        font-size: 16px; /* Ajusta el tamaño de los encabezados en móviles */
+    }
+
+    .alert p {
+        font-size: 14px; /* Ajusta el tamaño del texto adicional */
+    }
+}
+    @media print {
+        body {
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .table {
+            width: 100%;
+            font-size: 10px;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+        }
+        @media print {
+            .table th {
+                background-color: #007bff !important;
+                color: rgb(9, 9, 9) !important; /* Para que el texto sea legible sobre el fondo azul */
+            }
+        }
+        
+        .table td, table th {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        .dt-buttons {
+            display: none !important; /* Ocultar los botones al imprimir */
+        }
+    }
+
+
+@media screen and (max-width: 768px) {
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        text-align: center;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        width: 100%;
+    }
+    .dataTables_wrapper .dataTables_paginate {
+        margin-top: 10px;
+    }
+    .table.dataTable {
+        font-size: 12px;
+    }
+
+    .table.dataTable td, table.dataTable th {
+        padding: 6px;
+    }
+    .d-flex {
+        flex-direction: column; /* Cambiar a disposición vertical en móviles */
+        text-align: center; /* Centrar contenido en móviles */
+    }
+
+    #buttons-container {
+        flex-direction: column;
+        align-items: center; /* Centrar los botones en móviles */
+    }
+
+    h1 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    .dt-buttons .dt-button {
+        width: 100%; /* Los botones ocuparán el ancho completo */
+        margin-bottom: 10px; /* Espaciado entre botones */
+        text-align: center; /* Centrar texto */
+    }
+}
+@media screen and (min-width: 769px) {
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        text-align: right;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        width: auto;
+    }
+}
+
+/* Mejora de visualización en pantallas pequeñas */
+@media screen and (max-width: 576px) {
+    .table.dataTable td, .table.dataTable th {
+        font-size: 11px;
+        padding: 5px;
+    }
+    .my-link {
+        display: inline-block;
+        font-size: 11px;
+        padding: 4px 6px;
+    }
+    .badge {
+        font-size: 12px !important;
+        padding: 1px 10px 0px;
+    }
+}
