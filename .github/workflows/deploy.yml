@@ -4,10 +4,13 @@ on:
   push:
     branches:
       - ${{secrets.DEPLOY_BRANCH}}
+  pull_request:
+    branches:
+      - ${{secrets.DEPLOY_BRANCH}}
 
 jobs:
   deploy:
-    name: Deploy to VPS
+    name: Deploy
     runs-on: ubuntu-latest
 
     steps:
@@ -17,14 +20,18 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.HOST }}
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
           script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh 
             cd ${{secrets.WORK_DIR}}
             echo "📦 Pulling latest code..."
-            git pull origin ${{secrets.DEPLOY_BRANCH}}
+            git fetch 
+            git checkout ${{secrets.DEPLOY_BRANCH}}
+            git pull 
 
             echo "🔧 Installing dependencies..."
             composer install --no-dev --optimize-autoloader
