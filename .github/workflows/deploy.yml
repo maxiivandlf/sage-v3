@@ -1,0 +1,39 @@
+name: Deploy Laravel App
+
+on:
+  push:
+    branches:
+      - ${{secrets.DEPLOY_BRANCH}}
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            cd ${{secrets.WORK_DIR}}
+            echo "📦 Pulling latest code..."
+            git pull origin ${{secrets.DEPLOY_BRANCH}}
+
+            echo "🔧 Installing dependencies..."
+            composer install --no-dev --optimize-autoloader
+
+            echo "⚙️ Running Laravel optimizations..."
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            echo "✅ Deployment complete."
+            exit
