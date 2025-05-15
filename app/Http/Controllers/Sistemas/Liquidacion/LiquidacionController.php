@@ -64,12 +64,7 @@ class LiquidacionController extends Controller
             ->groupBy('tb_zonas_liq.nombre_loc_zona')
             ->get();
 
-        //Cantidad de docentes por escuela 
-        $totalAgentesPorEscuela = $totalAgentesPorEscuela = DB::table('tb_institucion_extension')
-            ->join('tb_agentes', 'tb_institucion_extension.CUECOMPLETO', '=', 'tb_agentes.CUECOMPLETO')
-            ->select('tb_institucion_extension.nombreInstitucion', DB::raw('COUNT(tb_agentes.Documento) as total_agentes'))
-            ->groupBy('tb_institucion_extension.nombreInstitucion')
-            ->get();
+
 
 
 
