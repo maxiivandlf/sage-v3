@@ -2,11 +2,9 @@ name: Deploy Laravel App
 
 on:
   push:
-    branches:
-      - ${{secrets.DEPLOY_BRANCH}}
+    branches: [develop]
   pull_request:
-    branches:
-      - ${{secrets.DEPLOY_BRANCH}}
+    branches: [develop]
 
 jobs:
   deploy:
