@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Liquidacion;
+namespace App\Models\liquidacion;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

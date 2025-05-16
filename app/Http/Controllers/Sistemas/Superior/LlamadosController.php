@@ -14,6 +14,7 @@ use App\Models\Superior\Zona;
 use App\Models\Superior\InstitutoSuperior;
 use App\Models\Superior\Carrera;
 use App\Models\Superior\EspacioCurricular;
+use App\Models\Superior\RelInstSupCarrera;
 use App\Models\Superior\TipoLlamado;
 use App\Models\Superior\TipoEstado;
 use App\Models\Superior\Turno;
@@ -124,7 +125,8 @@ class LlamadosController extends Controller
     }
 
 
- 
+    // TODO LOM
+    //ver lom
     public function lom(){
         $llamados = DB::connection('DB4')->table('tb_lom')
         ->join('tb_zona', 'tb_lom.idtb_zona', '=', 'tb_zona.idtb_zona')
@@ -149,15 +151,56 @@ class LlamadosController extends Controller
 
         return view('aegis.sistemas.superior.llamados.ver_lom', compact('llamados'));
     }
-    
+    // cargar lom
+    public function agregarLom()
+    {
+       //datos tabla lom
+       $zonas = Zona::all(); 
+       $tiposLlamado = TipoLlamado::all();
+       $institutos = InstitutoSuperior::all();
+       $carreras = Carrera::all();
+       $estados = TipoEstado::where('nombre_tipoestado', 'En Proceso')->first(); // Estado reservado
+       $cargos = DB::connection('DB4')->table('tb_cargos')->select('idtb_cargos', 'nombre_cargo')->get();
+       $espacios = DB::connection('DB4')->table('tb_espacioscurriculares')->select('idEspacioCurricular', 'nombre_espacio')->get();           
+
+        return view('aegis.sistemas.superior.lom.crearLom', compact(
+            'zonas', 
+            'tiposLlamado', 
+            'institutos', 
+            'carreras', 
+            'estados',
+            'cargos',
+            'espacios', 
+            'cargos'
+        ));
+    }
   
-    
+    // TODO LLAMADOS
     public function create()
     { //datos tabla llamados
+        // $zonas = DB::connection('DB4')->table('tb_zona')
+        // ->select('idtb_zona', 'nombre_zona')
+        // ->groupBy('idtb_zona', 'nombre_zona')
+        // ->get();
+
+        // $institutos = DB::connection('DB4')->table('tb_instituto_superior')
+        //     ->select('id_instituto_superior', 'nombre_instsup')
+        //     ->groupBy('id_instituto_superior', 'nombre_instsup')
+        //     ->get();
+
+        // $carreras = DB::connection('DB4')->table('tb_carreras')
+        // ->join('rel_instsup_carrera', 'tb_carreras.idCarrera', '=', 'rel_instsup_carrera.idCarrera')
+        // ->select('tb_carreras.idCarrera', 'tb_carreras.nombre_carrera')
+        // ->groupBy('tb_carreras.idCarrera', 'tb_carreras.nombre_carrera')
+        // ->get();
+
+        $institutos = [];
+        $carreras = [];
+        $relInstCarr=RelInstSupCarrera::all();
         $zonas = Zona::all(); 
         $tiposLlamado = TipoLlamado::all();
-        $institutos = InstitutoSuperior::all();
-        $carreras = Carrera::all();
+        // $institutos = InstitutoSuperior::all();
+        // $carreras = Carrera::all();
         $estados = TipoEstado::where('nombre_tipoestado', 'En Proceso')->first(); // Estado reservado
         //tabla espacios por llamado
         $espacios= EspacioPorLlamado::all();
@@ -251,10 +294,28 @@ class LlamadosController extends Controller
     {   
         //lo necesario para el formulario de editar llamado
         $llamado = Llamado::findOrFail($id);
+        // $zonas = DB::connection('DB4')->table('tb_zona')
+        //     ->select('idtb_zona', 'nombre_zona')
+        //     ->groupBy('idtb_zona', 'nombre_zona')
+        //     ->get();
+
+        // $institutos = DB::connection('DB4')->table('tb_instituto_superior')
+        //     ->select('id_instituto_superior', 'nombre_instsup')
+        //     ->groupBy('id_instituto_superior', 'nombre_instsup')
+        //     ->get();
+
+        // $carreras = DB::connection('DB4')->table('tb_carreras')
+        //     ->join('rel_instsup_carrera', 'tb_carreras.idCarrera', '=', 'rel_instsup_carrera.idCarrera')
+        //     ->select('tb_carreras.idCarrera', 'tb_carreras.nombre_carrera')
+        //     ->groupBy('tb_carreras.idCarrera', 'tb_carreras.nombre_carrera')
+        //     ->get();
+        $institutos = [];
+        $carreras = [];
+        $relInstCarr=RelInstSupCarrera::all();
         $zonas = Zona::all(); 
         $tiposLlamado = TipoLlamado::all();
-        $institutos = InstitutoSuperior::all();
-        $carreras = Carrera::all();
+        // $institutos = InstitutoSuperior::all();
+        // $carreras = Carrera::all();
         $estados = TipoEstado::where('nombre_tipoestado', 'En Proceso')->first(); // Estado reservado
         //tabla espacios por llamado
         $espacios= EspacioPorLlamado::all();
@@ -270,6 +331,7 @@ class LlamadosController extends Controller
         $perfil = DB::connection('DB4')->table('tb_perfil')->select('idtb_perfil', 'nombre_perfil')->get();
         $periodo_cursado = DB::connection('DB4')->table('tb_periodo_cursado')->select('idtb_periodo_cursado', 'nombre_periodo')->get(); 
        
+      
         return view('aegis.sistemas.superior.llamados.edit', compact(
             'zonas', 
             'tiposLlamado', 
@@ -283,7 +345,9 @@ class LlamadosController extends Controller
             'situacion_revista',
             'perfil',
             'periodo_cursado',
-            'llamado'));
+            'llamado',
+            'relcargos'
+        ));
 
     }
 
@@ -517,5 +581,50 @@ class LlamadosController extends Controller
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
+     // instituto por zona
+    public function obtenerInstitutosPorZona(Request $request)
+    {
+        try {
+             $zonaId = $request->input('zona_id');
+     
+             if (!$zonaId) {
+                 return response()->json(['error' => 'ID de zona no proporcionado'], 400);
+             }
+     
+             $institutos = DB::connection('DB4')->table('tb_instituto_superior')
+                 ->join('rel_zona_instsup', 'tb_instituto_superior.id_instituto_superior', '=', 'rel_zona_instsup.id_instituto_superior')
+                 ->where('rel_zona_instsup.idtb_zona', $zonaId)
+                 ->select('tb_instituto_superior.id_instituto_superior', 'tb_instituto_superior.nombre_instsup')
+                 ->orderBy('tb_instituto_superior.nombre_instsup')
+                 ->get();
+     
+             return response()->json($institutos);
+        } catch (\Throwable $e) {
+             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    // carrera por instituto
+    public function obtenerCarrerasPorInstituto(Request $request)
+{
+    try {
+        $institutoId = $request->input('instituto_id');
+
+        if (!$institutoId) {
+            return response()->json(['error' => 'ID de instituto no proporcionado'], 400);
+        }
+
+        $carreras = DB::connection('DB4')->table('tb_carreras')
+            ->join('rel_instsup_carrera', 'tb_carreras.idCarrera', '=', 'rel_instsup_carrera.idCarrera')
+            ->where('rel_instsup_carrera.id_instituto_superior', $institutoId)
+            ->select('tb_carreras.idCarrera', 'tb_carreras.nombre_carrera')
+            ->orderBy('tb_carreras.nombre_carrera')
+            ->get();
+
+        return response()->json($carreras);
+    } catch (\Throwable $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
 
 }

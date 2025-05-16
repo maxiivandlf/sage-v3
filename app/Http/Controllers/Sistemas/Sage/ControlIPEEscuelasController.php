@@ -11,7 +11,7 @@ use App\Models\TurnosModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Str;
 class ControlIPEEscuelasController extends Controller
 {
     public function cantidadIPEInforme(){
@@ -89,6 +89,38 @@ class ControlIPEEscuelasController extends Controller
     
         return view('sage.ipe.cantidadIpeInforme', $datos);
     }
+    public function detalleIPE()
+    {
+        // Paso 1: Obtener Escu y Area agrupados con cantidad desde DB7
+        $agrupados = DB::connection('DB7')->table('tb_pof_ipe')
+            ->whereNull('IPE')
+            ->whereNull('IPE_R1')
+            ->select('Escu', 'Area', DB::raw('COUNT(*) as cantidad'))
+            ->groupBy('Escu', 'Area')
+            ->get();
+
+        // Paso 2: Recorremos los agrupados para buscar nombre y cuea en DB8
+        $resultado = [];
+
+        foreach ($agrupados as $item) {
+            $infoInstitucion = DB::connection('DB8')->table('instarealiq')
+                ->where('escu', $item->Escu)
+                ->where('area', $item->Area)
+                ->select('CUEA', 'nombreInstitucion','escu', 'area')
+                ->first();
+
+            $resultado[] = [
+                'Escu' => $item->Escu,
+                'Area' => $item->Area,
+                'cantidad' => $item->cantidad,
+                'CUEA' => $infoInstitucion->CUEA ?? 'No encontrado',
+                'NombreInstitucion' => $infoInstitucion->nombreInstitucion ?? 'No encontrado',
+            ];
+        }
+
+        return view('bandeja.partials.tabla_ipe_null', ['registros' => $resultado]);
+    }
+
     public function controlDeIpe() {
         Carbon::setLocale('es');
         set_time_limit(0);
@@ -192,6 +224,272 @@ class ControlIPEEscuelasController extends Controller
         $sitRev = DB::connection('DB7')->table('tb_situacionrevista')->get();
         $Sexos = DB::table('tb_sexo')->get();
         $CargoSalarial = DB::connection('DB7')->table('tb_cargossalariales')->orderBy('Codigo', 'ASC')->get();
+        //prueba sobre mefifan
+        $infoAgentesMedifan = DB::connection('DB7')->table('tb_medifan')->get();
+
+        $CuesFiltro = [];//'460021200'
+        $cueaBuscar = session('CUECOMPLETO');
+
+         $esEditable = false;
+        if (in_array($cueaBuscar, $CuesFiltro)) {
+            $esEditable = true;
+                $datos = [
+                'mensajeError' => "",
+                'infoUnidLiq' => $infoUnidLiq,
+                'infoAgentes' => $infoAgentes,
+                'MesActual' => $MesActual,
+                'Turnos' => $Turnos,
+                'infoHoras' => $infoHoras,
+                'AgentesNuevos' => $AgentesNuevos,
+                'infoAgentesCount' => $infoAgentes->count(),
+                'infoAgentesRelacionados' => $infoAgentesRel,
+                'CUECOMPLETOBASE' => session('CUECOMPLETOBASE'),
+                'NombreInstitucion' => session('NombreInstitucion'),
+                'liqText' => $liqText,
+                'SitRev' => $sitRev,
+                'Sexos' => $Sexos,
+                'esEditable' => $esEditable,
+                'infoAgentesMedifan' => $infoAgentesMedifan,
+                'CargoSalarial' => $CargoSalarial,
+                'FechaActual' => Carbon::now()->format('Y-m-d'),
+                'mensajeNAV' => 'Panel de Control de IPE'
+            ];
+        
+            $ruta = '
+            <li class="breadcrumb-item active"><a href="#">Escuelas</a></li>
+            <li class="breadcrumb-item active"><a href="'.route('controlDeIpe').'">Control de IPE</a></li>';
+            session(['ruta' => $ruta]);
+        
+            return view('sage.ipe.controlIpeEscuelaPermitido', $datos);
+        }else{
+                $datos = [
+                'mensajeError' => "",
+                'infoUnidLiq' => $infoUnidLiq,
+                'infoAgentes' => $infoAgentes,
+                'MesActual' => $MesActual,
+                'Turnos' => $Turnos,
+                'infoHoras' => $infoHoras,
+                'AgentesNuevos' => $AgentesNuevos,
+                'infoAgentesCount' => $infoAgentes->count(),
+                'infoAgentesRelacionados' => $infoAgentesRel,
+                'CUECOMPLETOBASE' => session('CUECOMPLETOBASE'),
+                'NombreInstitucion' => session('NombreInstitucion'),
+                'liqText' => $liqText,
+                'SitRev' => $sitRev,
+                'Sexos' => $Sexos,
+                'infoAgentesMedifan' => $infoAgentesMedifan,
+                'CargoSalarial' => $CargoSalarial,
+                'FechaActual' => Carbon::now()->format('Y-m-d'),
+                'mensajeNAV' => 'Panel de Control de IPE'
+            ];
+        
+            $ruta = '
+            <li class="breadcrumb-item active"><a href="#">Escuelas</a></li>
+            <li class="breadcrumb-item active"><a href="'.route('controlDeIpe').'">Control de IPE</a></li>';
+            session(['ruta' => $ruta]);
+        
+            return view('sage.ipe.controlIpeEscuela', $datos);
+        }
+
+        
+       
+    }
+    public function consultar(Request $request)
+    {
+        $dni = $request->input('documento');
+        $cue = $request->input('cue');
+        $cuecompleto = $request->input('cuecompleto');
+
+        // Situaciones en Medifan
+        $registros = DB::connection('DB7')->table('tb_medifan')
+            ->where('Documento', $dni)
+            ->where('CUE', $cue)
+            ->get();
+
+        // Novedades
+        $inicioMesAnterior = Carbon::now()->subMonth()->startOfMonth()->toDateString(); // ej: 2025-04-01
+        $finMesAnterior = Carbon::now()->subMonth()->endOfMonth()->toDateString();
+
+        $infoNovedades = DB::connection('DB7')->table('tb_novedades')
+            ->join('tb_novedades_extras', 'tb_novedades_extras.idNovedadExtra', '=', 'tb_novedades.idNovedadExtra')
+            ->join('tb_condiciones', 'tb_condiciones.idCondicion', '=', 'tb_novedades.Condicion')
+            ->join(DB::connection('mysql')->getDatabaseName() . '.tb_motivos', 'tb_motivos.idMotivo', '=', 'tb_novedades.Motivo')
+            ->where('CUECOMPLETO', $cuecompleto)
+            ->where('Agente', $dni)
+            ->where('FormatoNovedadNuevo', 1)
+            ->whereBetween('tb_novedades.created_at', [$inicioMesAnterior, $finMesAnterior])
+            ->get();
+
+        $html = '
+        <ul class="nav nav-tabs" id="tabMedifanNovedades" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="tab-medifan-tab" data-toggle="tab" href="#tab-medifan" role="tab" aria-controls="tab-medifan" aria-selected="true">Situaciones Medifan</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tab-novedades-tab" data-toggle="tab" href="#tab-novedades" role="tab" aria-controls="tab-novedades" aria-selected="false">Novedades</a>
+            </li>
+        </ul>
+        <div class="tab-content mt-3" id="tabMedifanNovedadesContent">
+            <div class="tab-pane fade show active" id="tab-medifan" role="tabpanel" aria-labelledby="tab-medifan-tab">';
+
+        // Contenido de Medifan
+        if ($registros->isEmpty()) {
+            $html .= '<div class="alert alert-info">No se encontraron situaciones en Medifan.</div>';
+        } else {
+            $html .= '<table class="table table-bordered table-striped">';
+            $html .= '<thead><tr><th>Licencia</th><th>Diagnóstico</th><th>Días</th><th>Fecha Desde</th><th>Fecha Hasta</th><th>CUE</th></tr></thead><tbody>';
+
+            foreach ($registros as $r) {
+                $html .= '<tr>';
+                $html .= "<td>{$r->Desc_licencia}</td>";
+                $html .= "<td>{$r->Desc_diagnostico}</td>";
+                $html .= "<td>{$r->Dias}</td>";
+                $html .= "<td>" . ($r->Desde ? Carbon::parse($r->Desde)->format('d-m-Y H:i') : '-') . "</td>";
+                $html .= "<td>" . ($r->Hasta ? Carbon::parse($r->Hasta)->format('d-m-Y H:i') : '-') . "</td>";
+                $html .= "<td>Institución: {$r->CUE}</td>";
+                $html .= '</tr>';
+            }
+
+            $html .= '</tbody></table>';
+        }
+
+        $html .= '</div>'; // cierre tab medifan
+
+        // Contenido de Novedades
+        $html .= '<div class="tab-pane fade" id="tab-novedades" role="tabpanel" aria-labelledby="tab-novedades-tab">';
+
+        if ($infoNovedades->isEmpty()) {
+            $html .= '<div class="alert alert-warning">No se encontraron novedades para este agente.</div>';
+        } else {
+            $html .= '<table class="table table-bordered table-striped">';
+            $html .= '<thead><tr><th>Agente</th><th>CUE</th><th>ID</th><th>Desde</th><th>Hasta</th><th>Motivo</th><th>Observaciones</th></tr></thead><tbody>';
+
+            foreach ($infoNovedades as $n) {
+                $html .= '<tr>';
+                $html .= "<td>{$n->Agente}</td>";
+                $html .= "<td>{$n->CUECOMPLETO}</td>";
+                $html .= "<td>{$n->tipo_novedad}</td>";
+                $html .= "<td>" . ($n->FechaDesde ? Carbon::parse($n->FechaDesde)->format('d-m-Y H:i') : '-') . "</td>";
+                $html .= "<td>" . ($n->FechaHasta ? Carbon::parse($n->FechaHasta)->format('d-m-Y H:i') : '-') . "</td>";
+                $html .= "<td>{$n->Codigo}-{$n->Nombre_Licencia}</td>";
+                $html .= "<td>{$n->Descripcion}</td>";
+                $html .= "<td>{$n->Observaciones}</td>";
+                $html .= '</tr>';
+            }
+
+            $html .= '</tbody></table>';
+        }
+
+        $html .= '</div>'; // cierre tab novedades
+        $html .= '</div>'; // cierre tab-content
+
+        return $html;
+    }
+
+
+    public function controlDeIpeAnterior() {
+        Carbon::setLocale('es');
+        set_time_limit(0);
+        ini_set('memory_limit', '2028M');
+        
+        $cuebase = substr(session('CUECOMPLETO'), 0, 9);
+        session(['CUECOMPLETOBASE' => $cuebase]);
+    
+        $infoUnidLiq = DB::connection('DB8')->table('instarealiq')
+            ->where('instarealiq.CUEA', session('CUECOMPLETOBASE'))
+            ->select('escu', 'area')
+            ->groupBy('escu', 'area')
+            ->get()
+            ->toArray();
+    
+        $infoHoras = HorasIpeModel::all();
+    
+        // Armar string para vista
+        $liqText = '';
+        foreach ($infoUnidLiq as $unidliq) {
+            if (!empty($unidliq->escu) && !empty($unidliq->area)) {
+                $liqText .= $unidliq->escu . ' - ' . $unidliq->area;
+            } else {
+                $liqText .= 'S/D';
+            }
+            $liqText .= " / ";
+        }
+        $liqText = rtrim($liqText, ' / ');
+        session(['UnidadLiquidacion' => $liqText]);
+    
+        $listaNoPermitidos = ['820'];
+        $infoAgentesEliminados = DB::connection('DB7')->table('tb_rel_pof_ipe_abril')->where('CUECOMPLETO', session('CUECOMPLETOBASE'))
+            ->pluck('idPofIpe')
+            ->toArray();
+    
+        // Consulta base
+        $infoAgentesQuery = DB::connection('DB7')->table('tb_pof_ipe_abril')->whereNotIn('idPofIpe', $infoAgentesEliminados)
+            ->whereNotIn('Escu', $listaNoPermitidos)
+            ->whereNull('Agregado');
+    
+        if (!empty($infoUnidLiq)) {
+            $infoAgentesQuery->where(function($query) use ($infoUnidLiq) {
+                foreach ($infoUnidLiq as $item) {
+                    $query->orWhere(function($q) use ($item) {
+                        $q->where('Escu', $item->escu)
+                            ->where('Area', $item->area);
+                    });
+                }
+            });
+        } else {
+            $infoAgentesQuery->whereRaw('0 = 1');
+        }
+    
+        $infoAgentes = $infoAgentesQuery
+            ->join('tb_situacionrevista', 'tb_situacionrevista.idSituacionRevista', '=', 'tb_pof_ipe_abril.Plan')
+            ->join('tb_cargossalariales', function($join) {
+                $join->on(DB::raw("CONCAT(tb_pof_ipe_abril.lcat, tb_pof_ipe_abril.ncat)"), '=', 'tb_cargossalariales.Codigo');
+            })
+            ->join('tb_areas_liquidacion', 'tb_areas_liquidacion.descripcion_area', '=', 'tb_pof_ipe_abril.Area')
+            ->get();
+    
+        // Agentes nuevos
+        $AgentesNuevosQuery = DB::connection('DB7')->table('tb_pof_ipe_abril')->where('Agregado', 1)
+            ->where('CUECOMPLETO_AG', session('CUECOMPLETOBASE'));
+    
+        if (!empty($infoUnidLiq)) {
+            $AgentesNuevosQuery->where(function($query) use ($infoUnidLiq) {
+                foreach ($infoUnidLiq as $item) {
+                    $query->orWhere(function($q) use ($item) {
+                        $q->where('Escu', $item->escu)
+                            ->where('Area', $item->area);
+                    });
+                }
+            });
+        } else {
+            $AgentesNuevosQuery->whereRaw('0 = 1');
+        }
+    
+        $AgentesNuevos = $AgentesNuevosQuery
+            ->join('tb_situacionrevista', 'tb_situacionrevista.idSituacionRevista', '=', 'tb_pof_ipe_abril.Plan')
+            ->join('tb_cargossalariales', function($join) {
+                $join->on(DB::raw("CONCAT(tb_pof_ipe_abril.lcat, tb_pof_ipe_abril.ncat)"), '=', 'tb_cargossalariales.Codigo');
+            })
+            ->join('tb_areas_liquidacion', 'tb_areas_liquidacion.descripcion_area', '=', 'tb_pof_ipe_abril.Area')
+            ->get();
+    
+        // Agentes relacionados
+        $infoAgentesRel = DB::connection('DB7')->table('tb_pof_ipe_abril')->where('tb_rel_pof_ipe_abril.CUECOMPLETO', session('CUECOMPLETOBASE'))
+            ->join('tb_situacionrevista', 'tb_situacionrevista.idSituacionRevista', '=', 'tb_pof_ipe_abril.Plan')
+            ->join('tb_cargossalariales', function($join) {
+                $join->on(DB::raw("CONCAT(tb_pof_ipe_abril.lcat, tb_pof_ipe_abril.ncat)"), '=', 'tb_cargossalariales.Codigo');
+            })
+            ->join('tb_areas_liquidacion', 'tb_areas_liquidacion.descripcion_area', '=', 'tb_pof_ipe_abril.Area')
+            ->join('tb_rel_pof_ipe_abril', 'tb_rel_pof_ipe_abril.idPofIpe', '=', 'tb_pof_ipe_abril.idPofIpe')
+            ->get();
+        //dd($infoAgentesRel); 
+        $MesActual = Carbon::now()->locale('es')->format('F');
+        session(['MesActual' => $MesActual]);
+    
+        $Turnos = DB::connection('DB7')->table('tb_turnos')->get();
+        $sitRev = DB::connection('DB7')->table('tb_situacionrevista')->get();
+        $Sexos = DB::table('tb_sexo')->get();
+        $CargoSalarial = DB::connection('DB7')->table('tb_cargossalariales')->orderBy('Codigo', 'ASC')->get();
     
         $datos = [
             'mensajeError' => "",
@@ -215,12 +513,11 @@ class ControlIPEEscuelasController extends Controller
     
         $ruta = '
         <li class="breadcrumb-item active"><a href="#">Escuelas</a></li>
-        <li class="breadcrumb-item active"><a href="'.route('controlDeIpe').'">Control de IPE</a></li>';
+        <li class="breadcrumb-item active"><a href="'.route('controlDeIpeAnterior').'">Control de IPE</a></li>';
         session(['ruta' => $ruta]);
     
-        return view('sage.ipe.controlIpeEscuela', $datos);
+        return view('sage.ipe.controlIpeEscuelaAnterior', $datos);
     }
-    
     public function controlDeIpeSuper($idExtension) {
         Carbon::setLocale('es');
         set_time_limit(0);
@@ -331,6 +628,153 @@ class ControlIPEEscuelasController extends Controller
         $Sexos = DB::table('tb_sexo')->get();
         $CargoSalarial = DB::connection('DB7')->table('tb_cargossalariales')
             ->orderBy('Codigo', 'ASC')->get();
+        $infoAgentesMedifan = DB::connection('DB7')->table('tb_medifan')->get();
+
+        //aqui voy a cargar una boleana que me sirva para saber si es editable o si es sede de control sola
+        $esEditable = true;
+        if(session('Modo') >= 14 && session('Modo') <= 45){
+            $esEditable = false;
+        }
+
+        $datos = [
+            'mensajeError' => "",
+            'infoUnidLiq' => $infoUnidLiq,
+            'infoAgentes' => $infoAgentes,
+            'MesActual' => $MesActual,
+            'Turnos' => $Turnos,
+            'infoHoras' => $infoHoras,
+            'AgentesNuevos' => $AgentesNuevos,
+            'infoAgentesCount' => $infoAgentes->count(),
+            'infoAgentesRelacionados' => $infoAgentesRel,
+            'CUECOMPLETOBASE' => session('CUECOMPLETOBASE'),
+            'NombreInstitucion' => session('NombreInstitucion'),
+            'liqText' => $liqText,
+            'SitRev' => $sitRev,
+            'Sexos' => $Sexos,
+            'CargoSalarial' => $CargoSalarial,
+            'infoAgentesMedifan' => $infoAgentesMedifan,
+            'esEditable' => $esEditable,
+            'FechaActual' => Carbon::now()->format('Y-m-d'),
+            'mensajeNAV' => 'Panel de Control de IPE'
+        ];
+    
+        $ruta = '
+        <li class="breadcrumb-item active"><a href="#">Escuelas</a></li>
+        <li class="breadcrumb-item active"><a href="'.route('controlDeIpeSuper', $idExtension).'">Control de IPE</a></li>';
+        session(['ruta' => $ruta]);
+    
+        return view('sage.ipe.controlIpeEscuelaSuper', $datos);
+    }
+    public function controlDeIpeSuperAnterior($idExtension) {
+        Carbon::setLocale('es');
+        set_time_limit(0);
+        ini_set('memory_limit', '2028M');
+    
+        $infoEscuela = DB::table('tb_institucion_extension')
+            ->where('idInstitucionExtension', $idExtension)
+            ->first();
+    
+        $cuebase = substr($infoEscuela->CUECOMPLETO, 0, 9);
+        session(['CUECOMPLETOBASE' => $cuebase]);
+    
+        $infoUnidLiq = DB::connection('DB8')->table('instarealiq')
+            ->where('instarealiq.CUEA', session('CUECOMPLETOBASE'))
+            ->select('escu', 'area')
+            ->groupBy('escu', 'area')
+            ->get()
+            ->toArray();
+    
+        $infoHoras = HorasIpeModel::all();
+    
+        $liqText = '';
+        foreach ($infoUnidLiq as $unidliq) {
+            if (!empty($unidliq->escu) && !empty($unidliq->area)) {
+                $liqText .= "{$unidliq->escu} - {$unidliq->area}";
+            } else {
+                $liqText .= 'S/D';
+            }
+            $liqText .= " / ";
+        }
+        $liqText = rtrim($liqText, ' / ');
+        session(['UnidadLiquidacion' => $liqText]);
+    
+        $listaNoPermitidos = ['820'];
+    
+        $infoAgentesEliminados = DB::connection('DB7')->table('tb_rel_pof_ipe_abril')->where('CUECOMPLETO', session('CUECOMPLETOBASE'))
+            ->pluck('idPofIpe')
+            ->toArray();
+    
+        // === Agentes Existentes ===
+        $infoAgentesQuery = DB::connection('DB7')->table('tb_pof_ipe_abril')->whereNotIn('idPofIpe', $infoAgentesEliminados)
+            ->whereNotIn('Escu', $listaNoPermitidos)
+            ->whereNull('Agregado');
+    
+        if (!empty($infoUnidLiq)) {
+            $infoAgentesQuery->where(function($query) use ($infoUnidLiq) {
+                foreach ($infoUnidLiq as $item) {
+                    $query->orWhere(function($q) use ($item) {
+                        $q->where('Escu', $item->escu)
+                            ->where('Area', $item->area);
+                    });
+                }
+            });
+        } else {
+            $infoAgentesQuery->whereRaw('0 = 1');
+        }
+    
+        $infoAgentes = $infoAgentesQuery
+            ->join('tb_situacionrevista', 'tb_situacionrevista.idSituacionRevista', '=', 'tb_pof_ipe_abril.Plan')
+            ->join('tb_cargossalariales', function($join) {
+                $join->on(DB::raw("CONCAT(tb_pof_ipe_abril.lcat, tb_pof_ipe_abril.ncat)"), '=', 'tb_cargossalariales.Codigo');
+            })
+            ->join('tb_areas_liquidacion', 'tb_areas_liquidacion.descripcion_area', '=', 'tb_pof_ipe_abril.Area')
+            ->get();
+    
+        // === Agentes Nuevos ===
+        $AgentesNuevosQuery = DB::connection('DB7')->table('tb_pof_ipe_abril')->where('Agregado', 1)
+            ->where('CUECOMPLETO_AG', session('CUECOMPLETOBASE'));
+    
+        if (!empty($infoUnidLiq)) {
+            $AgentesNuevosQuery->where(function($query) use ($infoUnidLiq) {
+                foreach ($infoUnidLiq as $item) {
+                    $query->orWhere(function($q) use ($item) {
+                        $q->where('Escu', $item->escu)
+                            ->where('Area', $item->area);
+                    });
+                }
+            });
+        } else {
+            $AgentesNuevosQuery->whereRaw('0 = 1');
+        }
+    
+        $AgentesNuevos = $AgentesNuevosQuery
+            ->join('tb_situacionrevista', 'tb_situacionrevista.idSituacionRevista', '=', 'tb_pof_ipe_abril.Plan')
+            ->join('tb_cargossalariales', function($join) {
+                $join->on(DB::raw("CONCAT(tb_pof_ipe_abril.lcat, tb_pof_ipe_abril.ncat)"), '=', 'tb_cargossalariales.Codigo');
+            })
+            ->join('tb_areas_liquidacion', 'tb_areas_liquidacion.descripcion_area', '=', 'tb_pof_ipe_abril.Area')
+            ->get();
+    
+        // === Agentes Relacionados ===
+        $infoAgentesRel = DB::connection('DB7')->table('tb_pof_ipe_abril')->where('tb_rel_pof_ipe_abril.CUECOMPLETO', session('CUECOMPLETOBASE'))
+            ->join('tb_situacionrevista', 'tb_situacionrevista.idSituacionRevista', '=', 'tb_pof_ipe_abril.Plan')
+            ->join('tb_cargossalariales', function($join) {
+                $join->on(DB::raw("CONCAT(tb_pof_ipe_abril.lcat, tb_pof_ipe_abril.ncat)"), '=', 'tb_cargossalariales.Codigo');
+            })
+            ->join('tb_areas_liquidacion', 'tb_areas_liquidacion.descripcion_area', '=', 'tb_pof_ipe_abril.Area')
+            ->join('tb_rel_pof_ipe_abril', 'tb_rel_pof_ipe_abril.idPofIpe', '=', 'tb_pof_ipe_abril.idPofIpe')
+            ->get();
+    
+        setlocale(LC_TIME, 'es_ES.UTF-8');
+        Carbon::setLocale('es');
+        $MesActual = Carbon::now()->translatedFormat('F');
+        session(['MesActual' => $MesActual]);
+    
+        $Turnos = DB::connection('DB7')->table('tb_turnos')->get();
+        $sitRev = DB::connection('DB7')->table('tb_situacionrevista')->get();
+        $Sexos = DB::table('tb_sexo')->get();
+        $CargoSalarial = DB::connection('DB7')->table('tb_cargossalariales')
+            ->orderBy('Codigo', 'ASC')->get();
     
         $datos = [
             'mensajeError' => "",
@@ -354,12 +798,11 @@ class ControlIPEEscuelasController extends Controller
     
         $ruta = '
         <li class="breadcrumb-item active"><a href="#">Escuelas</a></li>
-        <li class="breadcrumb-item active"><a href="'.route('controlDeIpeSuper', $idExtension).'">Control de IPE</a></li>';
+        <li class="breadcrumb-item active"><a href="'.route('controlDeIpeSuperAnterior', $idExtension).'">Control de IPE</a></li>';
         session(['ruta' => $ruta]);
     
-        return view('sage.ipe.controlIpeEscuelaSuper', $datos);
+        return view('sage.ipe.controlIpeEscuelaSuperAnterior', $datos);
     }
-    
     public function controlDeIpeTec($idInstitucionExtension){
         Carbon::setLocale('es');
         set_time_limit(0);
@@ -489,12 +932,29 @@ class ControlIPEEscuelasController extends Controller
                     $agente->Horas_Trabajadas = 0;
                     $agente->CUECOMPLETO = session('CUECOMPLETOBASE');
                     $agente->Mes = session('MesActual');
+                    
+                    if (Str::startsWith(session('UsuarioCUECOMPLETO'), '8000')) {
+                        //guardo la datos de los super
+                        $agente->Nombre_Super = session('NombreInstitucion');
+                        $agente->CUECOMPLETO_SUPER = session('UsuarioCUECOMPLETO');
+                        $agente->FechaSuper = Carbon::now();
+                    }
+
+
+                   
+                    
                 $agente->save();
         }else{
             $agente = PofIpeModel::findOrFail($request->id);
                 $agente->IPE = $request->IPE;
                 $agente->CUECOMPLETO = session('CUECOMPLETOBASE');
                 $agente->Mes = session('MesActual');
+                    if (Str::startsWith(session('UsuarioCUECOMPLETO'), '8000')) {
+                        //guardo la datos de los super
+                        $agente->Nombre_Super = session('NombreInstitucion');
+                        $agente->CUECOMPLETO_SUPER = session('UsuarioCUECOMPLETO');
+                        $agente->FechaSuper = Carbon::now();
+                    }
             $agente->save();
         }
        
@@ -507,6 +967,12 @@ class ControlIPEEscuelasController extends Controller
             $agente->IPE = $request->IPER1;
             $agente->Mes = session('MesActual');
             $agente->CUECOMPLETO = session('CUECOMPLETOBASE');
+                    if (Str::startsWith(session('UsuarioCUECOMPLETO'), '8000')) {
+                        //guardo la datos de los super
+                        $agente->Nombre_Super = session('NombreInstitucion');
+                        $agente->CUECOMPLETO_SUPER = session('UsuarioCUECOMPLETO');
+                        $agente->FechaSuper = Carbon::now();
+                    }
         $agente->save();
     
         return response()->json(['status' => 'ok', 'message' => 'IPE actualizado']);
@@ -550,11 +1016,24 @@ class ControlIPEEscuelasController extends Controller
             $agente = PofIpeModel::findOrFail($request->id);
                 $agente->Turno = $request->Turno;
                 $agente->CUECOMPLETO = session('CUECOMPLETOBASE');
+                    if (Str::startsWith(session('UsuarioCUECOMPLETO'), '8000')) {
+                        //guardo la datos de los super
+                        $agente->Nombre_Super = session('NombreInstitucion');
+                        $agente->CUECOMPLETO_SUPER = session('UsuarioCUECOMPLETO');
+                        $agente->FechaSuper = Carbon::now();
+                    }
             $agente->save();
         }else{
             $agente = RelPofIpeModel::findOrFail($request->idr1);
                 $agente->Turno = $request->TurnoR1;
                 $agente->CUECOMPLETO = session('CUECOMPLETOBASE');
+                //guardo la datos de los super
+                    if (Str::startsWith(session('UsuarioCUECOMPLETO'), '8000')) {
+                        //guardo la datos de los super
+                        $agente->Nombre_Super = session('NombreInstitucion');
+                        $agente->CUECOMPLETO_SUPER = session('UsuarioCUECOMPLETO');
+                        $agente->FechaSuper = Carbon::now();
+                    }
             $agente->save();
         }
         
@@ -567,6 +1046,12 @@ class ControlIPEEscuelasController extends Controller
         $agente = RelPofIpeModel::findOrFail($request->idr1);
             $agente->Turno = $request->TurnoR1;
             $agente->CUECOMPLETO = session('CUECOMPLETOBASE');
+                    if (Str::startsWith(session('UsuarioCUECOMPLETO'), '8000')) {
+                        //guardo la datos de los super
+                        $agente->Nombre_Super = session('NombreInstitucion');
+                        $agente->CUECOMPLETO_SUPER = session('UsuarioCUECOMPLETO');
+                        $agente->FechaSuper = Carbon::now();
+                    }
         $agente->save();
     
         return response()->json(['status' => 'ok', 'message' => 'Turno actualizado']);
@@ -578,11 +1063,23 @@ class ControlIPEEscuelasController extends Controller
             $agente = PofIpeModel::findOrFail($request->id);
                 $agente->Horas_Trabajadas= $request->Hora;
                 $agente->CUECOMPLETO = session('CUECOMPLETOBASE');
+                    if (Str::startsWith(session('UsuarioCUECOMPLETO'), '8000')) {
+                        //guardo la datos de los super
+                        $agente->Nombre_Super = session('NombreInstitucion');
+                        $agente->CUECOMPLETO_SUPER = session('UsuarioCUECOMPLETO');
+                        $agente->FechaSuper = Carbon::now();
+                    }
             $agente->save();
         }else{
             $agente = PofIpeModel::findOrFail($request->idr1);
                 $agente->Horas_Trabajadas_R1 = $request->HoraR1;
                 $agente->CUECOMPLETO = session('CUECOMPLETOBASE');
+                    if (Str::startsWith(session('UsuarioCUECOMPLETO'), '8000')) {
+                        //guardo la datos de los super
+                        $agente->Nombre_Super = session('NombreInstitucion');
+                        $agente->CUECOMPLETO_SUPER = session('UsuarioCUECOMPLETO');
+                        $agente->FechaSuper = Carbon::now();
+                    }
             $agente->save();
         }
         
@@ -596,6 +1093,12 @@ class ControlIPEEscuelasController extends Controller
         $agente = RelPofIpeModel::findOrFail($request->idr1);
             $agente->Horas_Trabajadas = $request->HoraR1;
             $agente->CUECOMPLETO = session('CUECOMPLETOBASE');
+                    if (Str::startsWith(session('UsuarioCUECOMPLETO'), '8000')) {
+                        //guardo la datos de los super
+                        $agente->Nombre_Super = session('NombreInstitucion');
+                        $agente->CUECOMPLETO_SUPER = session('UsuarioCUECOMPLETO');
+                        $agente->FechaSuper = Carbon::now();
+                    }
         $agente->save();
         
         return response()->json(['status' => 'ok', 'message' => 'Horas actualizado']);
@@ -720,6 +1223,12 @@ class ControlIPEEscuelasController extends Controller
                 $agente->CUECOMPLETO = session('CUECOMPLETOBASE');
                 $agente->created_at = now();
                 $agente->updated_at = now();
+                    if (Str::startsWith(session('UsuarioCUECOMPLETO'), '8000')) {
+                        //guardo la datos de los super
+                        $agente->Nombre_Super = session('NombreInstitucion');
+                        $agente->CUECOMPLETO_SUPER = session('UsuarioCUECOMPLETO');
+                        $agente->FechaSuper = Carbon::now();
+                    }
             $agente->save();
     
             return response()->json(['status' => 'ok', 'message' => 'Agente relacionado eliminado correctamente']);
@@ -819,6 +1328,12 @@ class ControlIPEEscuelasController extends Controller
             $AgenteNuevo->ncat = $ncat;
             $AgenteNuevo->Agregado = 1; //para poder usarlo como bandera
             $AgenteNuevo->CUECOMPLETO_AG =session('CUECOMPLETOBASE');
+             if (Str::startsWith(session('UsuarioCUECOMPLETO'), '8000')) {
+                        //guardo la datos de los super
+                        $AgenteNuevo->Nombre_Super = session('NombreInstitucion');
+                        $AgenteNuevo->CUECOMPLETO_SUPER = session('UsuarioCUECOMPLETO');
+                        $AgenteNuevo->FechaSuper = Carbon::now();
+                    }
         $AgenteNuevo->save();
         return redirect("/controlDeIpe")->with('ConfirmarNuevoUsuario','OK');
 

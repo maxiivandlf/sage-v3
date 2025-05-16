@@ -108,7 +108,12 @@
                                             <td>{{ $totalRegistros }}</td>
                                             <td>{{ $totalIPE }}</td>
                                             <td>{{ $totalAgentes }}</td>
-                                            <td>{{ $totalSinIPENull }}</td>
+                                            <td>{{ $totalSinIPENull }}     
+                                                <button class="btn btn-info btn-sm" id="btnDetalleIPE" data-toggle="modal" data-target="#modalIPE">
+                                                    {{ $totalSinIPENull }}
+                                                </button>
+                                            </td>
+                                            
                                         </tr>
                                     </tbody>
                                 </table>
@@ -151,10 +156,48 @@
         </section>
     </section>
 </section>
+
+<!-- Modal -->
+<div class="modal fade" id="modalIPE" tabindex="-1" role="dialog" aria-labelledby="modalIPELabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalle de registros sin IPE</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="contenidoModalIPE">
+        <p>Cargando...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 @endsection
 
 @section('Script')
 <script src="https://code.highcharts.com/highcharts.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    $('#btnDetalleIPE').click(function () {
+        $('#contenidoModalIPE').html('<p>Cargando...</p>');
+
+        $.ajax({
+            url: '{{ route("reporte.ipe.detalle") }}',
+            method: 'GET',
+            success: function (response) {
+                $('#contenidoModalIPE').html(response);
+            },
+            error: function () {
+                $('#contenidoModalIPE').html('<p>Error al cargar los datos.</p>');
+            }
+        });
+    });
+});
+</script>
+
 <script>
     function crearGrafico(containerId, titulo, si, no, noConfirmado) {
         Highcharts.chart(containerId, {
@@ -193,4 +236,17 @@ document.addEventListener('DOMContentLoaded', function () {
     crearGrafico('graficoRelActual', 'IPE Rel {{ session("mesActual") }}', {{ $totalIPERel }}, {{ $totalAgentesRel }}, {{ $totalSinIPENullRel }});
 });
 </script>
+<script>
+function exportarExcelIPE() {
+    // Capturamos la tabla
+    var tabla = document.getElementById("tablaIPE");
+
+    // Convertimos a hoja de cálculo
+    var wb = XLSX.utils.table_to_book(tabla, { sheet: "RegistrosSinIPE" });
+
+    // Guardamos como archivo Excel
+    XLSX.writeFile(wb, "registros_sin_IPE.xlsx");
+}
+</script>
+
 @endsection

@@ -337,8 +337,15 @@ Route::post('/registrarTituloSuperior', [SuperiorController::class, 'registrarTi
 
 //control de IPE
 Route::get('/controlDeIpe', [ControlIPEEscuelasController::class, 'controlDeIpe'])->name('controlDeIpe');
+Route::get('/controlDeIpeAnterior', [ControlIPEEscuelasController::class, 'controlDeIpeAnterior'])->name('controlDeIpeAnterior');
+Route::post('/consulta-medifan', [ControlIPEEscuelasController::class, 'consultar'])->name('consulta.medifan');
+
 Route::get('/controlDeIpeSuper/{idInstitucionExtension}', [ControlIPEEscuelasController::class, 'controlDeIpeSuper'])->name('controlDeIpeSuper');
+Route::get('/controlDeIpeSuperAnterior/{idInstitucionExtension}', [ControlIPEEscuelasController::class, 'controlDeIpeSuperAnterior'])->name('controlDeIpeSuperAnterior');
+
 Route::get('/cantidadIPEInforme', [ControlIPEEscuelasController::class, 'cantidadIPEInforme'])->name('cantidadIPEInforme');
+Route::get('/reporte/ipe/detalle', [ControlIPEEscuelasController::class, 'detalleIPE'])->name('reporte.ipe.detalle');
+
 Route::get('/UnificarPofIpe', [ControlIPEEscuelasController::class, 'UnificarPofIpe'])->name('UnificarPofIpe');
 Route::get('/controlDeIpeTec/{idInstitucionExtension}', [ControlIPEEscuelasController::class, 'controlDeIpeTec'])->name('controlDeIpeTec');
 Route::delete('/agente-recuperar/{idPofIpe}/{cue}', [ControlIPEEscuelasController::class, 'recuperarAgenteEliminado'])->name('agente.recuperar');

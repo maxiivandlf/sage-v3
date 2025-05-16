@@ -48,14 +48,14 @@ class LoginController extends Controller
             //dd($usuario);
             $cantidadEncontrados = count($usuario);
 
-            setlocale(LC_TIME, 'es_ES.UTF-8'); 
+            setlocale(LC_TIME, 'es_ES.UTF-8');
             Carbon::setLocale('es');
 
             $mesActual = Carbon::now()->locale('es')->translatedFormat('F');
             $mesActual = Str::ucfirst($mesActual);
             session(['mesActual' => $mesActual]);
 
-            $mesAnterior = Carbon::now()->subMonth()->translatedFormat('F');
+            $mesAnterior = Carbon::now()->locale('es')->subMonth()->translatedFormat('F');
             $mesAnterior = Str::ucfirst($mesAnterior);
             session(['mesAnterior' => $mesAnterior]);
 
@@ -68,6 +68,7 @@ class LoginController extends Controller
                 //session(['idReparticion'=>$usuario[0]->idReparticion]); //ya no lo uso, ahora el cue esta en la misma tabla usuario
                 session(['UsuarioEmail' => $usuario[0]->email]);
                 session(['UsuarioCUE' => $usuario[0]->CUE]);
+                session(['UsuarioCUECOMPLETO' => $usuario[0]->CUECOMPLETO]);
                 session(['Modo' => $usuario[0]->Modo]);
                 session(['TurnoDescripcion' => $usuario[0]->Descripcion]);
                 session(['idTurnoUsuario' => $usuario[0]->Turno]);
@@ -160,6 +161,7 @@ class LoginController extends Controller
                         'mensajeNAV' => 'Bandeja Principal',
                     );
                     //session(['ActivarSplashInicial'=>"OK"]);
+                    session()->flash('mostrarAlertaImportante', true);
                     return redirect()->route('dashboardRedirect'); //->with('ActivarSplashInicial','OK');
                 }
             } else {

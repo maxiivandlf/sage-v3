@@ -27,7 +27,7 @@
                         </div>
                     </div>
                     <!-- Buscador Agente -->
-                    <h4 class="text-center display-4">Lista de Agentes </h4>
+                    <h4 class="text-center display-4">Lista de Agentes - MODO PERMITIDO POR HORAS</h4>
                     <!-- Agregar Nuevo Agente -->
                    
                     <div class="row d-flex justify-content-center">
@@ -305,12 +305,21 @@
                                                         
                                                     </td>
                                                     <td>
+                                                    @if ($esEditable==true)
+                                                        @if ($agente->updated_at != null)
+                                                            <small>Ultimo Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->updated_at)->format('d-m-Y H:i:s') }}</span></small>
+                                                        @else
+                                                            Sin Fecha de Control
+                                                        @endif
+                                                    @else
                                                         @if ($agente->FechaEsc != null)
                                                             <small>Ultimo Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->FechaEsc)->format('d-m-Y H:i:s') }}</span></small>
                                                         @else
                                                             Sin Fecha de Control
                                                         @endif
+                                                    @endif
                                                         
+                                               
                                                     </td>
                                                     <td>
                                                         @if ($agente->CUECOMPLETO != null)
@@ -472,10 +481,18 @@
                                                            
                                                         </td>
                                                         <td>
-                                                            @if ($agente->FechaEsc != null)
-                                                                <small>Ultimo Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->FechaEsc)->format('d-m-Y H:i:s') }}</span></small>
+                                                            @if ($esEditable==true)
+                                                                @if ($agente->updated_at != null)
+                                                                    <small>Ultimo Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->updated_at)->format('d-m-Y H:i:s') }}</span></small>
+                                                                @else
+                                                                    Sin Fecha de Control
+                                                                @endif
                                                             @else
-                                                                Sin Fecha de Control
+                                                                @if ($agente->FechaEsc != null)
+                                                                    <small>Ultimo Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->FechaEsc)->format('d-m-Y H:i:s') }}</span></small>
+                                                                @else
+                                                                    Sin Fecha de Control
+                                                                @endif
                                                             @endif
                                                             
                                                         </td>
@@ -646,12 +663,18 @@
                                                         
                                                     </td>
                                                     <td>
-                                                        @if ($agente->FechaEsc != null)
-                                                            <small>Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->FechaEsc)->format('d-m-Y H:i:s') }}</span></small>
-                                                            
-                                                            
+                                                         @if ($esEditable==true)
+                                                            @if ($agente->updated_at != null)
+                                                                <small>Ultimo Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->updated_at)->format('d-m-Y H:i:s') }}</span></small>
+                                                            @else
+                                                                Sin Fecha de Control
+                                                            @endif
                                                         @else
-                                                            Sin Fecha de Control
+                                                            @if ($agente->FechaEsc != null)
+                                                                <small>Ultimo Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->FechaEsc)->format('d-m-Y H:i:s') }}</span></small>
+                                                            @else
+                                                                Sin Fecha de Control
+                                                            @endif
                                                         @endif
                                                         
                                                     </td>

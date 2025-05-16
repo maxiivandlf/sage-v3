@@ -41,16 +41,13 @@
                                     <h4>Unidades Relacionadas: {!! ($liqText ? '<span style="color:yellow">' . rtrim($liqText, ' / ') . '</span>' : '<span style="color:red">No se encontró unidad de liquidación</span>') !!}</h4>
                                     <h4>Mes Actual: {{session('mesActual')}}</h4>
                                     
-                                    @if ($esEditable == true)
-                                        <a href="#modalAgente" class="btn btn-success" data-toggle="modal" title="Agregar Docente" data-target="#modalAgente" style="margin-left: 10px;" id="agenteBtn">
+                                    <a href="#modalAgente" class="btn btn-success" data-toggle="modal" title="Agregar Docente" data-target="#modalAgente" style="margin-left: 10px;" id="agenteBtn">
                                         <i class="fas fa-search"></i>  <label style="font-size: 1.5rem;">AGREGAR AGENTE A LA TABLA</label>
-                                        </a>
-                                        
-                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-alta" style="margin-left: 10px;">
-                                            <i class="fas fa-plus"></i> <label style="font-size: 1.5rem;">Alta de Nuevos Docentes y Volantes</label>
-                                        </button>
-                                    @endif
+                                    </a>
                                     
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-alta" style="margin-left: 10px;">
+                                        <i class="fas fa-plus"></i> <label style="font-size: 1.5rem;">Alta de Nuevos Docentes y Volantes</label>
+                                    </button>
                                     
                                     {{-- modal --}}
                                     <div class="modal fade" id="modal-alta">
@@ -154,14 +151,6 @@
                                 </div>
                               <!-- /.card-header -->
                                 <div class="card-body">
-                                    <div class="row" style="margin-left:30px;font-size: 1.2rem;">
-                                        <div class="col-12 mb-1">
-                                            <i class="fas fa-exclamation-triangle text-warning"></i> Tiene Novedad de Medifam
-                                        </div>
-                                        <div class="col-12">
-                                            <i class="fas fa-exclamation-triangle text-success"></i> Tiene Novedad de la Escuela
-                                        </div>
-                                    </div>
                                     <table id="tablacontrolIpe" class="table table-bordered table-striped">
                                         <thead>
                                             <tr>
@@ -188,56 +177,37 @@
                                         <tbody>
                                             @php $contador = 0; @endphp
                                             @foreach ($infoAgentes as $indice => $agente)
-                                                @php
-                                                    
-                                                        $inicioMesAnterior = Carbon\Carbon::now()->subMonth()->startOfMonth()->toDateString();
-                                                        $finMesAnterior = Carbon\Carbon::now()->subMonth()->endOfMonth()->toDateString();
-
-                                                        $infoNovedades = DB::connection('DB7')->table('tb_novedades')
-                                                            ->join('tb_novedades_extras', 'tb_novedades_extras.idNovedadExtra', '=', 'tb_novedades.idNovedadExtra')
-                                                            ->join('tb_condiciones', 'tb_condiciones.idCondicion', '=', 'tb_novedades.Condicion')
-                                                            ->join(DB::connection('mysql')->getDatabaseName() . '.tb_motivos', 'tb_motivos.idMotivo', '=', 'tb_novedades.Motivo')
-                                                            ->where('CUECOMPLETO', $agente->CUECOMPLETO)
-                                                            ->where('Agente', $agente->Documento)
-                                                            ->where('FormatoNovedadNuevo', 1)
-                                                            ->whereBetween('tb_novedades.created_at', [$inicioMesAnterior, $finMesAnterior])
-                                                            ->count();
-                                                        $tieneNovedad = false;
-                                                        if ($infoNovedades > 0) {
-                                                            $tieneNovedad = true;
-                                                        }
-                                                @endphp 
                                                 <tr data-id="{{ $agente->idPofIpe }}">
                                                     <td>{{ $contador }}</td>
                                                     <td class="dni-input" style="display:flex; justify-content: space-between;">
                                                         {{ $agente->Documento }}
                                                         @php
                                                             $cueMedifan = substr($agente->CUECOMPLETO, 0, 7);
-                                                            $tieneMedifan = DB::connection('DB7')->table('tb_medifan')
+                                                            $cueCompleto = substr(session('CUECOMPLETOBASE'), 0, 7);
+                                                            $tieneMedifan = false;
+
+                                                            $dniMedifan = DB::connection('DB7')->table('tb_medifan')
                                                                 ->where('Documento', $agente->Documento)
-                                                                ->where('CUE', $cueMedifan)
-                                                                ->exists();
+                                                                ->get();
+
+                                                            foreach ($dniMedifan as $dni) {
+                                                                if ($cueMedifan == substr($dni->CUE, 0, 7)) {
+                                                                    $tieneMedifan = true;
+                                                                    break;
+                                                                }
+                                                            }
                                                         @endphp
+
                                                         @if ($tieneMedifan)
                                                             <a href="#" class="text-warning abrir-modal-medifan" 
-                                                                data-dni="{{ $agente->Documento }}"
-                                                                data-nombre="{{ $agente->ApeNom }}" 
-                                                                data-cue="{{ $cueMedifan }}"
-                                                                data-cuecompleto="{{ $agente->CUECOMPLETO }}"
-                                                                style="margin-left: 5px;"
-                                                                title="Notificación de Medifan">
+                                                            data-dni="{{ $agente->Documento }}"
+                                                            data-nombre="{{ $agente->ApeNom }}" 
+                                                            style="margin-left: 5px;"
+                                                            title="Notificación de Medifan">
                                                                 <i class="fas fa-exclamation-triangle"></i>
                                                             </a>
-                                                        @elseif ($tieneNovedad)
-                                                            <a href="#" class="text-success abrir-modal-medifan" 
-                                                                data-dni="{{ $agente->Documento }}"
-                                                                data-nombre="{{ $agente->ApeNom }}" 
-                                                                data-cue="{{ $cueMedifan }}"
-                                                                data-cuecompleto="{{ $agente->CUECOMPLETO }}"
-                                                                style="margin-left: 5px;"
-                                                                title="Notificación de Novedad">
-                                                                <i class="fas fa-exclamation-triangle"></i>
-                                                            </a>
+                                                        @else
+                                                            <span class="text-success" title="Sin Notificación de Medifan">✔</span>
                                                         @endif
                                                     </td>
 
@@ -249,7 +219,7 @@
                                                     <td class="text-center">{{ $agente->Codigo }}</td>
                                                     <td class="text-center area-input">{{ $agente->Area }}</td>
                                                     <td class="text-center">
-                                                        <select class="form-control turno-normal" id="turno_{{ $agente->idPofIpe }}" data-id="{{ $agente->idPofIpe }}" {{ $esEditable ? '' : 'disabled' }}>
+                                                        <select class="form-control turno-normal" id="turno_{{ $agente->idPofIpe }}" data-id="{{ $agente->idPofIpe }}">
                                                             <option value="" disabled {{ is_null($agente->Turno) ? 'selected' : '' }}>Seleccione</option>
                                                             @foreach ($Turnos as $turno)
                                                                 <option value="{{ $turno->idTurno }}"
@@ -265,7 +235,7 @@
                                                                 id="ipe_si_{{ $agente->idPofIpe }}"
                                                                 name="ipe_{{ $agente->idPofIpe }}"
                                                                 data-id="{{ $agente->idPofIpe }}"
-                                                                {{ $agente->IPE == 'SI' ? 'checked' : '' }} {{ $esEditable ? '' : 'disabled' }}>
+                                                                {{ $agente->IPE == 'SI' ? 'checked' : '' }}>
                                                             <label class="form-check-label" for="ipe_si_{{ $agente->idPofIpe }}">SI</label>
                                                         </div>
                                                         <div class="form-check form-check-inline">
@@ -273,7 +243,7 @@
                                                                 id="ipe_no_{{ $agente->idPofIpe }}"
                                                                 name="ipe_{{ $agente->idPofIpe }}"
                                                                 data-id="{{ $agente->idPofIpe }}"
-                                                                {{ $agente->IPE == 'NO' ? 'checked' : '' }} {{ $esEditable ? '' : 'disabled' }}>
+                                                                {{ $agente->IPE == 'NO' ? 'checked' : '' }}>
                                                             <label class="form-check-label" for="ipe_no_{{ $agente->idPofIpe }}">NO</label>
                                                         </div>
                                                     </td>
@@ -285,7 +255,7 @@
                                                             data-id="{{ $agente->idPofIpe }}"
                                                             value="{{ $agente->Horas_Trabajadas ?? '' }}"
                                                             min="0" max="50"
-                                                            inputmode="numeric" {{ $esEditable ? '' : 'disabled' }}
+                                                            inputmode="numeric"
                                                            
                                                            
                                                         />
@@ -294,19 +264,16 @@
                                                         <span class="text-success check-validacion d-none" id="check_{{ $agente->idPofIpe }}">
                                                             <i class="fas fa-check-circle"></i>
                                                         </span>
-                                                        @if ($esEditable == true)
-                                                            |  
-                                                            <button class="btn btn-danger btn-sm eliminar-agente_base"
-                                                                    data-idpof="{{ $agente->idPofIpe }}"
-                                                                    data-idrel="{{ $agente->idRelPofIpe }}">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        @endif
-                                                        
+                                                        |  
+                                                        <button class="btn btn-danger btn-sm eliminar-agente_base"
+                                                                data-idpof="{{ $agente->idPofIpe }}"
+                                                                data-idrel="{{ $agente->idRelPofIpe }}">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
                                                     </td>
                                                     <td>
-                                                        @if ($agente->FechaEsc != null)
-                                                            <small>Ultimo Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->FechaEsc)->format('d-m-Y H:i:s') }}</span></small>
+                                                        @if ($agente->updated_at != null)
+                                                            <small>Ultimo Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->updated_at)->format('d-m-Y H:i:s') }}</span></small>
                                                         @else
                                                             Sin Fecha de Control
                                                         @endif
@@ -356,58 +323,39 @@
                                                     </td>
                                                 </tr>
                                                 @foreach ($AgentesNuevos as $indice => $agente)
-                                                    @php
-                                                    
-                                                        $inicioMesAnterior = Carbon\Carbon::now()->subMonth()->startOfMonth()->toDateString();
-                                                        $finMesAnterior = Carbon\Carbon::now()->subMonth()->endOfMonth()->toDateString();
-
-                                                        $infoNovedades = DB::connection('DB7')->table('tb_novedades')
-                                                            ->join('tb_novedades_extras', 'tb_novedades_extras.idNovedadExtra', '=', 'tb_novedades.idNovedadExtra')
-                                                            ->join('tb_condiciones', 'tb_condiciones.idCondicion', '=', 'tb_novedades.Condicion')
-                                                            ->join(DB::connection('mysql')->getDatabaseName() . '.tb_motivos', 'tb_motivos.idMotivo', '=', 'tb_novedades.Motivo')
-                                                            ->where('CUECOMPLETO', $agente->CUECOMPLETO)
-                                                            ->where('Agente', $agente->Documento)
-                                                            ->where('FormatoNovedadNuevo', 1)
-                                                            ->whereBetween('tb_novedades.created_at', [$inicioMesAnterior, $finMesAnterior])
-                                                            ->count();
-                                                        $tieneNovedad = false;
-                                                        if ($infoNovedades > 0) {
-                                                            $tieneNovedad = true;
-                                                        }
-                                                    @endphp
                                                     <tr data-id="{{ $agente->idPofIpe }}">
                                                         <td>{{ $contador }}</td>
-                                                        <td class="dni-input" style="display:flex; justify-content: space-between;">
-                                                        {{ $agente->Documento }}
-                                                        @php
-                                                            $cueMedifan = substr($agente->CUECOMPLETO, 0, 7);
-                                                            $tieneMedifan = DB::connection('DB7')->table('tb_medifan')
-                                                                ->where('Documento', $agente->Documento)
-                                                                ->where('CUE', $cueMedifan)
-                                                                ->exists();
-                                                        @endphp
-                                                        @if ($tieneMedifan)
-                                                            <a href="#" class="text-warning abrir-modal-medifan" 
+                                                        <td class="dni-input"  style="display:flex; justify-content: space-between;">
+                                                            {{ $agente->Documento }}
+                                                            @php
+                                                                $cueMedifan = substr($agente->CUECOMPLETO, 0, 7);
+                                                                $cueCompleto = substr(session('CUECOMPLETOBASE'), 0, 7);
+                                                                $tieneMedifan = false;
+
+                                                                $dniMedifan = DB::connection('DB7')->table('tb_medifan')
+                                                                    ->where('Documento', $agente->Documento)
+                                                                    ->get();
+
+                                                                foreach ($dniMedifan as $dni) {
+                                                                    if ($cueMedifan == substr($dni->CUE, 0, 7)) {
+                                                                        $tieneMedifan = true;
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            @endphp
+
+                                                            @if ($tieneMedifan)
+                                                                <a href="#" class="text-warning abrir-modal-medifan" 
                                                                 data-dni="{{ $agente->Documento }}"
                                                                 data-nombre="{{ $agente->ApeNom }}" 
-                                                                data-cue="{{ $cueMedifan }}"
-                                                                data-cuecompleto="{{ $agente->CUECOMPLETO }}"
                                                                 style="margin-left: 5px;"
                                                                 title="Notificación de Medifan">
-                                                                <i class="fas fa-exclamation-triangle"></i>
-                                                            </a>
-                                                        @elseif ($tieneNovedad)
-                                                            <a href="#" class="text-success abrir-modal-medifan" 
-                                                                data-dni="{{ $agente->Documento }}"
-                                                                data-nombre="{{ $agente->ApeNom }}" 
-                                                                data-cue="{{ $cueMedifan }}"
-                                                                data-cuecompleto="{{ $agente->CUECOMPLETO }}"
-                                                                style="margin-left: 5px;"
-                                                                title="Notificación de Novedad">
-                                                                <i class="fas fa-exclamation-triangle"></i>
-                                                            </a>
-                                                        @endif
-                                                    </td>
+                                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                                </a>
+                                                            @else
+                                                                <span class="text-success"  title="Sin Notificación de Medifan">✔</span>
+                                                            @endif
+                                                        </td>
                                                         <td>{{ $agente->Cuil }}</td>
                                                         <td class="text-center">{{ $agente->Trabajo?$agente->Trabajo:"S/S" }}</td>
                                                         <td class="apenom-input">{{ $agente->ApeNom }}</td>
@@ -416,7 +364,7 @@
                                                         <td class="text-center">{{ $agente->Codigo }}</td>
                                                         <td class="text-center area-input">{{ $agente->Area }}</td>
                                                         <td class="text-center">
-                                                            <select class="form-control turno-normal" id="turno_{{ $agente->idPofIpe }}" data-id="{{ $agente->idPofIpe }}" {{ $esEditable ? '' : 'disabled' }}>
+                                                            <select class="form-control turno-normal" id="turno_{{ $agente->idPofIpe }}" data-id="{{ $agente->idPofIpe }}">
                                                                 <option value="" disabled {{ is_null($agente->Turno) ? 'selected' : '' }}>Seleccione</option>
                                                                 @foreach ($Turnos as $turno)
                                                                     <option value="{{ $turno->idTurno }}"
@@ -432,7 +380,7 @@
                                                                     id="ipe_si_{{ $agente->idPofIpe }}"
                                                                     name="ipe_{{ $agente->idPofIpe }}"
                                                                     data-id="{{ $agente->idPofIpe }}"
-                                                                    {{ $agente->IPE == 'SI' ? 'checked' : '' }} {{ $esEditable ? '' : 'disabled' }}>
+                                                                    {{ $agente->IPE == 'SI' ? 'checked' : '' }}>
                                                                 <label class="form-check-label" for="ipe_si_{{ $agente->idPofIpe }}">SI</label>
                                                             </div>
                                                             <div class="form-check form-check-inline">
@@ -440,7 +388,7 @@
                                                                     id="ipe_no_{{ $agente->idPofIpe }}"
                                                                     name="ipe_{{ $agente->idPofIpe }}"
                                                                     data-id="{{ $agente->idPofIpe }}"
-                                                                    {{ $agente->IPE == 'NO' ? 'checked' : '' }} {{ $esEditable ? '' : 'disabled' }}>
+                                                                    {{ $agente->IPE == 'NO' ? 'checked' : '' }}>
                                                                 <label class="form-check-label" for="ipe_no_{{ $agente->idPofIpe }}">NO</label>
                                                             </div>
                                                         </td>
@@ -452,7 +400,7 @@
                                                                 data-id="{{ $agente->idPofIpe }}"
                                                                 value="{{ $agente->Horas_Trabajadas ?? '' }}"
                                                                 min="0" max="50"
-                                                                inputmode="numeric" {{ $esEditable ? '' : 'disabled' }}
+                                                                inputmode="numeric"
                                                                
                                                             />
                                                         </td>
@@ -460,20 +408,16 @@
                                                             <span class="text-success check-validacion d-none" id="check_{{ $agente->idPofIpe }}">
                                                                 <i class="fas fa-check-circle"></i>
                                                             </span>
-                                                            @if ($esEditable == true)
-                                                                |  
-                                                                <button class="btn btn-danger btn-sm eliminar-agente_base"
-                                                                        data-idpof="{{ $agente->idPofIpe }}"
-                                                                        data-idrel="{{ $agente->idRelPofIpe }}">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                                
-                                                            @endif
-                                                           
+                                                            |  
+                                                            <button class="btn btn-danger btn-sm eliminar-agente_base"
+                                                                    data-idpof="{{ $agente->idPofIpe }}"
+                                                                    data-idrel="{{ $agente->idRelPofIpe }}">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
                                                         </td>
                                                         <td>
-                                                            @if ($agente->FechaEsc != null)
-                                                                <small>Ultimo Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->FechaEsc)->format('d-m-Y H:i:s') }}</span></small>
+                                                            @if ($agente->updated_at != null)
+                                                                <small>Ultimo Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->updated_at)->format('d-m-Y H:i:s') }}</span></small>
                                                             @else
                                                                 Sin Fecha de Control
                                                             @endif
@@ -519,56 +463,37 @@
                                                 </td>
                                             </tr>
                                                 @foreach ($infoAgentesRelacionados as $indice => $agente)
-                                                @php
-                                                    
-                                                        $inicioMesAnterior = Carbon\Carbon::now()->subMonth()->startOfMonth()->toDateString();
-                                                        $finMesAnterior = Carbon\Carbon::now()->subMonth()->endOfMonth()->toDateString();
-
-                                                        $infoNovedades = DB::connection('DB7')->table('tb_novedades')
-                                                            ->join('tb_novedades_extras', 'tb_novedades_extras.idNovedadExtra', '=', 'tb_novedades.idNovedadExtra')
-                                                            ->join('tb_condiciones', 'tb_condiciones.idCondicion', '=', 'tb_novedades.Condicion')
-                                                            ->join(DB::connection('mysql')->getDatabaseName() . '.tb_motivos', 'tb_motivos.idMotivo', '=', 'tb_novedades.Motivo')
-                                                            ->where('CUECOMPLETO', $agente->CUECOMPLETO)
-                                                            ->where('Agente', $agente->Documento)
-                                                            ->where('FormatoNovedadNuevo', 1)
-                                                            ->whereBetween('tb_novedades.created_at', [$inicioMesAnterior, $finMesAnterior])
-                                                            ->count();
-                                                        $tieneNovedad = false;
-                                                        if ($infoNovedades > 0) {
-                                                            $tieneNovedad = true;
-                                                        }
-                                                    @endphp
                                                 <tr data-id="{{ $agente->idPofIpe }}">
                                                     <td>{{ $contador }}</td>
-                                                    <td class="dni-input" style="display:flex; justify-content: space-between;">
+                                                    <td class="dni-input"  style="display:flex; justify-content: space-between;">
                                                         {{ $agente->Documento }}
                                                         @php
                                                             $cueMedifan = substr($agente->CUECOMPLETO, 0, 7);
-                                                            $tieneMedifan = DB::connection('DB7')->table('tb_medifan')
+                                                            $cueCompleto = substr(session('CUECOMPLETOBASE'), 0, 7);
+                                                            $tieneMedifan = false;
+
+                                                            $dniMedifan = DB::connection('DB7')->table('tb_medifan')
                                                                 ->where('Documento', $agente->Documento)
-                                                                ->where('CUE', $cueMedifan)
-                                                                ->exists();
+                                                                ->get();
+
+                                                            foreach ($dniMedifan as $dni) {
+                                                                if ($cueMedifan == substr($dni->CUE, 0, 7)) {
+                                                                    $tieneMedifan = true;
+                                                                    break;
+                                                                }
+                                                            }
                                                         @endphp
+
                                                         @if ($tieneMedifan)
                                                             <a href="#" class="text-warning abrir-modal-medifan" 
-                                                                data-dni="{{ $agente->Documento }}"
-                                                                data-nombre="{{ $agente->ApeNom }}" 
-                                                                data-cue="{{ $cueMedifan }}"
-                                                                data-cuecompleto="{{ $agente->CUECOMPLETO }}"
-                                                                style="margin-left: 5px;"
-                                                                title="Notificación de Medifan">
+                                                            data-dni="{{ $agente->Documento }}"
+                                                            data-nombre="{{ $agente->ApeNom }}" 
+                                                            style="margin-left: 5px;"
+                                                            title="Notificación de Medifan">
                                                                 <i class="fas fa-exclamation-triangle"></i>
                                                             </a>
-                                                        @elseif ($tieneNovedad)
-                                                            <a href="#" class="text-success abrir-modal-medifan" 
-                                                                data-dni="{{ $agente->Documento }}"
-                                                                data-nombre="{{ $agente->ApeNom }}" 
-                                                                data-cue="{{ $cueMedifan }}"
-                                                                data-cuecompleto="{{ $agente->CUECOMPLETO }}"
-                                                                style="margin-left: 5px;"
-                                                                title="Notificación de Novedad">
-                                                                <i class="fas fa-exclamation-triangle"></i>
-                                                            </a>
+                                                        @else
+                                                            <span class="text-success" title="Sin Notificación de Medifan">✔</span>
                                                         @endif
                                                     </td>
                                                     <td>{{ $agente->Cuil }}</td>
@@ -586,7 +511,7 @@
                                                                 ->first();
                                                                 //dd($infoRelAgenteIpe);
                                                         @endphp
-                                                        <select class="form-control turno-relacionado" id="turno_r1_{{ $infoRelAgenteIpe->idPofIpe }}" data-idr1="{{ $infoRelAgenteIpe->idRelPofIpe }}" {{ $esEditable ? '' : 'disabled' }}>
+                                                        <select class="form-control turno-relacionado" id="turno_r1_{{ $infoRelAgenteIpe->idPofIpe }}" data-idr1="{{ $infoRelAgenteIpe->idRelPofIpe }}">
                                                             <option value="" disabled {{ is_null($infoRelAgenteIpe->Turno) ? 'selected' : '' }}>Seleccione</option>
                                                             @foreach ($Turnos as $turno)
                                                                 <option value="{{ $turno->idTurno }}"
@@ -604,7 +529,7 @@
                                                                    name="ipe_{{ $agente->idPofIpe }}"
                                                                    data-id="{{ $agente->idPofIpe }}"
                                                                    data-idr1="{{ $infoRelAgenteIpe->idRelPofIpe }}"
-                                                                   {{ $infoRelAgenteIpe->IPE == 'SI' ? 'checked' : '' }} {{ $esEditable ? '' : 'disabled' }}>
+                                                                   {{ $infoRelAgenteIpe->IPE == 'SI' ? 'checked' : '' }}>
                                                             <label class="form-check-label" for="ipe_si_r1_{{ $agente->idPofIpe }}">SI</label>
                                                         </div>
                                                         <div class="form-check form-check-inline">
@@ -613,7 +538,7 @@
                                                                    name="ipe_{{ $agente->idPofIpe }}"
                                                                    data-id="{{ $agente->idPofIpe }}"
                                                                    data-idr1="{{ $infoRelAgenteIpe->idRelPofIpe }}"
-                                                                   {{ $infoRelAgenteIpe->IPE == 'NO' ? 'checked' : '' }} {{ $esEditable ? '' : 'disabled' }}>
+                                                                   {{ $infoRelAgenteIpe->IPE == 'NO' ? 'checked' : '' }}>
                                                             <label class="form-check-label" for="ipe_no_r1_{{ $agente->idPofIpe }}">NO</label>
                                                         </div>
                                                     </td>
@@ -626,7 +551,7 @@
                                                             data-idr1="{{ $infoRelAgenteIpe->idRelPofIpe }}"
                                                             value="{{ $infoRelAgenteIpe->Horas_Trabajadas ?? '' }}"
                                                             min="0" max="50"
-                                                            inputmode="numeric" {{ $esEditable ? '' : 'disabled' }}
+                                                            inputmode="numeric"
                                                            
                                                         />
                                                     </td>
@@ -635,19 +560,16 @@
                                                         <span class="text-success check-validacion2 d-none" id="check2_{{ $agente->idPofIpe }}">
                                                             <i class="fas fa-check-circle"></i>
                                                         </span>
-                                                        @if ($esEditable == true)
-                                                            |
-                                                            <button class="btn btn-danger btn-sm eliminar-agente"
-                                                                    data-idpof="{{ $agente->idPofIpe }}"
-                                                                    data-idrel="{{ $agente->idRelPofIpe }}">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        @endif
-                                                        
+                                                        |
+                                                        <button class="btn btn-danger btn-sm eliminar-agente"
+                                                                data-idpof="{{ $agente->idPofIpe }}"
+                                                                data-idrel="{{ $agente->idRelPofIpe }}">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
                                                     </td>
                                                     <td>
-                                                        @if ($agente->FechaEsc != null)
-                                                            <small>Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->FechaEsc)->format('d-m-Y H:i:s') }}</span></small>
+                                                        @if ($agente->updated_at != null)
+                                                            <small>Control: <span style="color:green"><br>{{ \Carbon\Carbon::parse($agente->updated_at)->format('d-m-Y H:i:s') }}</span></small>
                                                             
                                                             
                                                         @else
@@ -806,38 +728,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-@if ($esEditable == true)
-    <script src="{{ asset('js/sage/controlipe.js') }}"></script>  
-@else
-    <script>
-    //bsucador
-    $(document).ready(function () {
-        $("#searchInput").on("keyup", function () {
-            const value = $(this).val().toLowerCase().trim();
 
-            $("#tablacontrolIpe tbody tr").each(function () {
-                const dni = $(this).find(".dni-input").text().toLowerCase().trim();
-                const name = $(this)
-                    .find(".apenom-input")
-                    .text()
-                    .toLowerCase()
-                    .trim();
-                const area = $(this)
-                    .find(".area-input")
-                    .text()
-                    .toLowerCase()
-                    .trim();
-
-                const matches =
-                    dni.includes(value) ||
-                    name.includes(value) ||
-                    area.includes(value);
-                $(this).toggle(matches);
-            });
-        });
-    });
-    </script>
-@endif
+<script src="{{ asset('js/sage/controlipe.js') }}"></script>
 <script>
 
     $(document).ready(function() {
@@ -1155,11 +1047,7 @@ document.getElementById("btnExportarPDF").addEventListener("click", function () 
     
             const dni = $(this).data('dni');
             const nombre = $(this).data('nombre');
-            const cue = $(this).data('cue');
-             const cuecompleto = $(this).data('cuecompleto');
-            
-            console.log(cue,cuecompleto,dni);
-           
+    
             $('#modalMedifanLabel').text(`Medifan - ${nombre} (DNI ${dni})`);
             $('#contenedorMedifan').html('<p class="text-muted">Cargando datos...</p>');
             $('#modalMedifan').modal('show');
@@ -1169,9 +1057,7 @@ document.getElementById("btnExportarPDF").addEventListener("click", function () 
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
-                    documento: dni,
-                    cue: cue,
-                    cuecompleto: cuecompleto
+                    documento: dni
                 },
                 success: function (response) {
                     $('#contenedorMedifan').html(response);

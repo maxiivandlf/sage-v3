@@ -16,8 +16,8 @@ Route::post('/crear-llamado', [LlamadosController::class, 'crearllamado'])->name
 Route::post('/actualizar-llamado', [LlamadosController::class, 'actualizarLlamado'])->name('llamado.actualizar');
 Route::get('/llamado.editar/{id}', [LlamadosController::class, 'editarLlamado'])->name('llamado.editar');
 //rutas para lom
-Route::post('/agregarLom', [LlamadosController::class, 'agregarLom'])->name('llamado.agregarLom');
-Route::post('/obtenerLom', [LlamadosController::class, 'obtenerLomPorLlamado'])->name('llamado.obtenerLom');    
+Route::get('/agregarLom', [LlamadosController::class, 'agregarLom'])->name('llamado.agregarLom');//formulario
+Route::post('/guardarLom', [LlamadosController::class, 'guardarLom'])->name('llamado.guardarLom');
 Route::get('/editarLom/{id}', [LlamadosController::class, 'editarLom'])->name('llamado.editarLom');
 Route::post('/eliminarLom', [LlamadosController::class, 'eliminarLom'])->name('llamado.eliminarLom');
 
@@ -35,12 +35,16 @@ Route::post('/editarCargo', [LlamadosController::class, 'editarCargo'])->name('l
 // cambio de estado
 Route::post('/llamado/estado', [LlamadosController::class, 'cambiarEstado'])->name('llamado.cambiar.estado');
 
+// filtros zona, institutos y carreras
+Route::post('/superior/obtener-institutos', [LlamadosController::class, 'obtenerInstitutosPorZona'])->name('llamado.obtenerInstitutos');
+Route::post('/superior/obtener-carreras', [LlamadosController::class, 'obtenerCarrerasPorInstituto'])->name('llamado.obtenerCarreras');
 
 
-//crear llamado AJAX
-Route::prefix('ajax')->controller(LlamadosAjaxController::class)->group(function () {
-    Route::get('/institutos/{zonaId}', 'getInstitutos');
-    Route::get('/carreras/{institutoId}', 'getCarreras');
-    Route::get('/cargos', 'getCargos');
-    Route::get('/espacios', 'getEspacios');
-});
+
+// //crear llamado AJAX
+// Route::prefix('ajax')->controller(LlamadosAjaxController::class)->group(function () {
+//     Route::get('/institutos/{zonaId}', 'getInstitutos');
+//     Route::get('/carreras/{institutoId}', 'getCarreras');
+//     Route::get('/cargos', 'getCargos');
+//     Route::get('/espacios', 'getEspacios');
+// });

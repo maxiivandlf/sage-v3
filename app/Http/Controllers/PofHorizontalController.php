@@ -2764,6 +2764,7 @@ public function pofmhNovedades($dni, $cue)
             'mensajeNAV'=>'Panel de Administracion de Supervisores',
         );
         //dd($infoPlaza);
+        
         return view('bandeja.POF.supervisora.escuelasSupervisora',$datos);
     }
 
@@ -3035,40 +3036,47 @@ public function pofmhNovedades($dni, $cue)
         return view('bandeja.POF.supervisora.escuelasSupervisoraVinculada',$datos);
     }
 
-    public function listaSupervisoraMensajes(){
-        set_time_limit(0);
-        ini_set('memory_limit', '2028M');
-        //saco el modo de la memoria
-        $infoUsuario = session('InfoUsuario');
+public function listaSupervisoraMensajes(){
+    set_time_limit(0);
+    ini_set('memory_limit', '2028M');
 
-        $Misrelaciones = SuperRelacionCUEModel::where('idUsuarioSuper', session('idUsuario'))->get();
+    $infoUsuario = session('InfoUsuario');
+    $mesActual = Carbon::now()->month;
+    $anioActual = Carbon::now()->year;
 
-        $CUEs = $Misrelaciones->pluck('CUECOMPLETO')->toArray();
+    // Filtrar relaciones por mes y año actual
+    $Misrelaciones = SuperRelacionCUEModel::where('idUsuarioSuper', session('idUsuario'))
+        ->whereMonth('created_at', $mesActual)
+        ->whereYear('created_at', $anioActual)
+        ->get();
 
-        $AlertasMensajes = DB::table('tb_alerta_novedades')
-            ->whereIn('CUECOMPLETO', $CUEs)
-            ->orderby('Estado','DESC')
-            ->get();
+    $CUEs = $Misrelaciones->pluck('CUECOMPLETO')->toArray();
 
-        //$AlertasMensajes = AlertaMensaje::whereIn('CUECOMPLETO', $CUEs)->get();
+    // Filtrar mensajes también por mes y año actual
+    $AlertasMensajes = DB::table('tb_alerta_novedades')
+        ->whereIn('CUECOMPLETO', $CUEs)
+        ->whereMonth('created_at', $mesActual)
+        ->whereYear('created_at', $anioActual)
+        ->orderBy('Estado', 'DESC')
+        ->get();
 
-        $datos=array(
-            'mensajeError'=>"",
-            //'Escuelas'=>$escuelas,
-            'valorModo'=>1,
-            'Misrelaciones'=>$Misrelaciones,
-            'AlertasMensajes'=>$AlertasMensajes,
-            'mensajeNAV'=>'Panel de Administracion de Supervisores',
-        );
-        //dd($infoPlaza);
-        $ruta ='
-        <li class="breadcrumb-item active"><a href="#">PANEL DE SUPERVISORES</a></li>
-        <li class="breadcrumb-item active"><a href="'.route('listaSupervisoraMensajes').'">LISTA DE MENSAJES</a></li>
-        '; 
-        session(['ruta' => $ruta]);
-        return view('bandeja.POF.supervisora.listaMensajesSuper',$datos);
+    $datos = [
+        'mensajeError' => "",
+        'valorModo' => 1,
+        'Misrelaciones' => $Misrelaciones,
+        'AlertasMensajes' => $AlertasMensajes,
+        'mensajeNAV' => 'Panel de Administracion de Supervisores',
+    ];
 
-    }
+    $ruta ='
+    <li class="breadcrumb-item active"><a href="#">PANEL DE SUPERVISORES</a></li>
+    <li class="breadcrumb-item active"><a href="'.route('listaSupervisoraMensajes').'">LISTA DE MENSAJES</a></li>
+    '; 
+
+    session(['ruta' => $ruta]);
+
+    return view('bandeja.POF.supervisora.listaMensajesSuper', $datos);
+}
     //control de super agregar o quitar cue
     public function agregar_relacion_cue_super(Request $request)
     {
@@ -3687,62 +3695,72 @@ public function traerTodoAgenteLiq() {
     ini_set('memory_limit', '2028M');
 
     // Cargar todas las colecciones necesarias de una vez
-    $institucionExtension = InstitucionExtensionModel::Join('tb_turnos_usuario', 'tb_turnos_usuario.idTurnoUsuario', '=', 'tb_institucion_extension.idTurnoUsuario')
-        ->leftJoin('tb_nivelesensenanza', 'tb_institucion_extension.Nivel', '=', 'tb_nivelesensenanza.NivelEnsenanza')
-        ->select('tb_institucion_extension.*', 'tb_turnos_usuario.*', 'tb_nivelesensenanza.*')
-        ->first();
+    // $institucionExtension = InstitucionExtensionModel::Join('tb_turnos_usuario', 'tb_turnos_usuario.idTurnoUsuario', '=', 'tb_institucion_extension.idTurnoUsuario')
+    //     ->leftJoin('tb_nivelesensenanza', 'tb_institucion_extension.Nivel', '=', 'tb_nivelesensenanza.NivelEnsenanza')
+    //     ->select('tb_institucion_extension.*', 'tb_turnos_usuario.*', 'tb_nivelesensenanza.*')
+    //     //->first(); //<esto no sera correcto porque solo trae 1 solo registro
+    //     ->get();
 
-    $instituciones = DB::table('tb_institucion_extension')
-        ->select('CUECOMPLETO', 'Nivel', 'Zona', 'ZonaSupervision', 'idTurnoUsuario')
-        ->get()
-        ->groupBy('CUECOMPLETO');
+    // $instituciones = DB::table('tb_institucion_extension')
+    //     ->select('CUECOMPLETO', 'Nivel', 'Zona', 'ZonaSupervision', 'idTurnoUsuario')
+    //     ->get()
+    //     ->groupBy('CUECOMPLETO');
 
-    $zonas = DB::table('tb_zonas_liq')
-        ->pluck('nombre_loc_zona', 'codigo_letra')
-        ->toArray();
+    // $zonas = DB::table('tb_zonas_liq')
+    //     ->pluck('nombre_loc_zona', 'codigo_letra')
+    //     ->toArray();
+    //dd($zonas);
+    // $zonasSupervision = DB::table('tb_zonasupervision')
+    //     ->pluck('Codigo', 'idZonaSupervision')
+    //     ->toArray();
 
-    $zonasSupervision = DB::table('tb_zonasupervision')
-        ->pluck('Codigo', 'idZonaSupervision')
-        ->toArray();
+    // $dnInBase = DB::table('tb_agentes')
+    //     ->pluck('Documento')
+    //     ->toArray();
 
-    $dnInBase = DB::table('tb_agentes')
-        ->pluck('Documento')
-        ->toArray();
-
-    $pofmh = PofmhModel::where('CUECOMPLETO', 'not like', '999%')
+    // $pofmh = PofmhModel::where('CUECOMPLETO', 'not like', '999%')
+    //     ->where('CUECOMPLETO', 'not like', '950%')
+    //     ->orderBy('CUECOMPLETO', 'ASC')
+    //     ->get();
+    $pofmh = DB::connection('DB7')->table('_tb_pofmh_abr_escu_area')->where('CUECOMPLETO', 'not like', '999%')
         ->where('CUECOMPLETO', 'not like', '950%')
         ->orderBy('CUECOMPLETO', 'ASC')
         ->get();
 
-    $CargosSalariales = DB::table('tb_cargossalariales')
-        ->pluck('Cargo', 'idCargo')
-        ->toArray();
+    // $CargosSalariales = DB::table('tb_cargossalariales')
+    //     ->pluck('Cargo', 'idCargo')
+    //     ->toArray();
 
-    $CargosSalarialesCodigo = DB::table('tb_cargossalariales')
-        ->pluck('Codigo', 'idCargo')
-        ->toArray();
+    // $CargosSalarialesCodigo = DB::table('tb_cargossalariales')
+    //     ->pluck('Codigo', 'idCargo')
+    //     ->toArray();
 
-    $Condiciones = CondicionModel::pluck('Descripcion', 'idCondicion')->toArray();
-    $Aulas = PofmhAulas::pluck('nombre_aula', 'idAula')->toArray();
-    $Divisiones = PofmhDivisiones::pluck('nombre_division', 'idDivision')->toArray();
-    $Turnos = PofmhTurnos::pluck('nombre_turno', 'idTurno')->toArray();
-    $Activos = PofmhActivosModel::pluck('nombre_activo', 'idActivo')->toArray();
-    $OrigenesDeCargos = PofmhOrigenCargoModel::pluck('nombre_origen', 'idOrigenCargo')->toArray();
+    // $Condiciones = CondicionModel::pluck('Descripcion', 'idCondicion')->toArray();
+    // $Aulas = PofmhAulas::pluck('nombre_aula', 'idAula')->toArray();
+    // $Divisiones = PofmhDivisiones::pluck('nombre_division', 'idDivision')->toArray();
+    // $Turnos = PofmhTurnos::pluck('nombre_turno', 'idTurno')->toArray();
+    // $Activos = PofmhActivosModel::pluck('nombre_activo', 'idActivo')->toArray();
+    // $OrigenesDeCargos = PofmhOrigenCargoModel::pluck('nombre_origen', 'idOrigenCargo')->toArray();
 
-    $CargosCreados = DB::connection('DB7')->table('tb_padt')
-        ->join('tb_origenes_cargos', 'tb_padt.idOrigenCargo', '=', 'tb_origenes_cargos.idOrigenCargo')
-        ->join('tb_cargos_pof_origen', 'tb_origenes_cargos.nombre_origen', '=', 'tb_cargos_pof_origen.idCargos_Pof_Origen')
-        ->pluck('tb_cargos_pof_origen.nombre_cargo_origen', 'tb_padt.idOrigenCargo')
-        ->toArray();
+    // $CargosCreados = DB::connection('DB7')->table('tb_padt')
+    //     ->join('tb_origenes_cargos', 'tb_padt.idOrigenCargo', '=', 'tb_origenes_cargos.idOrigenCargo')
+    //     ->join('tb_cargos_pof_origen', 'tb_origenes_cargos.nombre_origen', '=', 'tb_cargos_pof_origen.idCargos_Pof_Origen')
+    //     ->pluck('tb_cargos_pof_origen.nombre_cargo_origen', 'tb_padt.idOrigenCargo')
+    //     ->toArray();
 
-    $SitRev = PofMhSitRev::pluck('Descripcion', 'idSituacionRevista')->toArray();
-    $Motivos = DB::table('tb_motivos')->pluck('Nombre_Licencia', 'idMotivo')->toArray();
-    $MotivosCodigo = DB::table('tb_motivos')->pluck('Codigo', 'idMotivo')->toArray();
+    // $SitRev = PofMhSitRev::pluck('Descripcion', 'idSituacionRevista')->toArray();
+    // $Motivos = DB::table('tb_motivos')->pluck('Nombre_Licencia', 'idMotivo')->toArray();
+    // $MotivosCodigo = DB::table('tb_motivos')->pluck('Codigo', 'idMotivo')->toArray();
 
     // Procesar los datos
+    /*
     foreach ($pofmh as $row) {
+        //no termina de convencerme
         if (isset($instituciones[$row->CUECOMPLETO])) {
+            //dd($row->Turno);
+            //dd($instituciones[$row->CUECOMPLETO]);
             $institucion = $instituciones[$row->CUECOMPLETO]->firstWhere('idTurnoUsuario', $row->Turno);
+            dd($institucion);
             if ($institucion) {
                 $row->Nivel = $institucion->Nivel ?? 'S/D';
                 $row->Zona = $zonas[$institucion->Zona] ?? 'S/D';
@@ -3758,7 +3776,7 @@ public function traerTodoAgenteLiq() {
             $row->ZonaSupervision = 'S/D';
         }
 
-        $row->isDniLoaded = in_array($row->Agente, $dnInBase);
+        $row->isDniLoaded = in_array($row->docu, $dnInBase);
         $row->Origen = $CargosCreados[$row->Origen] ?? 'S/D';
         $row->SitRev = $SitRev[$row->SitRev] ?? 'S/D';
         $row->Cargo = isset($CargosSalariales[$row->Cargo]) ? 
@@ -3775,10 +3793,11 @@ public function traerTodoAgenteLiq() {
         $row->FechaDesde = $row->FechaDesde ? Carbon::parse($row->FechaDesde)->format('Y-m-d') : 'S/D';
         $row->FechaHasta = $row->FechaHasta ? Carbon::parse($row->FechaHasta)->format('Y-m-d') : 'S/D';
     }
-
+    //dd($pofmh);
+    */
     $datos = [
         'mensajeError' => "",
-        'institucionExtension' => $institucionExtension,
+        //'institucionExtension' => $institucionExtension,
         'infoPofMH' => $pofmh,
         'mensajeNAV' => 'Panel de Configuración de POF(Modalidad Horizontal)'
     ];

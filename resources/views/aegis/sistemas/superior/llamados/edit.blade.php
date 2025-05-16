@@ -1,16 +1,17 @@
 @extends('layout.app')
 @section('Titulo', 'Sage2.0 - Nivel Superior - Editar Llamado')
-@section('ContenidoPrincipal')
 @section('LinkCSS')
     {{-- para superior --}}
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css">
-
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css">  
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/superior/tablallamado.css') }}">  
     <!--fin superior -->
 @endsection
+@section('ContenidoPrincipal')
+
     <section id="container" class="col-12">
         <section id="main-content">
             <section class="content-wrapper">
@@ -31,7 +32,7 @@
                             <div class="mb-3">
                                 <label for="idtb_zona">Zona:</label>
                               
-                                    <select name="idtb_zona" id="idtb_zona" class="form-control" required>
+                                    <select name="idtb_zona" id="idtb_zona" class="form-control select2" required>
                                         <option value="">Seleccione una zona</option>
                                         @foreach($zonas as $zona)
                                             @if($zona->idtb_zona == $llamado->idtb_zona)
@@ -45,29 +46,29 @@
                     
                             <div class="mb-3">
                                 <label for="id_instituto_superior">Instituto:</label>
-                                <select name="id_instituto_superior" id="id_instituto_superior" class="form-control" required>
+                                <select name="id_instituto_superior" id="id_instituto_superior" class="form-control select2" required>
                                     <option value="">Seleccione un instituto</option>
-                                    @foreach($institutos as $instituto)
+                                    {{-- @foreach($institutos as $instituto)
                                         @if($instituto->id_instituto_superior == $llamado->id_instituto_superior)
                                             <option value="{{ $instituto->id_instituto_superior }}" selected>{{ $instituto->nombre_instsup }}</option>
                                         @else   
                                             <option value="{{ $instituto->id_instituto_superior }}">{{ $instituto->nombre_instsup }}</option>
                                         @endif
-                                    @endforeach
+                                    @endforeach --}}
                                 </select>
                             </div>
                     
                             <div class="mb-3">
                                 <label for="idCarrera">Carrera:</label>
-                                <select name="idCarrera" id="idCarrera" class="form-control" required>
+                                <select name="idCarrera" id="idCarrera" class="form-control select2" required>
                                     <option value="">Seleccione una carrera</option>
-                                    @foreach($carreras as $carrera)
+                                    {{-- @foreach($carreras as $carrera)
                                         @if($carrera->idCarrera == $llamado->idCarrera)
                                             <option value="{{ $carrera->idCarrera }}" selected>{{ $carrera->nombre_carrera }}</option>
                                         @else       
                                             <option value="{{ $carrera->idCarrera }}">{{ $carrera->nombre_carrera }}</option>
                                         @endif    
-                                    @endforeach
+                                    @endforeach --}}
                                 </select>
                             </div>
                     
@@ -120,8 +121,7 @@
                                     <p><strong> Imagen actual: </strong>{{ $llamado->nombre_img }}<strong>  <br/>Si desea cambiar la imagen, seleccione una nueva.</strong></p>    
                                     <input type="file" name="imagen" id="imagen" class="form-control">  
                                                                
-                                @endif
-                                                      
+                                @endif                                                      
                             </div>
                              <!-- link-->
                             <div class="form-group mb-3">                           
@@ -130,11 +130,8 @@
                                     <p><strong> Link actual: </strong>{{ $llamado->url_form }}<strong>  <br/>Si desea cambiar el link, seleccione uno nuevo.</strong></p>
                                     <input type="text" name="url_form" id="url_form" class="form-control" value="{{ $llamado->url_form }}" maxlength="255"> 
                                    
-                                @endif
-                                                    
-                            </div>
-            
-                            
+                                @endif                                                    
+                            </div>          
                             <input type="hidden" name="llamado_id" id="llamado_id" value="{{ $llamado->idllamado }}">                        
                             <button type="submit" class="btn btn-primary">Actualizar</button>
                            
@@ -149,7 +146,7 @@
         </section>
     </section>
 
-    <section id="container" class="col-12">
+        <section id="container" class="col-12">
             <section id="main-content">
                <section class="content-wrapper">                               
                     @if (session('success'))
@@ -177,7 +174,6 @@
                             </tr>
                         </table>
                     </div>
-
                     <div class="row">
                         <h3 style="display: block">Cargos Cargados</h3>
                         <table class="table table-striped table-bordered dt-responsive nowrap tablaCargos" style="width:100%">
@@ -198,14 +194,13 @@
                         </table>
                     </div>
                 </section>
-               
            </section>
-    </section>   
+        </section>   
     {{-- modales --}}
     <!-- Modal Cargo -->
-    <div class="modal fade" id="modalCargo" tabindex="-1" role="dialog" aria-labelledby="modalCargoLabel" aria-hidden="true">
+    <div class="modal fade col-md-12" id="modalCargo" tabindex="-1" role="dialog" aria-labelledby="modalCargoLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
-          <div class="modal-content">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Agregar Cargo al llamado <span id="mostrarIdCargo"></span></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
@@ -216,7 +211,7 @@
                     <p>Formulario para agregar cargo.</p>
                     <form action="{{ route('llamado.agregarCargo') }}" method="POST" id="formAgregarCargo">
                         @csrf
-                        <div class="row">             
+                        <div class="row mt-2">             
                             <div class="col-md-6">
                                 <label for="cargoSelect" class="font-weight-bold">Cargo:</label>
                                 <select name="idtb_cargos_modal" class="form-control" id="cargoSelect_modal">
@@ -225,10 +220,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                        <!-- Otros campos como Turno, Horas Cátedra, etc. -->
-                        <div class="row mt-2">
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <label class="font-weight-bold">Turno:</label>
                                 <select name="idTurno_modal" class="form-control" id="idTurno_modal">
                                     @foreach($turnos as $turno)
@@ -236,11 +228,13 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                        </div>                   
+                        <div class="row mt-2">                           
+                            <div class="col-md-6">
                                 <label class="font-weight-bold">Horas Cátedra:</label>
                                 <input type="text" name="horacat_modal" class="form-control" maxlength="20" id="horacat_modal">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <label class="font-weight-bold">Situación de Revista:</label>
                                 <select name="idtb_situacion_revista_modal" class="form-control" id="idtb_situacion_revista_modal">
                                     @foreach($situacion_revista as $situacion)
@@ -248,7 +242,13 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label class="font-weight-bold">Horario:</label>
+                                <textarea name="horario_modal" class="form-control" id="horario_modal"></textarea>
+                            </div>     
+                            <div class="col-md-6">
                                 <label class="font-weight-bold">Período de Cursado:</label>
                                 <select name="idtb_periodo_cursado_modal" class="form-control" id="idtb_periodo_cursado_modal">
                                     @foreach($periodo_cursado as $periodo)
@@ -256,17 +256,11 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>    
-                           
-                        <!-- Otros campos como horario, perfil -->
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Horario:</label>
-                                <textarea name="horario_modal" class="form-control" id="horario_modal"></textarea>
-                            </div>
-                            <div class="col-md-6">
+                        </div>                     
+                        <div class="row mt-2">                      
+                            <div class="col-12">
                                 <label for="idtb_perfil_modal" class="font-weight-bold">Perfil:</label>
-                                <select name="idtb_perfil_modal" id="idtb_perfil_modal" class="form-control">
+                                <select name="idtb_perfil_modal" id="idtb_perfil_modal" class="form-control selectPerfil">
                                     @foreach($perfil as $per)
                                         <option value="{{ $per->idtb_perfil }}">{{ $per->nombre_perfil }}</option>
                                     @endforeach
@@ -284,7 +278,7 @@
         </div>
     </div>
       <!-- Modal Editar Cargo -->
-    <div class="modal fade" id="modalEditarCargo" tabindex="-1" role="dialog" aria-labelledby="modalEditarCargoLabel">        
+    <div class="modal fade col-md-12" id="modalEditarCargo" tabindex="-1" role="dialog" aria-labelledby="modalEditarCargoLabel">        
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -301,7 +295,7 @@
                         <input type="hidden" name="idCargoEditar" id="idCargoEditar">
                         <input type="hidden" name="llamado_id" id="llamadoIdCargo" value="{{ $llamado->idllamado }}">
                     
-                        <div class="row">
+                        <div class="row mt-2">
                             <div class="col-md-6">
                                 <label class="font-weight-bold">Cargo:</label>
                                 <select name="idtb_cargos_modal" class="form-control" id="cargoSelectEditar">
@@ -310,10 +304,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                    
-                        <div class="row mt-2">
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <label class="font-weight-bold">Turno:</label>
                                 <select name="idTurno_modal" class="form-control" id="idTurnoEditar">
                                     @foreach($turnos as $turno)
@@ -321,11 +312,13 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                        </div>                    
+                        <div class="row mt-2">                           
+                            <div class="col-md-6">
                                 <label class="font-weight-bold">Horas Cátedra:</label>
                                 <input type="text" name="horacat_modal" class="form-control" id="horacatEditarCargo" maxlength="20" >
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <label class="font-weight-bold">Situación de Revista:</label>
                                 <select name="idtb_situacion_revista_modal" class="form-control" id="idSituacionRevistaEditar">
                                     @foreach($situacion_revista as $situacion)
@@ -333,7 +326,13 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label class="font-weight-bold">Horario:</label>
+                                <textarea name="horario_modal" class="form-control" id="horarioEditarCargo"></textarea>
+                            </div>
+                            <div class="col-md-6">
                                 <label class="font-weight-bold">Periodo de Cursado:</label>
                                 <select name="idtb_periodo_cursado_modal" class="form-control" id="idPeriodoEditar">
                                     @foreach($periodo_cursado as $periodo)
@@ -341,64 +340,50 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                    
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Horario:</label>
-                                <textarea name="horario_modal" class="form-control" id="horarioEditarCargo"></textarea>
-                            </div>
-                            <div class="col-md-6">
+                        </div>                    
+                        <div class="row mt-2">                           
+                            <div class="col-md-12">
                                 <label class="font-weight-bold">Perfil:</label>
-                                <select name="idtb_perfil_modal" class="form-control" id="idPerfilEditar">
+                                <select name="idtb_perfil_modal" class="form-control selectPerfil" id="idPerfilEditar">
                                     @foreach($perfil as $per)
                                         <option value="{{ $per->idtb_perfil }}">{{ $per->nombre_perfil }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                    
+                        </div>                    
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-primary">Guardar cambios</button>
                         </div>
-                    </form>
-                    
+                    </form>                    
                 </div>
             </div>
         </div>
     </div>
   
      <!-- Modal Espacio Curricular -->
-    <div class="modal fade" id="modalEspacio" tabindex="-1" role="dialog" aria-labelledby="modalEspacioLabel">
-            <div class="modal-dialog modal-lg" role="document">
+    <div class="modal fade col-md-12" id="modalEspacio" tabindex="-1" role="dialog" aria-labelledby="modalEspacioLabel">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title">Agregar Espacio Curricular al llamado <span id="mostrarIdEspacio"></span></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                    <h5 class="modal-title">Agregar Espacio Curricular al llamado <span id="mostrarIdEspacio"></span></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="modal-body">
-                
-                <p>Formulario para agregar espacio curricular.</p>
-                    <!-- Modal para agregar espacio/cargo -->
+                <div class="modal-body">              
                     <form action="{{ route('llamado.agregarEspacio') }}" method="POST" id="formAgregarEspacio">
                         @csrf
-                        <div class="row">             
+                        <div class="row mt-2">             
                             <div class="col-md-6">
-                                <label for="espacioSelect" class="font-weight-bold">Unidad Curricular:</label>
-                             
-                                <select name="idEspacioCurricular_modal" class="form-control" id="espacioSelect_modal">
+                                <label for="espacioSelect" class="font-weight-bold">Unidad Curricular:</label>                             
+                                <select name="idEspacioCurricular_modal" class="form-control espacioSelect" id="espacioSelect_modal">
                                     @foreach($espacios as $espacio)
                                         <option value="{{ $espacio->idEspacioCurricular }}">{{ $espacio->nombre_espacio }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                        <!-- Otros campos como Turno, Horas Cátedra, etc. -->
-                        <div class="row mt-2">
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <label class="font-weight-bold">Turno:</label>
                                 <select name="idTurno_modal" class="form-control" id="idTurno_modal">
                                     @foreach($turnos as $turno)
@@ -406,11 +391,13 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                        </div>                     
+                        <div class="row mt-2">                            
+                            <div class="col-md-6">
                                 <label class="font-weight-bold">Horas Cátedra:</label>
                                 <input type="text" name="horacat_modal" class="form-control" maxlength="20" id="horacat_modal">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <label class="font-weight-bold">Situación de Revista:</label>
                                 <select name="idtb_situacion_revista_modal" class="form-control" id="idtb_situacion_revista_modal">
                                     @foreach($situacion_revista as $situacion)
@@ -418,7 +405,13 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label class="font-weight-bold">Horario:</label>
+                                <textarea name="horario_modal" class="form-control" id="horario_modal"></textarea>
+                            </div>
+                            <div class="col-md-6">
                                 <label class="font-weight-bold">Período de Cursado:</label>
                                 <select name="idtb_periodo_cursado_modal" class="form-control" id="idtb_periodo_cursado_modal">
                                     @foreach($periodo_cursado as $periodo)
@@ -427,15 +420,10 @@
                                 </select>
                             </div>
                         </div>
-                        <!-- Otros campos como horario, perfil -->
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Horario:</label>
-                                <textarea name="horario_modal" class="form-control" id="horario_modal"></textarea>
-                            </div>
-                            <div class="col-md-6">
+                        <div class="row mt-2">                           
+                            <div class="col-md-12">
                                 <label for="idtb_perfil_modal" class="font-weight-bold">Perfil:</label>
-                                <select name="idtb_perfil_modal" id="idtb_perfil_modal" class="form-control">
+                                <select name="idtb_perfil_modal" id="idtb_perfil_modal" class="form-control selectPerfil">
                                     @foreach($perfil as $per)
                                         <option value="{{ $per->idtb_perfil }}">{{ $per->nombre_perfil }}</option>
                                     @endforeach
@@ -451,12 +439,12 @@
                     </form>    
                 </div>
             </div>
-            </div>
+        </div>
     </div>
 
      {{-- modal para editar --}}
     <!-- Modal Editar Espacio Curricular -->
-    <div class="modal fade" id="modalEditarEspacio" tabindex="-1" role="dialog" aria-labelledby="modalEditarEspacioLabel">        
+    <div class="modal fade col-md-12" id="modalEditarEspacio" tabindex="-1" role="dialog" aria-labelledby="modalEditarEspacioLabel">        
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -468,68 +456,66 @@
                 <div class="modal-body">
                     <form action="{{ route('llamado.editarEspacio') }}" method="POST" id="formEditarEspacio">
                         @csrf
-                        <input type="hidden" name="idEspacioEditar" id="idEspacioEditar">
-            
-                        <div class="row">
-                        <div class="col-md-6">
-                            <label class="font-weight-bold">Unidad Curricular:</label>
-                            <select name="idEspacioCurricular_modal" class="form-control" id="espacioSelectEditar">
-                            @foreach($espacios as $espacio)
-                                <option value="{{ $espacio->idEspacioCurricular }}">{{ $espacio->nombre_espacio }}</option>
-                            @endforeach
-                            </select>
-                        </div>
-                        </div>
-            
+                        <input type="hidden" name="idEspacioEditar" id="idEspacioEditar">            
                         <div class="row mt-2">
-                        <div class="col-md-3">
-                            <label class="font-weight-bold">Turno:</label>
-                            <select name="idTurno_modal" class="form-control" id="idTurnoEditar">
-                            @foreach($turnos as $turno)
-                                <option value="{{ $turno->idTurno }}">{{ $turno->nombre_turno }}</option>
-                            @endforeach
-                            </select>
+                            <div class="col-md-6">
+                                <label class="font-weight-bold">Unidad Curricular:</label>
+                                <select name="idEspacioCurricular_modal" class="form-control espacioSelect" id="espacioSelectEditar">
+                                @foreach($espacios as $espacio)
+                                    <option value="{{ $espacio->idEspacioCurricular }}">{{ $espacio->nombre_espacio }}</option>
+                                @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="font-weight-bold">Turno:</label>
+                                <select name="idTurno_modal" class="form-control" id="idTurnoEditar">
+                                @foreach($turnos as $turno)
+                                    <option value="{{ $turno->idTurno }}">{{ $turno->nombre_turno }}</option>
+                                @endforeach
+                                </select>
+                            </div>
+                        </div>            
+                        <div class="row mt-2">                        
+                            <div class="col-md-6">
+                                <label class="font-weight-bold">Horas Cátedra:</label>
+                                <input type="text" name="horacat_modal" class="form-control" id="horacatEditarEspacio" maxlength="20">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="font-weight-bold">Situación de Revista:</label>
+                                <select name="idtb_situacion_revista_modal" class="form-control" id="idSituacionRevistaEditar">
+                                @foreach($situacion_revista as $situacion)
+                                    <option value="{{ $situacion->idtb_situacion_revista }}">{{ $situacion->nombre_situacion_revista }}</option>
+                                @endforeach
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-md-3">
-                            <label class="font-weight-bold">Horas Cátedra:</label>
-                            <input type="text" name="horacat_modal" class="form-control" id="horacatEditarEspacio" maxlength="20">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="font-weight-bold">Situación de Revista:</label>
-                            <select name="idtb_situacion_revista_modal" class="form-control" id="idSituacionRevistaEditar">
-                            @foreach($situacion_revista as $situacion)
-                                <option value="{{ $situacion->idtb_situacion_revista }}">{{ $situacion->nombre_situacion_revista }}</option>
-                            @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="font-weight-bold">Periodo de Cursado:</label>
-                            <select name="idtb_periodo_cursado_modal" class="form-control" id="idPeriodoEditar">
-                            @foreach($periodo_cursado as $periodo)
-                                <option value="{{ $periodo->idtb_periodo_cursado }}">{{ $periodo->nombre_periodo }}</option>
-                            @endforeach
-                            </select>
-                        </div>
-                        </div>
-            
                         <div class="row mt-2">
-                        <div class="col-md-6">
-                            <label class="font-weight-bold">Horario:</label>
-                            <textarea name="horario_modal" class="form-control" id="horarioEditarEspacio"></textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="font-weight-bold">Perfil:</label>
-                            <select name="idtb_perfil_modal" class="form-control" id="idPerfilEditar">
-                            @foreach($perfil as $per)
-                                <option value="{{ $per->idtb_perfil }}">{{ $per->nombre_perfil }}</option>
-                            @endforeach
-                            </select>
-                        </div>
-                        </div>
-            
+                            <div class="col-md-6">
+                                <label class="font-weight-bold">Horario:</label>
+                                <textarea name="horario_modal" class="form-control" id="horarioEditarEspacio"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="font-weight-bold">Periodo de Cursado:</label>
+                                <select name="idtb_periodo_cursado_modal" class="form-control" id="idPeriodoEditar">
+                                @foreach($periodo_cursado as $periodo)
+                                    <option value="{{ $periodo->idtb_periodo_cursado }}">{{ $periodo->nombre_periodo }}</option>
+                                @endforeach
+                                </select>
+                            </div>
+                        </div>            
+                        <div class="row mt-2">                        
+                            <div class="col-md-12">
+                                <label class="font-weight-bold">Perfil:</label>
+                                <select name="idtb_perfil_modal" class="form-control selectPerfil" id="idPerfilEditar">
+                                @foreach($perfil as $per)
+                                    <option value="{{ $per->idtb_perfil }}">{{ $per->nombre_perfil }}</option>
+                                @endforeach
+                                </select>
+                            </div>
+                        </div>            
                         <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
                         </div>
                     </form>
                 </div>
@@ -539,7 +525,7 @@
 @endsection
 
 @section('Script')     
-   
+       {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
@@ -551,9 +537,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-    <script src="{{ asset('js/superior/tablaLlamado.js') }}"></script>  
-    <script src="{{ asset('js/superior/tipoLlamado.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+  
+    
     <script>
           // Variables globales
           let modo = 'agregar'; 
@@ -1082,7 +1072,93 @@
 
             llenarTablaEspacio($('#llamadoIdEspacio').val());
             llenarTablaCargo($('#llamadoIdCargo').val());
+
+            const zonaId = '{{ $llamado->idtb_zona }}';
+        const institutoId = '{{ $llamado->id_instituto_superior }}';
+        const carreraId = '{{ $llamado->idCarrera }}';
+
+        if (zonaId) {
+    $('#idtb_zona').val(zonaId);
+
+    $.ajax({
+        url: '{{ route("llamado.obtenerInstitutos") }}',
+        type: 'POST',
+        data: { zona_id: zonaId, _token: '{{ csrf_token() }}' },
+        success: function (institutos) {
+            const institutoSelect = $('#id_instituto_superior');
+            institutoSelect.empty().append('<option value="">Seleccione un instituto</option>');
+            institutos.forEach(inst => {
+                institutoSelect.append(`<option value="${inst.id_instituto_superior}">${inst.nombre_instsup}</option>`);
+            });
+
+            institutoSelect.val(institutoId);
+
+            // 🧠 Reiniciar Select2 correctamente
+            if (institutoSelect.hasClass('select2-hidden-accessible')) {
+                institutoSelect.select2('destroy');
+            }
+            institutoSelect.select2({
+                width: '100%',
+                placeholder: 'Seleccione un instituto',
+                allowClear: true
+            });
+
+            // Cargar carreras automáticamente luego
+                $.ajax({
+                    url: '{{ route("llamado.obtenerCarreras") }}',
+                    type: 'POST',
+                    data: { instituto_id: institutoId, _token: '{{ csrf_token() }}' },
+                    success: function (carreras) {
+                        const carreraSelect = $('#idCarrera');
+                        carreraSelect.empty().append('<option value="">Seleccione una carrera</option>');
+                        carreras.forEach(carrera => {
+                            carreraSelect.append(`<option value="${carrera.idCarrera}">${carrera.nombre_carrera}</option>`);
+                        });
+
+                        carreraSelect.val(carreraId);
+
+                        // 🧠 Reiniciar Select2 para carreras también
+                        if (carreraSelect.hasClass('select2-hidden-accessible')) {
+                            carreraSelect.select2('destroy');
+                        }
+                            carreraSelect.select2({
+                                width: '100%',
+                                placeholder: 'Seleccione una carrera',
+                                allowClear: true
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        // Cargar carreras al cambiar el instituto
+        $('#id_instituto_superior').on('change', function () {
+            const institutoId = $(this).val();
+                $.ajax({
+                    url: '{{ route("llamado.obtenerCarreras") }}',
+                    type: 'POST',
+                    data: { instituto_id: institutoId, _token: '{{ csrf_token() }}' },
+                    success: function (carreras) {
+                        const carreraSelect = $('#idCarrera');
+                        carreraSelect.empty().append('<option value="">Seleccione una carrera</option>');
+                        carreras.forEach(carrera => {
+                            carreraSelect.append(`<option value="${carrera.idCarrera}">${carrera.nombre_carrera}</option>`);
+                        });
+                    }
+                });
+            });
         });
- 
+
+
     </script>
+
+    <script>
+        window.routes = {
+            obtenerInstitutos: "{{ route('llamado.obtenerInstitutos') }}",
+            obtenerCarreras: "{{ route('llamado.obtenerCarreras') }}",
+            csrf: "{{ csrf_token() }}"
+        };
+    </script>   
+     <script src="{{ asset('js/superior/tipoLlamado.js') }}"></script>
+
 @endsection

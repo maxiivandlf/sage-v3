@@ -91,6 +91,31 @@
             text-align: center;
             margin-top: 10px;
         }
+
+        .modal-importante {
+            max-width: 900px;
+            /* o 1000 si querés más */
+        }
+
+        .modal-importante .modal-content {
+            font-size: 1.2rem;
+            /* tamaño general del texto */
+            line-height: 1.6;
+        }
+
+        .modal-importante .modal-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .modal-importante .modal-body p {
+            font-size: 2.2rem;
+        }
+
+        .modal-importante .btn {
+            font-size: 2.1rem;
+            padding: 0.6rem 1.5rem;
+        }
     </style>
 
 </head>
@@ -122,18 +147,16 @@
             <!--Hamburguesa-->
             <nav class="main-header navbar navbar-expand navbar-light">
                 <ul class="navbar-nav align-items-center">
-                    <li class="nav-item"> <a href="#" class="nav-link" data-widget="pushmenu" role="button">
-                            <i class="fas fa-bars"></i></a>
-                    </li>
+                    <li class="nav-item"> <a href="#" class="nav-link" data-widget="pushmenu" role="button"><i
+                                class="fas fa-bars"></i></a></li>
                     <li class="nav-item d-none d-sm-inline-block">
-                        <marquee style="color:red;font-size:24px;">Durante la jornada, el control de Ipe sé activara en
-                            modo observación . Gracias
+                        <marquee style="color:red;font-size:24px;">Viernes 16 - 21Hs, se cierra control de IPE para
+                            Supervisores . Gracias
                         </marquee>
                         <div style="display: flex; align-items: center;">
                             <div class="col-12">
                                 <a href="#" class="nav-link h5" style="margin-right: 10px;">
                                     <?php
-                                    
                                     //consulto su Unidad o Unidades de Liquidacion
                                     $infoUnidLiq = DB::connection('DB8')->table('instarealiq')->where('instarealiq.CUEA', session('CUECOMPLETOBASE'))->groupBy('instarealiq.escu')->select('instarealiq.escu')->get();
                                     
@@ -144,38 +167,36 @@
                                         $liqText .= ' / '; // Añadir un separador solo si no es el último
                                     }
                                     //echo rtrim($liqText, ' / '); // Remueve el último " / "
-                                    
+                                    $CUECOMPLETO = session('CUECOMPLETO') ? session('CUECOMPLETO') : session('UsuarioCUECOMPLETO');
                                     //echo "hab:".$EstadoHabilitado."--";
-                                    
-                                    if (session('Modo') == 4) {
-                                        echo 'Sistema de Liquidaciones - ' . session('Usuario');
-                                    } elseif (session('Modo') != 13) {
+                                    if (session('Modo') != 13) {
                                         if (session('Modo') == 44) {
                                             echo 'Sistema control SAGE - Gestión Privada';
                                         } elseif (session('Modo') == 45) {
                                             echo 'Sistema control SAGE - Gestión Municipal';
+                                        } elseif (session('Modo') == 4) {
+                                            echo 'Sistema control SAGE - Liquidación';
+                                        } elseif (session('Modo') == 3) {
+                                            echo 'Sistema control SAGE - Técnicos';
+                                        } elseif (session('Modo') == 43) {
+                                            echo 'Sistema control SAGE - ' . session('NombreInstitucion');
+                                        } elseif (session('Modo') == 12) {
+                                            echo 'Sistema control SAGE - SURI Modalidad Superior';
                                         } elseif (session('Nombre_Institucion')) {
-                                            echo session('Nombre_Institucion') . ' - CUE: ' . session('CUECOMPLETO') . ' - Unidad de Liquidación: ' . ($liqText ? '<span style="color:green">' . rtrim($liqText, ' / ') . '<span>' : '<span style="color:red"> No se encontró unidad de liquidación</span>');
+                                            echo session('Nombre_Institucion') . ' - CUE: ' . $CUECOMPLETO . ' - Unidad de Liquidación: ' . ($liqText ? '<span style="color:green">' . rtrim($liqText, ' / ') . '<span>' : '<span style="color:red"> No se encontró unidad de liquidación</span>');
                                         } else {
                                             echo 'Sistema control SAGE';
                                         }
                                     } else {
                                         echo 'Cuenta Multiusuario';
                                     }
-                                    
                                     ?>
                                 </a>
 
                             </div>
-                            {{-- Alertas segun MODO  --}}
+
                             <div class="col-6">
-                                @if (session('Modo') == 4)
-                                    <div class="alert alert-info alert-dismissible"
-                                        style="margin-right: 10px;width:250px;">
-                                        <h5><i class="icon fas fa-check"></i> Aviso</h5>
-                                        No hay novedades <b>LIQUIDACION</b>
-                                    </div>
-                                @elseif (session('Modo') != 13)
+                                @if (session('Modo') != 13)
                                     @switch(session('EstadoHabilitado'))
                                         @case(1)
                                             <div class="alert alert-success alert-dismissible"
@@ -454,11 +475,11 @@
                                         </a>
                                     </li>
                                     {{-- <li class="nav-item">
-                                        <a href="{{route('asistencias_modelo_pofmh',session('idInstitucionExtension'))}}" class="nav-link">
-                                          <i class="far fa-circle nav-icon"></i>
-                                          <p>Asistencia Modelo</b></p>
-                                        </a>
-                                      </li> --}}
+              <a href="{{route('asistencias_modelo_pofmh',session('idInstitucionExtension'))}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Asistencia Modelo</b></p>
+              </a>
+            </li> --}}
                                     <li class="nav-item">
                                         <a href="{{ route('agregarNovedadParticular') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
@@ -473,29 +494,36 @@
                                         </a>
                                     </li>
                                     {{-- <li class="nav-item">
-                                      <a href="{{route('asistencias_pofmh',session('idInstitucionExtension'))}}" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Asistencia <b style="color:yellow">{{session('mesActual')}}</b></p>
-                                      </a>
-                                    </li> --}}
+              <a href="{{route('controlDeIpeAnterior')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Control de IPE <b style="color:yellow">{{session('mesAnterior')}}</b></p>
+              </a>
+            </li> --}}
+                                    {{-- {{route('controlDeIpe')}} <b style="color:yellow">{{session('mesActual')}}</b>
+            <li class="nav-item">
+              <a href="{{route('asistencias_pofmh',session('idInstitucionExtension'))}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Asistencia <b style="color:yellow">{{session('mesActual')}}</b></p>
+              </a>
+            </li> --}}
                                     {{-- <li class="nav-item" title="DISPONIBLE POR UNOS DIAS">
-                                      <a href="{{route('asistencias_pofmh_anterior',session('idInstitucionExtension'))}}" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p style="color:yellow">Asistencia <b style="color:rgb(238, 132, 10)">{{session('mesAnterior')}}</b>*</p>
-                                      </a>
-                                    </li> --}}
+              <a href="{{route('asistencias_pofmh_anterior',session('idInstitucionExtension'))}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p style="color:yellow">Asistencia <b style="color:rgb(238, 132, 10)">{{session('mesAnterior')}}</b>*</p>
+              </a>
+            </li> --}}
                                     {{-- <li class="nav-item">
-                                      <a href="{{route('calendarioEsc')}}" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Agregar Fechas Asistencia</p>
-                                      </a>
-                                    </li> --}}
+              <a href="{{route('calendarioEsc')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Agregar Fechas Asistencia</p>
+              </a>
+            </li> --}}
                                     {{-- <li class="nav-item">
-                                      <a href="{{route('confirmarPOF')}}" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Confirmar POF</p>
-                                      </a>
-                                    </li> --}}
+              <a href="{{route('confirmarPOF')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Confirmar POF</p>
+              </a>
+            </li> --}}
                                 </ul>
                             </li>
                             <li class="nav-item menu-is-opening menu-open">
@@ -553,17 +581,17 @@
 
 
                                     {{-- <li class="nav-item">
-                                        <a href="{{route('generar_pdf_novedades')}}" class="nav-link">
-                                          <i class="far fa-circle nav-icon"></i>
-                                          <p>Generar PDF de Novedades</p>
-                                        </a>
-                                      </li> --}}
+              <a href="{{route('generar_pdf_novedades')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Generar PDF de Novedades</p>
+              </a>
+            </li> --}}
                                     {{-- <li class="nav-item">
-                                        <a href="{{route('buscar_dni_cue')}}" class="nav-link">
-                                          <i class="far fa-circle nav-icon"></i>
-                                          <p class="text-warning">Consulta Temporal - Borrar</p>
-                                        </a>
-                                      </li> --}}
+              <a href="{{route('buscar_dni_cue')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p class="text-warning">Consulta Temporal - Borrar</p>
+              </a>
+            </li> --}}
                                     @if (session('PermiteBorrarTodo') == 1)
                                         <li class="nav-item">
                                             <a href="{{ route('limpiar_carga') }}" class="nav-link"
@@ -1416,30 +1444,30 @@
                                 <a href="#" class="nav-link">
                                     <i class="nav-icon fas fa-copy"></i>
                                     <p>
-                                        Agentes
+                                        Panel de Control
                                         <i class="fas fa-angle-left right"></i>
                                         <span class="badge badge-info right"><!--aqui algo--></span>
                                     </p>
                                 </a>
                                 <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ route('altaAgenteSup') }}" class="nav-link border-bottom">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Alta de Agentes</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('usuariosListaSupRegistrado') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Agentes En Sistema</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('usuariosListaSup') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Agentes Recuperados</p>
-                                        </a>
-                                    </li>
+                                    {{-- <li class="nav-item">
+              <a href="{{route('altaAgenteSup')}}" class="nav-link border-bottom">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Alta de Agentes</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{route('usuariosListaSupRegistrado')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Agentes En Sistema</p>
+              </a>
+            </li> --}}
+                                    {{-- <li class="nav-item">
+              <a href="{{route('usuariosListaSup')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Agentes Recuperados</p>
+              </a>
+            </li> --}}
                                     <li class="nav-item" style="margin-left: 20px;">
                                         <a href="{{ route('llamados.index') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon text-warning"></i>
@@ -1464,11 +1492,15 @@
                                             <p>Cargar Llamado</p>
                                         </a>
                                     </li>
-
+                                    <li class="nav-item" style="margin-left: 20px;">
+                                        <a href="{{ route('llamado.agregarLom') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon text-info"></i>
+                                            <p>Cargar LOM</p>
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
                         @endif
-
                         {{-- DIRECTORAS DE NIVEL --}}
                         @if (session('Modo') >= 14 && session('Modo') <= 43)
                             <li class="nav-item menu-is-opening menu-open">
@@ -1484,18 +1516,24 @@
                                     <li class="nav-item">
                                         <a href="{{ route('listaSupervisora') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
-                                            <p>Listado de Instituciones</p>
+                                            <p>Listado de Instituciones(Solo Control)</p>
                                         </a>
+                                        @php
+                                            //{{ route('listaSupervisora') }}
+                                        @endphp
                                     </li>
                                     <li class="nav-item">
                                         <a href="{{ route('listaSupervisoraVinculada') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
-                                            <p>Mis CUES Vinculados</p>
+                                            <p>Mis CUES Vinculados(Solo Control)</p>
                                         </a>
+                                        @php
+                                            // {{ route('listaSupervisoraVinculada') }}
+                                        @endphp
                                     </li>
-                                    <li class="nav-item" id="AlertaMensajes">
-
-                                    </li>
+                                    {{-- <li class="nav-item" id="AlertaMensajes">
+            
+          </li> --}}
                                 </ul>
                             </li>
                             <li class="nav-item menu-is-opening menu-open">
@@ -1517,7 +1555,6 @@
                                 </ul>
                             </li>
                         @endif
-
                         {{-- Gestion Privada --}}
                         @if (session('Modo') == 44)
                             <li class="nav-item menu-is-opening menu-open">
@@ -1763,6 +1800,34 @@
 <!-- /.content -->
 <!-- /.content-wrapper -->
 
+@if (session('mostrarAlertaImportante'))
+    <!-- Modal de Alerta Importante -->
+    <div class="modal fade" id="alertaImportante" tabindex="-1" role="dialog"
+        aria-labelledby="alertaImportanteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content border-danger">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="alertaImportanteLabel" style="font-size: 1.5rem">¡IMPORTANTE!</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size: 1.2rem"><strong>Instituciones:</strong> si no cargó o no completó en
+                        <strong>Control IPE</strong> los datos requeridos, deberá solicitar a su
+                        <strong>Supervisor</strong> que lo haga.</p>
+                    <p style="font-size: 1.2rem"><strong>Sede de Supervisión:</strong> tiene tiempo hasta el dia
+                        Viernes 16 a las <strong>21hs</strong> para controlar, modificar y verificar <strong>Control
+                            IPE</strong> de las instituciones.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnAceptar" class="btn btn-primary d-none"
+                        data-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 
 
 
@@ -2071,7 +2136,18 @@
     });
 </script>
 
-@livewireScripts
+<script>
+    $(document).ready(function() {
+        // Mostrar el modal al cargar la página
+        $('#alertaImportante').modal('show');
+
+        // Retardo de 5 segundos para el botón Aceptar
+        setTimeout(function() {
+            document.getElementById("btnAceptar").classList.remove("d-none");
+        }, 5000);
+    });
+</script>
+
 
 </body>
 

@@ -67,7 +67,6 @@
     text-overflow: ellipsis; /* Añade '...' si el contenido excede el ancho */
 }
 
-
 .espacio-cargo{
     margin-bottom: 0.03em!important; /* Espaciado inferior */
 }
@@ -202,7 +201,7 @@
 .form-control {
     border-radius: 5px;
     border: 1px solid #ddd;
-    padding: 10px;
+    padding: 0px 2px 0px 2px;
     transition: box-shadow 0.3s, border-color 0.3s;
 }
 
@@ -303,6 +302,21 @@ table.dataTable tbody td.child {
     padding: 10px 20px !important;
     background-color: #f9f9f9;
     font-size: 12px;
+}
+.select2-container--default .select2-results__option {
+    font-size: 0.95rem !important;/* Cambiá el valor según lo que necesites, por ejemplo 1.1rem o 14px */
+    height: 36px !important; /* o ajustá según tus necesidades */
+    display: flex !important;
+    align-items: center !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    font-size: 0.95rem !important;/* Afecta el texto del select visible */
+    padding-top: 0px !important; /* bajá este número si querés menos espacio arriba */
+    padding-bottom: 3px !important;
+    line-height: 1.5 !important;
+    vertical-align: middle !important;
+   
 }
 
 

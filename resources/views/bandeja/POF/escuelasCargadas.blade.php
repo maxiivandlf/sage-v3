@@ -9,9 +9,9 @@
     border: 1px solid #ddd;
     color: #6c757d;
     font-size: 12px;
-    height: 60px;
+    height: 70px;
     margin: 0 0 10px 10px;
-    min-width: 80px;
+    min-width: 90px;
     padding: 15px 5px;
     position: relative;
     text-align: center;
@@ -196,8 +196,11 @@
                                                 <a class="btn btn-app"  href="{{route('adjuntar_novedad', $nag->idInstitucionExtension)}}" class="nav-link">
                                                     <i class="fas fa-paperclip"></i> Adjuntar Novedades
                                                 </a>
+                                                <a class="btn btn-app"  href="{{route('controlDeIpeSuperAnterior', $nag->idInstitucionExtension)}}" class="nav-link" style="background-color: yellowgreen">
+                                                    <i class="fas fa-check-square"></i> Ver Control IPE -Anterior
+                                                </a>
                                                 <a class="btn btn-app"  href="{{route('controlDeIpeSuper', $nag->idInstitucionExtension)}}" class="nav-link">
-                                                    <i class="fas fa-check-square"></i> Ver Control IPE
+                                                    <i class="fas fa-check-square"></i> Ver Control IPE -Actual
                                                 </a>
                                                 <a class="btn btn-app"  href="{{route('controlDeIpeTec', $nag->idInstitucionExtension)}}" class="nav-link">
                                                     <i class="fas fa-trash"></i> Control Ipe - Borrados

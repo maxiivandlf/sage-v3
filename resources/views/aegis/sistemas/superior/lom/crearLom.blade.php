@@ -28,7 +28,7 @@
                         </div>
                     @endif                   
                     <div id="formularioLlamado" style="display: none;">
-                        <form action="{{ route('llamados.store') }}" method="POST" id="formActualizarLlamado" enctype="multipart/form-data">
+                        <form action="{{ route('llamado.guardarLom') }}" method="POST" id="formActualizarLlamado" enctype="multipart/form-data">
                             @csrf
                             <h1 class="text-primary text-center mb-4">Crear LOM</h1>
                             <div class="mb-3">
@@ -43,17 +43,16 @@
                     
                             <div class="mb-3">
                                 <label for="id_instituto_superior">Instituto:</label>
-                                <select name="id_instituto_superior" id="id_instituto_superior" class="form-control" required>
+                                <select name="id_instituto_superior" id="id_instituto_superior" class="form-control selectInstituto" required>
                                     <option value="">Seleccione un instituto</option>
                                     @foreach($institutos as $instituto)
                                         <option value="{{ $instituto->id_instituto_superior }}">{{ $instituto->nombre_instsup }}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                    
+                            </div>                    
                             <div class="mb-3">
                                 <label for="idCarrera">Carrera:</label>
-                                <select name="idCarrera" id="idCarrera" class="form-control" required>
+                                <select name="idCarrera" id="idCarrera" class="form-control selectCarrera" required>
                                     <option value="">Seleccione una carrera</option>
                                     @foreach($carreras as $carrera)
                                         <option value="{{ $carrera->idCarrera }}">{{ $carrera->nombre_carrera }}</option>
@@ -99,310 +98,33 @@
                         <div class="alert alert-success">
                             {{ session('success') }}
                         </div>
-                    @endif
-                   
+                    @endif                   
                     <div class="row">
-                        <h3 style="display: block">Espacios Cargados</h3>
+                        <h3 style="display: block">LOM Cargados</h3>
                         <table class="table table-striped table-bordered dt-responsive nowrap tablaEspacios" style="width:100%">
                             <tr>
-                                <th>N° Llamado</th>
-                                <th>Unidad Curricular</th>
-                                <th>Horas Catedra</th>
-                                <th>Situación de Revista</th>
-                                <th>Horario</th>                               
-                                <th>Turno</th>                               
-                                <th>Periodo</th>
-                                <th>Perfil</th>                               
-                                <th>Editar / Borrar</th>
+                                <th>N°</th>
+                                <th>LOM</th>
+                                <th>Zona</th>
+                                <th>Institución</th>
+                                <th>Carrera</th>
+                                <th>Unidad / Cargo</th>
                             </tr>
                             <tr>
                                 <td colspan="8">Sin Información</td>
                             </tr>
                         </table>
-                    </div>
-
-                    <div class="row">
-                        <h3 style="display: block">Cargos Cargados</h3>
-                        <table class="table table-striped table-bordered dt-responsive nowrap tablaCargos" style="width:100%">
-                            <tr>
-                                <th>N° Llamado</th>
-                                <th>Cargo</th>
-                                <th>Horas Catedra</th>
-                                <th>Situación de Revista</th>
-                                <th>Horario</th>                               
-                                <th>Turno</th>                               
-                                <th>Periodo</th>
-                                <th>Perfil</th>                               
-                                <th>Editar / Borrar</th>
-                            </tr>
-                            <tr>
-                                <td colspan="8">Sin Información</td>
-                            </tr>
-                        </table>
-                    </div>
-                </section>
-               
+                    </div>                  
+                </section>               
            </section>
     </section>   
     {{-- modales --}}
-    <!-- Modal Cargo -->
-    <div class="modal fade" id="modalCargo" tabindex="-1" role="dialog" aria-labelledby="modalCargoLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-          <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Agregar Cargo al llamado <span id="mostrarIdCargo"></span></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>Formulario para agregar cargo.</p>
-                    <form action="{{ route('llamado.agregarCargo') }}" method="POST" id="formAgregarCargo">
-                        @csrf
-                        <div class="row">             
-                            <div class="col-md-6">
-                                <label for="cargoSelect" class="font-weight-bold">Cargo:</label>
-                                <select name="idtb_cargos_modal" class="form-control" id="cargoSelect_modal">
-                                    @foreach($cargos as $cargo)
-                                        <option value="{{ $cargo->idtb_cargos }}">{{ $cargo->nombre_cargo }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <!-- Otros campos como Turno, Horas Cátedra, etc. -->
-                        <div class="row mt-2">
-                            <div class="col-md-3">
-                                <label class="font-weight-bold">Turno:</label>
-                                <select name="idTurno_modal" class="form-control" id="idTurno_modal">
-                                    @foreach($turnos as $turno)
-                                        <option value="{{ $turno->idTurno }}">{{ $turno->nombre_turno }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="font-weight-bold">Horas Cátedra:</label>
-                                <input type="text" name="horacat_modal" class="form-control" maxlength="20" id="horacat_modal">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="font-weight-bold">Situación de Revista:</label>
-                                <select name="idtb_situacion_revista_modal" class="form-control" id="idtb_situacion_revista_modal">
-                                    @foreach($situacion_revista as $situacion)
-                                        <option value="{{ $situacion->idtb_situacion_revista }}">{{ $situacion->nombre_situacion_revista }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="font-weight-bold">Período de Cursado:</label>
-                                <select name="idtb_periodo_cursado_modal" class="form-control" id="idtb_periodo_cursado_modal">
-                                    @foreach($periodo_cursado as $periodo)
-                                        <option value="{{ $periodo->idtb_periodo_cursado }}">{{ $periodo->nombre_periodo }}</option>    
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>    
-                           
-                        <!-- Otros campos como horario, perfil -->
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Horario:</label>
-                                <textarea name="horario_modal" class="form-control" id="horario_modal"></textarea>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="idtb_perfil_modal" class="font-weight-bold">Perfil:</label>
-                                <select name="idtb_perfil_modal" id="idtb_perfil_modal" class="form-control">
-                                    @foreach($perfil as $per)
-                                        <option value="{{ $per->idtb_perfil }}">{{ $per->nombre_perfil }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="hidden" id="llamadoIdCargo" name="llamado_id">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary" id="btnSubmitCargo" >Agregar</button>
-                        </div>
-                    </form>    
-                </div>
-            </div>
-        </div>
-    </div>
-      <!-- Modal Editar Cargo -->
-    <div class="modal fade" id="modalEditarCargo" tabindex="-1" role="dialog" aria-labelledby="modalEditarCargoLabel">        
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Cargo</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ route('llamado.editarCargo') }}" method="POST" id="formEditarCargo">
-                        @csrf
-                    
-                        <!-- IDs ocultos -->
-                        <input type="hidden" name="idCargoEditar" id="idCargoEditar">
-                        <input type="hidden" name="llamado_id" id="llamadoIdCargo">
-                    
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Cargo:</label>
-                                <select name="idtb_cargos_modal" class="form-control" id="cargoSelectEditar">
-                                    @foreach($cargos as $cargo)
-                                        <option value="{{ $cargo->idtb_cargos }}">{{ $cargo->nombre_cargo }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    
-                        <div class="row mt-2">
-                            <div class="col-md-3">
-                                <label class="font-weight-bold">Turno:</label>
-                                <select name="idTurno_modal" class="form-control" id="idTurnoEditar">
-                                    @foreach($turnos as $turno)
-                                        <option value="{{ $turno->idTurno }}">{{ $turno->nombre_turno }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="font-weight-bold">Horas Cátedra:</label>
-                                <input type="text" name="horacat_modal" class="form-control" id="horacatEditar" maxlength="20" >
-                            </div>
-                            <div class="col-md-3">
-                                <label class="font-weight-bold">Situación de Revista:</label>
-                                <select name="idtb_situacion_revista_modal" class="form-control" id="idSituacionRevistaEditar">
-                                    @foreach($situacion_revista as $situacion)
-                                        <option value="{{ $situacion->idtb_situacion_revista }}">{{ $situacion->nombre_situacion_revista }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="font-weight-bold">Periodo de Cursado:</label>
-                                <select name="idtb_periodo_cursado_modal" class="form-control" id="idPeriodoEditar">
-                                    @foreach($periodo_cursado as $periodo)
-                                        <option value="{{ $periodo->idtb_periodo_cursado }}">{{ $periodo->nombre_periodo }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Horario:</label>
-                                <textarea name="horario_modal" class="form-control" id="horarioEditar"></textarea>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Perfil:</label>
-                                <select name="idtb_perfil_modal" class="form-control" id="idPerfilEditar">
-                                    @foreach($perfil as $per)
-                                        <option value="{{ $per->idtb_perfil }}">{{ $per->nombre_perfil }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                        </div>
-                    </form>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-  
-     <!-- Modal Espacio Curricular -->
-    <div class="modal fade" id="modalEspacio" tabindex="-1" role="dialog" aria-labelledby="modalEspacioLabel">
-            <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                <h5 class="modal-title">Agregar Espacio Curricular al llamado <span id="mostrarIdEspacio"></span></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                </div>
-                <div class="modal-body">
-                
-                <p>Formulario para agregar espacio curricular.</p>
-                    <!-- Modal para agregar espacio/cargo -->
-                    <form action="{{ route('llamado.agregarEspacio') }}" method="POST" id="formAgregarEspacio">
-                        @csrf
-                        <div class="row">             
-                            <div class="col-md-6">
-                                <label for="espacioSelect" class="font-weight-bold">Unidad Curricular:</label>
-                                <select name="idEspacioCurricular_modal" class="form-control" id="espacioSelect_modal">
-                                    @foreach($espacios as $espacio)
-                                        <option value="{{ $espacio->idEspacioCurricular }}">{{ $espacio->nombre_espacio }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <!-- Otros campos como Turno, Horas Cátedra, etc. -->
-                        <div class="row mt-2">
-                            <div class="col-md-3">
-                                <label class="font-weight-bold">Turno:</label>
-                                <select name="idTurno_modal" class="form-control" id="idTurno_modal">
-                                    @foreach($turnos as $turno)
-                                        <option value="{{ $turno->idTurno }}">{{ $turno->nombre_turno }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="font-weight-bold">Horas Cátedra:</label>
-                                <input type="text" name="horacat_modal" class="form-control" maxlength="20" id="horacat_modal">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="font-weight-bold">Situación de Revista:</label>
-                                <select name="idtb_situacion_revista_modal" class="form-control" id="idtb_situacion_revista_modal">
-                                    @foreach($situacion_revista as $situacion)
-                                        <option value="{{ $situacion->idtb_situacion_revista }}">{{ $situacion->nombre_situacion_revista }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="font-weight-bold">Período de Cursado:</label>
-                                <select name="idtb_periodo_cursado_modal" class="form-control" id="idtb_periodo_cursado_modal">
-                                    @foreach($periodo_cursado as $periodo)
-                                        <option value="{{ $periodo->idtb_periodo_cursado }}">{{ $periodo->nombre_periodo }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <!-- Otros campos como horario, perfil -->
-                        <div class="row mt-2">
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Horario:</label>
-                                <textarea name="horario_modal" class="form-control" id="horario_modal"></textarea>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="idtb_perfil_modal" class="font-weight-bold">Perfil:</label>
-                                <select name="idtb_perfil_modal" id="idtb_perfil_modal" class="form-control">
-                                    @foreach($perfil as $per)
-                                        <option value="{{ $per->idtb_perfil }}">{{ $per->nombre_perfil }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="hidden" id="llamadoIdEspacio" name="llamado_id">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary" id="btnSubmitEspacio" >Agregar</button>
-                        </div>
-
-                    </form>    
-                </div>
-            </div>
-            </div>
-    </div>
-
-     {{-- modal para editar --}}
-    <!-- Modal Editar Espacio Curricular -->
+    {{-- modal para editar --}}
     <div class="modal fade" id="modalEditarEspacio" tabindex="-1" role="dialog" aria-labelledby="modalEditarEspacioLabel">        
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Editar Espacio Curricular</h5>
+                    <h5 class="modal-title">Editar LOM</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -413,65 +135,24 @@
                         <input type="hidden" name="idEspacioEditar" id="idEspacioEditar">
             
                         <div class="row">
-                        <div class="col-md-6">
-                            <label class="font-weight-bold">Unidad Curricular:</label>
-                            <select name="idEspacioCurricular_modal" class="form-control" id="espacioSelectEditar">
-                            @foreach($espacios as $espacio)
-                                <option value="{{ $espacio->idEspacioCurricular }}">{{ $espacio->nombre_espacio }}</option>
-                            @endforeach
-                            </select>
-                        </div>
-                        </div>
-            
+                            <div class="col-md-6">
+                                <label class="font-weight-bold">Unidad Curricular:</label>
+                                <select name="idEspacioCurricular_modal" class="form-control espacioSelect" id="espacioSelectEditar">
+                                @foreach($espacios as $espacio)
+                                    <option value="{{ $espacio->idEspacioCurricular }}">{{ $espacio->nombre_espacio }}</option>
+                                @endforeach
+                                </select>
+                            </div>
+                        </div>                      
                         <div class="row mt-2">
-                        <div class="col-md-3">
-                            <label class="font-weight-bold">Turno:</label>
-                            <select name="idTurno_modal" class="form-control" id="idTurnoEditar">
-                            @foreach($turnos as $turno)
-                                <option value="{{ $turno->idTurno }}">{{ $turno->nombre_turno }}</option>
-                            @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="font-weight-bold">Horas Cátedra:</label>
-                            <input type="text" name="horacat_modal" class="form-control" id="horacatEditar" maxlength="20">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="font-weight-bold">Situación de Revista:</label>
-                            <select name="idtb_situacion_revista_modal" class="form-control" id="idSituacionRevistaEditar">
-                            @foreach($situacion_revista as $situacion)
-                                <option value="{{ $situacion->idtb_situacion_revista }}">{{ $situacion->nombre_situacion_revista }}</option>
-                            @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="font-weight-bold">Periodo de Cursado:</label>
-                            <select name="idtb_periodo_cursado_modal" class="form-control" id="idPeriodoEditar">
-                            @foreach($periodo_cursado as $periodo)
-                                <option value="{{ $periodo->idtb_periodo_cursado }}">{{ $periodo->nombre_periodo }}</option>
-                            @endforeach
-                            </select>
-                        </div>
-                        </div>
-            
-                        <div class="row mt-2">
-                        <div class="col-md-6">
-                            <label class="font-weight-bold">Horario:</label>
-                            <textarea name="horario_modal" class="form-control" id="horarioEditar"></textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="font-weight-bold">Perfil:</label>
-                            <select name="idtb_perfil_modal" class="form-control" id="idPerfilEditar">
-                            @foreach($perfil as $per)
-                                <option value="{{ $per->idtb_perfil }}">{{ $per->nombre_perfil }}</option>
-                            @endforeach
-                            </select>
-                        </div>
-                        </div>
-            
+                            <div class="col-md-6">
+                                <label class="font-weight-bold">Horario:</label>
+                                <textarea name="horario_modal" class="form-control" id="horarioEditar"></textarea>
+                            </div>                       
+                        </div>            
                         <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
                         </div>
                     </form>
                 </div>

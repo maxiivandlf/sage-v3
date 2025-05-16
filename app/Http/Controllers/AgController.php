@@ -3181,27 +3181,30 @@ public function cambiarEstadoRechazar(Request $request)
 
 
 
-        public function consultaPruebaNovedad(){
-            
-            $Misrelaciones = SuperRelacionCUEModel::where('idUsuarioSuper', session('idUsuario'))->get();
+public function consultaPruebaNovedad(){
+    $mesActual = Carbon::now()->month; // mayo = 5
+    $anioActual = Carbon::now()->year; // 2025
 
-            $CUEs = $Misrelaciones->pluck('CUECOMPLETO')->toArray();
-    
-            $cantidad = DB::table('tb_alerta_novedades')
-                ->whereIn('CUECOMPLETO', $CUEs)
-                ->where('Estado',"Pendiente")
-                ->count();
-                session(['hayAlertas'=>$cantidad]);
-            /*$cantidad = DB::table('tb_alerta_novedades')
-                ->where('CUECOMPLETO', session('CUECOMPLETO'))
-                ->where('idUsuarioSuperior', session('idUsuario'))
-                ->where('Estado', "Pendiente")
-                ->count();*/
-            // Retornar los resultados como JSON
-            return response()->json([
-                'Cantidad'=>$cantidad
-            ]);
-        }
+    // Buscar relaciones del usuario en el mes y año actual
+    $Misrelaciones = SuperRelacionCUEModel::where('idUsuarioSuper', session('idUsuario'))
+        ->whereMonth('created_at', $mesActual)
+        ->whereYear('created_at', $anioActual)
+        ->get();
+
+    $CUEs = $Misrelaciones->pluck('CUECOMPLETO')->toArray();
+
+    $cantidad = DB::table('tb_alerta_novedades')
+        ->whereIn('CUECOMPLETO', $CUEs)
+        ->where('Estado', "Pendiente")
+        ->whereMonth('created_at', $mesActual)
+        ->count();
+
+    session(['hayAlertas' => $cantidad]);
+
+    return response()->json([
+        'Cantidad' => $cantidad
+    ]);
+}
 
 
 
