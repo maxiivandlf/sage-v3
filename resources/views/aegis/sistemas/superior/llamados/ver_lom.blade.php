@@ -39,6 +39,7 @@
 
                     <thead>
                         <tr>
+                            <th>N°</th>
                             <th>LOM</th>
                             <th>Zona</th>
                             <th>Institución</th>
@@ -50,6 +51,7 @@
                     <tbody>
                         @foreach($llamados as $llamado)
                             <tr>
+                                <td>{{$llamado->idtb_lom}}</td>
                                 <td>
                                     @if($llamado->mes == null)     
                                         <a class="my-link" href="{{ asset('storage/superior/lom/'.$llamado->pdf) }}" onclick="abrirModal('{{ asset('storage/superior/lom/'.$llamado->pdf) }}'); return false;">

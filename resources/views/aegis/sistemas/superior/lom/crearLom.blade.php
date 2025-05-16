@@ -1,5 +1,5 @@
 @extends('layout.app')
-@section('Titulo', 'Sage2.0 - Nivel Superior - Crear Llamado')
+@section('Titulo', 'Sage2.0 - Nivel Superior - Crear LOM')
 @section('ContenidoPrincipal')
 @section('LinkCSS')
     {{-- para superior --}}
@@ -15,7 +15,7 @@
         <section id="main-content">
             <section class="content-wrapper">
                 <div class="row mb-3">
-                    <button id="btnCrearLlamado" type="button" class="btn btn-primary">Crear Llamado</button>
+                    <button id="btnCrearLlamado" type="button" class="btn btn-primary">Crear LOM</button>
                 </div>
                 <div class="form-wrapper mx-auto bg-light p-4 rounded shadow-sm">                   
                     @if ($errors->any())
@@ -30,7 +30,7 @@
                     <div id="formularioLlamado" style="display: none;">
                         <form action="{{ route('llamados.store') }}" method="POST" id="formActualizarLlamado" enctype="multipart/form-data">
                             @csrf
-                            <h1 class="text-primary text-center mb-4">Crear Llamado</h1>
+                            <h1 class="text-primary text-center mb-4">Crear LOM</h1>
                             <div class="mb-3">
                                 <label for="idtb_zona">Zona:</label>
                                 <select name="idtb_zona" id="idtb_zona" class="form-control" required>
@@ -69,40 +69,23 @@
                                         <option value="{{ $tipo->idtipo_llamado }}">{{ $tipo->nombre}}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                    
-                            <div class="mb-3">
-                                <label for="fecha_ini">Fecha Inicio:</label>
-                                <input type="datetime-local" name="fecha_ini" class="form-control" required>
-                            </div>
-                    
-                            <div class="mb-3">
-                                <label for="fecha_fin">Fecha Fin:</label>
-                                <input type="datetime-local" name="fecha_fin" class="form-control" required>
-                            </div>
-                    
-                            <div class="mb-3">
-                                <label for="descripcion">Descripción:</label>
-                                <textarea name="descripcion" class="form-control"></textarea>
-                            </div>
-                              <!-- imagen -->
-                              <div class="form-group mb-3">                           
+                            </div>                      
+                            <!-- imagen -->
+                            <div class="form-group mb-3">                           
                                 <label for="nombre_img" class="font-weight-bold mt-3">Imagen:</label>
                                 <input type="file" name="imagen" id="imagen" class="form-control">                          
                             </div>
-                             <!-- link-->
-                            <div class="form-group mb-3">                           
-                                <label for="url_form" class="font-weight-bold mt-3">Link Formulario:</label>
-                                <input type="text" name="url_form" id="url_form" class="form-control">                          
+                               <!-- pdf -->
+                               <div class="form-group mb-3">                           
+                                <label for="pdf" class="font-weight-bold mt-3">PDF:</label>
+                                <input type="file" name="pdf" id="pdf" class="form-control">                          
                             </div>
-            
+                           
                             
                             <input type="hidden" name="llamado_id" id="llamado_id">                        
                             <button type="submit" class="btn btn-primary">Actualizar</button>
                         </form>
-                        <!-- Botones -->
-                        <button id="btnCargo" type="button" class="btn btn-secondary mt-3" data-id="">Agregar Cargo</button>
-                        <button id="btnEspacio" type="button" class="btn btn-secondary mt-3" data-id="">Agregar Espacio Curricular</button>
+                       
                     </div>
                 </div>
             </section>
@@ -283,7 +266,7 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="font-weight-bold">Horas Cátedra:</label>
-                                <input type="text" name="horacat_modal" class="form-control" id="horacatEditarCargo" maxlength="20" >
+                                <input type="text" name="horacat_modal" class="form-control" id="horacatEditar" maxlength="20" >
                             </div>
                             <div class="col-md-3">
                                 <label class="font-weight-bold">Situación de Revista:</label>
@@ -306,7 +289,7 @@
                         <div class="row mt-2">
                             <div class="col-md-6">
                                 <label class="font-weight-bold">Horario:</label>
-                                <textarea name="horario_modal" class="form-control" id="horarioEditarCargo"></textarea>
+                                <textarea name="horario_modal" class="form-control" id="horarioEditar"></textarea>
                             </div>
                             <div class="col-md-6">
                                 <label class="font-weight-bold">Perfil:</label>
@@ -896,9 +879,9 @@
                 // Cargar los datos al modal
                 $('#idCargoEditar').val(fila.data('idcargorel'));
                 $('#cargoSelectEditar').val(fila.data('idcargo')).trigger('change');
-                $('#horacatEditarCargo').val(fila.data('horacat'));
+                $('#horacatEditar').val(fila.data('horacat'));
                 $('#idSituacionRevistaEditar').val(fila.data('situacionrevista'));
-                $('#horarioEditarCargo').val(fila.data('horario'));
+                $('#horarioEditar').val(fila.data('horario'));
                 $('#idTurnoEditar').val(fila.data('turno'));
                 $('#idPeriodoEditar').val(fila.data('periodo'));
                 $('#idPerfilEditar').val(fila.data('perfil'));

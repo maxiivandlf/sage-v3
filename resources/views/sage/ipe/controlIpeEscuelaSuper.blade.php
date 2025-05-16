@@ -587,7 +587,7 @@
         });
     
         // Procesar los campos de horas
-        tableClone.querySelectorAll("input[type='number']").forEach((input) => {
+        tableClone.querySelectorAll("input[type='text']").forEach((input) => {
             const value = input.value;
             const td = input.closest("td");
             if (td) td.textContent = value;

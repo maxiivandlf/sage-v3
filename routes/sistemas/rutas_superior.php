@@ -9,11 +9,19 @@ Route::get('/ver_lom', [LlamadosController::class, 'lom'])->name('ver_lom'); // 
 Route::get('/llamados/create', [LlamadosController::class, 'create'])->name('llamados.create'); // Formulario
 Route::post('/llamados', [LlamadosController::class, 'store'])->name('llamados.store'); // Guardar datos
 // Edición (para luego cargar cargos/espacios)
-Route::get('/llamados/{id}/edit', [LlamadosController::class, 'edit'])->name('llamados.edit');
-Route::post('/llamados/{id}', [LlamadosController::class, 'update'])->name('llamados.update'); // Actualizar datos
-
+// Route::get('/llamados/{id}/edit', [LlamadosController::class, 'edit'])->name('llamados.edit');
+// Route::post('/llamados/{id}', [LlamadosController::class, 'update'])->name('llamados.update'); // Actualizar datos
+//Rutas para llamados
 Route::post('/crear-llamado', [LlamadosController::class, 'crearllamado'])->name('llamado.crear');
 Route::post('/actualizar-llamado', [LlamadosController::class, 'actualizarLlamado'])->name('llamado.actualizar');
+Route::get('/llamado.editar/{id}', [LlamadosController::class, 'editarLlamado'])->name('llamado.editar');
+//rutas para lom
+Route::post('/agregarLom', [LlamadosController::class, 'agregarLom'])->name('llamado.agregarLom');
+Route::post('/obtenerLom', [LlamadosController::class, 'obtenerLomPorLlamado'])->name('llamado.obtenerLom');    
+Route::get('/editarLom/{id}', [LlamadosController::class, 'editarLom'])->name('llamado.editarLom');
+Route::post('/eliminarLom', [LlamadosController::class, 'eliminarLom'])->name('llamado.eliminarLom');
+
+
 //rutas para espacios
 Route::post('/agregarEspacio', [LlamadosController::class, 'agregarEspacio'])->name('llamado.agregarEspacio');
 Route::post('/obtenerEspacios', [LlamadosController::class, 'obtenerEspaciosPorLlamado'])->name('llamado.obtenerEspacios');

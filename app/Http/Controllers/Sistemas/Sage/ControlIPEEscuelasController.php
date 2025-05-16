@@ -14,6 +14,81 @@ use Illuminate\Support\Facades\DB;
 
 class ControlIPEEscuelasController extends Controller
 {
+    public function cantidadIPEInforme(){
+        $infoPofIpe = PofIpeModel::all();
+        //necesito sacar de infopofipe separado, cantidad de registros totales, cantidad de IPE="SI", cantidad de IPE="NO" o "null"
+        $totalRegistros = $infoPofIpe->count();
+        $totalIPE = $infoPofIpe->where('IPE', 'SI')->count();
+        $totalSinIPE = $infoPofIpe->where('IPE', 'NO')->count();
+        $totalSinIPENull = $infoPofIpe->where('IPE', null)->count();
+        $totalAgentes = $totalSinIPE + $totalSinIPENull;
+
+        //ahora cuento los relacionados
+        $infoPofIpeRel = RelPofIpeModel::all();
+        $totalRegistrosRel = $infoPofIpeRel->count();
+        $totalIPERel = $infoPofIpeRel->where('IPE', 'SI')->count();
+        $totalSinIPERel = $infoPofIpeRel->where('IPE', 'NO')->count();
+        $totalSinIPENullRel = $infoPofIpeRel->where('IPE', null)->count();
+        $totalAgentesRel = $totalSinIPERel + $totalSinIPENullRel;
+
+        //control de mes anterior tomado de otra db
+        $infoIpeAnterior = DB::connection('DB7')->table('tb_pof_ipe_abril')->get();
+        $totalRegistrosAbril = $infoIpeAnterior->count();
+        $totalIPEAbril = $infoIpeAnterior->where('IPE', 'SI')->count();
+        $totalSinIPEAbril = $infoIpeAnterior->where('IPE', 'NO')->count();
+        $totalSinIPENullAbril = $infoIpeAnterior->where('IPE', null)->count();
+        $totalAgentesAbril = $totalSinIPEAbril + $totalSinIPENullAbril;
+
+        //ahora cuento los relacionados
+        $infoPofIpeRelAbril = DB::connection('DB7')->table('tb_rel_pof_ipe_abril')->get();
+        $totalRegistrosRelAbril = $infoPofIpeRelAbril->count();
+        $totalIPERelAbril = $infoPofIpeRelAbril->where('IPE', 'SI')->count();
+        $totalSinIPERelAbril = $infoPofIpeRelAbril->where('IPE', 'NO')->count();
+        $totalSinIPENullRelAbril = $infoPofIpeRelAbril->where('IPE', null)->count();
+        $totalAgentesRelAbril = $totalSinIPERelAbril + $totalSinIPENullRelAbril;
+        
+
+        $datos = [
+            'mensajeError' => "",
+            'infoPofIpe' => $infoPofIpe,
+            'totalRegistros' => $totalRegistros,
+            'totalIPE' => $totalIPE,
+            'totalSinIPE' => $totalSinIPE,
+            'totalSinIPENull' => $totalSinIPENull,
+            'totalAgentes' => $totalAgentes,
+            //las relaciones de mayo
+            'infoPofIpeRel' => $infoPofIpeRel,
+            'totalRegistrosRel' => $totalRegistrosRel,
+            'totalIPERel' => $totalIPERel,
+            'totalSinIPERel' => $totalSinIPERel,
+            'totalSinIPENullRel' => $totalSinIPENullRel,
+            'totalAgentesRel' => $totalAgentesRel,
+
+
+            'totalRegistrosAbril' => $totalRegistrosAbril,
+            'totalIPEAbril' => $totalIPEAbril,
+            'totalSinIPEAbril' => $totalSinIPEAbril,
+            'totalSinIPENullAbril' => $totalSinIPENullAbril,
+            'totalAgentesAbril' => $totalAgentesAbril,
+
+            //las relaciones de abril
+            'infoPofIpeRelAbril' => $infoPofIpeRelAbril,
+            'totalRegistrosRelAbril' => $totalRegistrosRelAbril,
+            'totalIPERelAbril' => $totalIPERelAbril,
+            'totalSinIPERelAbril' => $totalSinIPERelAbril,
+            'totalSinIPENullRelAbril' => $totalSinIPENullRelAbril,
+            'totalAgentesRelAbril' => $totalAgentesRelAbril,
+            'FechaActual' => Carbon::now()->format('Y-m-d'),
+            'mensajeNAV' => 'Panel de Control de IPE'
+        ];
+    
+        $ruta = '
+        <li class="breadcrumb-item active"><a href="#">Escuelas</a></li>
+        <li class="breadcrumb-item active"><a href="'.route('cantidadIPEInforme').'">Control de IPE</a></li>';
+        session(['ruta' => $ruta]);
+    
+        return view('sage.ipe.cantidadIpeInforme', $datos);
+    }
     public function controlDeIpe() {
         Carbon::setLocale('es');
         set_time_limit(0);

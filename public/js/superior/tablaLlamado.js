@@ -2,6 +2,7 @@ $(document).ready(function() {
     var table = $('#myTable').DataTable({
         responsive: true,
         dom: 'Bfrtip',
+        order: [[0, 'desc']], // Ordenar por la primera columna, de forma ascendente
         buttons: [
             {
                 extend: 'copy',
@@ -58,7 +59,7 @@ $(document).ready(function() {
             }
         ],
         language: {
-            url: 'https//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+            url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
         }
     });
     // Mover los botones a #buttons-container

@@ -19,10 +19,6 @@
         /* Ocultar el loader por defecto */
         #loader {
             display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             z-index: 9999;
         }
     </style>
@@ -53,14 +49,17 @@
                 <label for="archivo">Seleccione el archivo Excel (.xlsx o .xls)</label>
                 <input type="file" class="form-control" id="archivo" name="archivo" required accept=".xls,.xlsx">
             </div>
-
-            <button type="submit" class="btn btn-primary mt-3">Subir y Procesar</button>
-            <!-- Loader -->
-            <div id="loader" class="">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="">Cargando...</span>
+            <div style="display: flex; flex-direction: row; height: fit-content;align-items: center;gap: 10px;">
+                <button type="submit" class="btn btn-primary ">Subir y Procesar</button>
+                <!-- Loader -->
+                <div id="loader" style="flex-direction: row;gap: 10px; align-items: center">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="m-0">Procesando archivo, por favor espere...</p>
                 </div>
-                <p class="text-center mt-2">Procesando archivo, por favor espere...</p>
+            </div>
+            <div class="progress mt-3" style="display: none;" id="progressContainer">
+                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                    style="height: 20px;width: 0%">0%</div>
             </div>
         </form>
 
@@ -69,10 +68,60 @@
 @endsection
 
 @section('Script')
-    <script>
+    {{-- <script>
         // Mostrar el loader al enviar el formulario
         document.getElementById('uploadForm').addEventListener('submit', function() {
-            document.getElementById('loader').style.display = 'block';
+            document.getElementById('loader').style.display = 'flex';
+        });
+    </script> --}}
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var form = this;
+            var fileInput = document.getElementById('archivo');
+            if (!fileInput.files.length) return;
+
+            var formData = new FormData(form);
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('POST', form.action, true);
+            xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+
+            // Mostrar barra de progreso y loader
+            document.getElementById('progressContainer').style.display = 'block';
+            document.getElementById('loader').style.display = 'flex';
+
+            xhr.upload.addEventListener('progress', function(e) {
+                console.log(e);
+                if (e.lengthComputable) {
+                    var percent = Math.round((e.loaded / e.total) * 100);
+                    var progressBar = document.getElementById('progressBar');
+                    progressBar.style.width = percent + '%';
+                    progressBar.textContent = percent + '%';
+                    if (percent === 100) {
+                        setTimeout(function() {
+                            document.getElementById('progressContainer').style.display = 'none';
+                            document.querySelector('#loader p').textContent =
+                                'Archivo subido! Procesando archivo, por favor espere...';
+                        }, 500);
+                    }
+                }
+            });
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    window.location.reload(); // Recarga para mostrar mensajes y datos
+                } else {
+                    alert('Error al subir el archivo');
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('progressContainer').style.display = 'none';
+                }
+            };
+
+            xhr.send(formData);
         });
     </script>
 @endsection

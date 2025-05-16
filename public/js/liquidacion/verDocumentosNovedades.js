@@ -35,8 +35,9 @@ $(document).on("click", "#btnVerDocumentosNovedades", function (event) {
                                 }</td>
                                 <td class="text-center">
                                     
-                                        ${documento.URL || "Sin datos"}
-                                   
+                                        ${
+                                            documento.URL || "Sin datos"
+                                        }                                   
                                 </td>
                                 <td class="text-center">   
                                     <a href="/storage/DOCUMENTOS/${

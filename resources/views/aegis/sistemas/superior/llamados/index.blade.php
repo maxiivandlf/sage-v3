@@ -88,7 +88,10 @@
                                                      {{ $tipo->nombre_tipoestado }}
                                                  </option>
                                              @endforeach
-                                         </select>                                        
+                                         </select>   
+                                            @if(isset($llamado->idllamado))
+                                                <a href="{{ route('llamado.editar', $llamado->idllamado) }}" class="btn btn-secondary">Editar</a>        
+                                            @endif
                                          @endif
                                     </td>
                         
@@ -202,17 +205,21 @@
                                         @endif
 
                                         @if(session('Modo') == 12)  
-                                        {{-- //crear un select con los tipos estados --}}                                         
-                                        <select name="idtb_tipoestado" class="form-control tipoestado-select" data-id="{{ $llamado->idllamado }}">
-                                            <option value="">Seleccione</option>
+                                            {{-- //crear un select con los tipos estados --}}                                         
+                                            <select name="idtb_tipoestado" class="form-control tipoestado-select" data-id="{{ $llamado->idllamado }}">
+                                                <option value="">Seleccione</option>
 
-                                            @foreach($tipoestado as $tipo)
-                                                <option value="{{ $tipo->idtb_tipoestado }}">
-                                                    {{ $tipo->nombre_tipoestado }}
-                                                </option>
-                                            @endforeach
-                                        </select>                                                                             
-                                    @endif 
+                                                @foreach($tipoestado as $tipo)
+                                                    <option value="{{ $tipo->idtb_tipoestado }}">
+                                                        {{ $tipo->nombre_tipoestado }}
+                                                    </option>
+                                                @endforeach
+                                            </select>       
+                                            @if(isset($llamado->idllamado))
+                                                <a href="{{ route('llamado.editar', $llamado->idllamado) }}" class="btn btn-secondary">Editar</a>
+                                            @endif
+                                                                                                 
+                                        @endif 
                                     </td>
                         
                                     <td>{{ $llamado->nombre_zona }}</td>

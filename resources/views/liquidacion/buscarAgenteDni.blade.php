@@ -98,7 +98,6 @@
     <section id="container">
         <section id="main-content">
             <section class="content-wrapper" style="height: 300px !important">
-
                 @php
                     $dni = '';
                     if (session('AgenteDuplicadoBuscado')) {
@@ -140,7 +139,6 @@
                 <!-- Tablas Detalladas -->
                 <div class="row">
                     <div class="col-md-12">
-
                         <div class="card card-secondary">
                             <div class="card-header">
                                 <h3 class="card-title">Información Completa del Agente</h3>

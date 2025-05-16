@@ -64,6 +64,7 @@ class LlamadosController extends Controller
             'cargos.horario_cargo',
         )
        // ->whereIn('llamado.idtb_tipoestado', [8,9]) // en proceso
+        ->orderBy('llamado.idllamado', 'desc')
         ->get()
         ->groupBy('idllamado')
         ->map(function ($items) {
@@ -94,7 +95,9 @@ class LlamadosController extends Controller
                     'nombre_perfil'            => $i->nombre_perfil,
                     'nombre_periodo'           => $i->nombre_periodo,                 
 
-                ])->filter(fn($e) => $e['nombre_espacio']),
+                ])
+                ->unique(fn($item) => md5(json_encode($item)))
+                ->filter(fn($e) => $e['nombre_espacio']),
                 // Y cargos por separado (si lo llegás a necesitar en otra vista)
                 'cargos' => $items->map(fn($i) => [
                     'nombre_cargo_secundario'  => $i->nombre_cargo_secundario,
@@ -104,14 +107,17 @@ class LlamadosController extends Controller
                     'nombre_periodo'    => $i->periodo_cursado_cargo,
                     'horacat_cargo'          => $i->horacat_cargo,
                     'horario_cargo'          => $i->horario_cargo,
-                ])->filter(fn($c) => $c['nombre_cargo_secundario']),
+                ])
+                ->unique(fn($item) => md5(json_encode($item)))
+                ->filter(fn($c) => $c['nombre_cargo_secundario']),
             ];
 
             // ¡Convertimos el array en objeto para que tu Blade siga usando ->
             return (object) $data;
         })
+
         ->values();
-        //dd($llamados);
+       // dd($llamados);
         $tipoestado = TipoEstado::all();
         // Usá $llamados para no tocar tu blade
         return view('aegis.sistemas.superior.llamados.index', compact('llamados', 'tipoestado'));
@@ -241,11 +247,44 @@ class LlamadosController extends Controller
     //                      ->with('success', 'Llamado creado correctamente.');
     // }
     
-    public function edit($id)
-    {
+    public function editarLlamado($id)
+    {   
+        //lo necesario para el formulario de editar llamado
         $llamado = Llamado::findOrFail($id);
+        $zonas = Zona::all(); 
+        $tiposLlamado = TipoLlamado::all();
+        $institutos = InstitutoSuperior::all();
+        $carreras = Carrera::all();
+        $estados = TipoEstado::where('nombre_tipoestado', 'En Proceso')->first(); // Estado reservado
+        //tabla espacios por llamado
+        $espacios= EspacioPorLlamado::all();
+        //tabla cargos por llamado
+        $relcargos= CargoPorLlamado::all();
+        $cargos = DB::connection('DB4')->table('tb_cargos')->select('idtb_cargos', 'nombre_cargo')->get();
+    
+        $idEspacioCurricular_modal = EspacioCurricular::all();
+        $espacios = DB::connection('DB4')->table('tb_espacioscurriculares')->select('idEspacioCurricular', 'nombre_espacio')->get();
+        $turnos = Turno::all();
+        $situacion_revista = DB::connection('DB4')->table('tb_situacion_revista')->select('idtb_situacion_revista', 'nombre_situacion_revista')->get();
+        $turnos = DB::connection('DB4')->table('tb_turnos')->select('idTurno', 'nombre_turno')->get();
+        $perfil = DB::connection('DB4')->table('tb_perfil')->select('idtb_perfil', 'nombre_perfil')->get();
+        $periodo_cursado = DB::connection('DB4')->table('tb_periodo_cursado')->select('idtb_periodo_cursado', 'nombre_periodo')->get(); 
+       
+        return view('aegis.sistemas.superior.llamados.edit', compact(
+            'zonas', 
+            'tiposLlamado', 
+            'estados',
+            'institutos', 
+            'carreras', 
+            'espacios', 
+            'idEspacioCurricular_modal',
+            'cargos',
+            'turnos',
+            'situacion_revista',
+            'perfil',
+            'periodo_cursado',
+            'llamado'));
 
-        return view('aegis.sistemas.superior.llamados.edit', compact('llamado'));
     }
 
 
@@ -363,9 +402,9 @@ class LlamadosController extends Controller
         // Actualizamos los campos
         $espacio->idEspacioCurricular = $request->idEspacioCurricular_modal;
         $espacio->idTurno = $request->idTurno_modal;
-        $espacio->horacat_espacio = $request->horacat_modal;
+        $espacio->horacat_espacio = $request->horacat_modal?$request->horacat_modal: 0;
         $espacio->idtb_situacion_revista = $request->idtb_situacion_revista_modal;
-        $espacio->idtb_periodo_cursado = $request->idtb_periodo_cursado_modal;
+        $espacio->idtb_periodo_cursado = $request->idtb_periodo_cursado_modal? $request->idtb_periodo_cursado_modal: 4;
         $espacio->horario_espacio = $request->horario_modal;
         $espacio->idtb_perfil = $request->idtb_perfil_modal;
         

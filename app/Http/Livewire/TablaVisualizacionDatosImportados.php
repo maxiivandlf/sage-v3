@@ -34,7 +34,7 @@ class TablaVisualizacionDatosImportados extends Component
     {
         $datosImportados = LiquidacionTempExcelModel::select('docu', 'cuil', 'trab', 'nomb', 'zona')
             ->orderBy('id', 'desc')
-            ->paginate(10);
+            ->paginate(25);
 
         return view('livewire.tabla-visualizacion-datos-importados', compact('datosImportados'));
     }

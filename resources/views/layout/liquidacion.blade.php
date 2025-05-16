@@ -64,45 +64,17 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     {{-- control para ancho de select --}}
     <style>
-        .custom-select option {
-            width: 723px;
-            /* Ancho máximo inicial */
-            max-width: 100%;
-            /* Limita el ancho máximo al tamaño del contenedor */
-            overflow-x: auto;
-            /* Oculta el desbordamiento de contenido */
-        }
 
-        .nav-separator {
-            height: 1px;
-            /* Altura del separador */
-            background-color: #ccc;
-            /* Color del separador */
-            margin: 5px 0;
-            /* Espacio alrededor del separador */
-            list-style: none;
-            /* Elimina los estilos de viñeta de la lista */
-        }
-
-        #reloj {
-            font-size: 1.5rem;
-            font-family: Arial, sans-serif;
-            color: #333;
-            text-align: center;
-            margin-top: 10px;
-        }
     </style>
 
 </head>
 <!--BODY-->
-@if (session('Validar') != '')
 
-    <body class=" sidebar-mini layout-fixed ">
-        {{-- <div class="loader"></div>  --}}
+<body class=" sidebar-mini layout-fixed ">
+    @if (session('Validar') != '')
 
-        <div class=""> <!-- Aquí era así <div class="wrapper"> -->
+        <div class="" style="border-color: aqua; border-width: 2px">
 
-            <!-- Preloader con barra de progreso -->
             <div id="preloader">
                 <!-- Imagen del preloader -->
                 <div class="preloader-img mb-4">
@@ -110,7 +82,8 @@
                 </div>
                 <!-- Barra de progreso -->
                 <div class="spinner text-center">
-                    <!--<div class="progress-bar bg-primary progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>-->
+                    {{-- <div class="progress-bar bg-primary progress-bar-striped" role="progressbar" aria-valuenow="0"
+                        aria-valuemin="0" aria-valuemax="100"></div> --}}
                     <div class="spinner-grow gb-trabajo" role="status"></div>
                     <div class="spinner-grow gb-energia" role="status"></div>
                     <div class="spinner-grow gb-conectividad" role="status"></div>
@@ -126,48 +99,15 @@
                             <i class="fas fa-bars"></i></a>
                     </li>
                     <li class="nav-item d-none d-sm-inline-block">
-                        <marquee style="color:red;font-size:24px;">Durante la jornada, el control de Ipe sé activara en
-                            modo observación . Gracias
-                        </marquee>
                         <div style="display: flex; align-items: center;">
                             <div class="col-12">
                                 <a href="#" class="nav-link h5" style="margin-right: 10px;">
                                     <?php
-                                    
-                                    //consulto su Unidad o Unidades de Liquidacion
-                                    $infoUnidLiq = DB::connection('DB8')->table('instarealiq')->where('instarealiq.CUEA', session('CUECOMPLETOBASE'))->groupBy('instarealiq.escu')->select('instarealiq.escu')->get();
-                                    
-                                    $liqText = '';
-                                    foreach ($infoUnidLiq as $unidliq) {
-                                        // Validación más explícita para asegurarse de que 'escu' no sea vacío ni nulo
-                                        $liqText .= !empty($unidliq->escu) ? $unidliq->escu : 'S/D';
-                                        $liqText .= ' / '; // Añadir un separador solo si no es el último
-                                    }
-                                    //echo rtrim($liqText, ' / '); // Remueve el último " / "
-                                    
-                                    //echo "hab:".$EstadoHabilitado."--";
-                                    
-                                    if (session('Modo') == 4) {
-                                        echo 'Sistema de Liquidaciones - ' . session('Usuario');
-                                    } elseif (session('Modo') != 13) {
-                                        if (session('Modo') == 44) {
-                                            echo 'Sistema control SAGE - Gestión Privada';
-                                        } elseif (session('Modo') == 45) {
-                                            echo 'Sistema control SAGE - Gestión Municipal';
-                                        } elseif (session('Nombre_Institucion')) {
-                                            echo session('Nombre_Institucion') . ' - CUE: ' . session('CUECOMPLETO') . ' - Unidad de Liquidación: ' . ($liqText ? '<span style="color:green">' . rtrim($liqText, ' / ') . '<span>' : '<span style="color:red"> No se encontró unidad de liquidación</span>');
-                                        } else {
-                                            echo 'Sistema control SAGE';
-                                        }
-                                    } else {
-                                        echo 'Cuenta Multiusuario';
-                                    }
-                                    
+                                    echo 'Sistema de Liquidaciones - ' . session('Usuario');
                                     ?>
                                 </a>
-
                             </div>
-                            {{-- Alertas segun MODO  --}}
+                            {{-- Alertas --}}
                             <div class="col-6">
                                 @if (session('Modo') == 4)
                                     <div class="alert alert-info alert-dismissible"
@@ -177,508 +117,259 @@
                                     </div>
                                 @endif
                             </div>
-
                         </div>
-        </div>
-        </li>
-
-        </ul>
-        </nav>
+                    </li>
+                </ul>
+            </nav>
 
 
-        <div class="row main-header">
-            <section class="content-header">
-                <div class="container-fluid">
-                    <ol id="breadcrumb" class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href={{ route('dashboardRedirect') }}>INICIO</a></li>
+            <div class="row main-header">
+                <section class="content-header">
+                    <div class="container-fluid">
+                        <ol id="breadcrumb" class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href={{ route('dashboardRedirect') }}>INICIO</a></li>
 
-                        @if (session('Modo') == 4)
-                            @php
-                                $currentUrl = url()->current();
-                                $routeName = Route::currentRouteName();
-                                $breadcrumbName = strtoupper(str_replace('_', ' ', last(explode('.', $routeName))));
-                                $breadcrumbName = str_replace(' LIQ', '', $breadcrumbName);
+                            @if (session('Modo') == 4)
+                                @php
+                                    $currentUrl = url()->current();
+                                    $routeName = Route::currentRouteName();
+                                    $breadcrumbName = strtoupper(str_replace('_', ' ', last(explode('.', $routeName))));
+                                    $breadcrumbName = str_replace(' LIQ', '', $breadcrumbName);
 
-                                echo '
-                                    <li class="breadcrumb-item active">
-                                        <a href="' .
-                                    $currentUrl .
-                                    '">' .
-                                    $breadcrumbName .
-                                    '</a>
-                                </li>
-                            ';
-                            @endphp
-                        @else
-                            @php
-                                echo session('ruta');
-                            @endphp
-                        @endif
+                                    echo '
+                                        <li class="breadcrumb-item active">
+                                            <a href="' .
+                                        $currentUrl .
+                                        '">' .
+                                        $breadcrumbName .
+                                        '</a>
+                                    </li>
+                                ';
+                                @endphp
+                            @else
+                                @php
+                                    echo session('ruta');
+                                @endphp
+                            @endif
 
-                    </ol>
-                </div>
-            </section>
-        </div>
-
-        <!-- Main Sidebar Container -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <!-- Brand Logo -->
-            <a href="{{ route('dashboardRedirect') }}" class="brand-link">
-                <img src="{{ asset('img/logo_larioja.png') }}" alt="SAGE"
-                    class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light">SAGE</span>
-            </a>
-
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <!-- Sidebar user panel (optional) -->
-                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                    <div class="image">
-                        @php
-                            $InfoUsuario = session('InfoUsuario');
-                        @endphp
-                        <img src="{{ asset('img/' . $InfoUsuario->avatar) }}" class="img-circle elevation-2"
-                            alt="User Image">
+                        </ol>
                     </div>
-                    <div class="info">
-                        <a href="{{ route('perfilMulticuenta') }}" class="d-block">{{ session('Usuario') }}</a><br>
-                        @if (session('Modo') != 13)
-                            <a href="#"
-                                class="d-block">{{ session('NombreInstitucion') }}({{ session('TurnoDescripcion') }})</a>
-                        @else
-                            <a href="#" class="d-block">Usuario {{ session('NombreInstitucion') }}</a>
-                        @endif
-                        <div id="reloj" style="color:green"></div>
-                    </div>
-                </div>
-
-                <!-- Sidebar Menu -->
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-                        data-accordion="false">
-                        <li class="nav-item">
-                            <a href={{ route('dashboardRedirect') }} class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
-                                <p>
-                                    Inicio
-                                </p>
-                            </a>
-                        </li>
-
-                        {{-- Liquidación --}}
-
-                        <li class="nav-item menu-is-opening menu-open">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-search"></i>
-                                <p>
-                                    Consultas
-                                    <i class="fas fa-angle-left right"></i>
-                                    <span class="badge badge-info right"><!--aqui algo--></span>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('buscar_dni_liq') }}" class="nav-link">
-                                        <i class="far fa-id-card nav-icon"></i>
-                                        <p>Buscar por DNI</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('buscar_cue_liq') }}" class="nav-link">
-                                        <i class="fas fa-school nav-icon"></i>
-                                        <p>Buscar por CUE</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item menu-is-opening menu-open">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-university"></i>
-                                <p>
-                                    Instituciones Educativas
-                                    <i class="fas fa-angle-left right"></i>
-                                    <span class="badge badge-info right"><!--aqui algo--></span>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('listarInstarealiq') }}" class="nav-link">
-                                        <i class="fas fa-info-circle nav-icon"></i>
-                                        <p><span style="color:yellow">Informacón Instituciones</span></p>
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </li>
-                        <li class="nav-item menu-is-opening menu-open">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-calendar-alt"></i>
-                                <p>
-                                    Control Mensual
-                                    <i class="fas fa-angle-left right"></i>
-                                    <span class="badge badge-info right"><!--aqui algo--></span>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('cargarExcelLiquidacion') }}" class="nav-link">
-                                        <i class="far fa-file-excel nav-icon"></i>
-                                        <p>Carga Excel</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('compararDatosLiquidacion') }}" class="nav-link">
-                                        <i class="fas fa-clipboard-check nav-icon"></i>
-                                        <p>Control IPE</p>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a href="{{ route('traerTodoAgenteLiq') }}" class="nav-link">
-                                        <i class="fas fa-users nav-icon"></i>
-                                        <p>Lista total de Agentes<span style="color:yellow">(Experimental)</span>
-                                        </p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
-
-                        <li class="nav-header">Opciones</li>
-                        <li class="nav-item">
-                            <a href="{{ route('Salir') }}" class="nav-link">
-                                <i class="nav-icon fas fa-sign-out-alt"></i>
-                                <p>
-                                    Salir
-                                    <span class="badge badge-info right"><!--aqui algo--></span>
-                                </p>
-                            </a>
-                        </li>
-
-                    </ul>
-                </nav>
-                <!-- /.sidebar-menu -->
+                </section>
             </div>
-            <!-- /.sidebar -->
-        </aside>
+
+            <!-- Main Sidebar Container -->
+            <aside class="main-sidebar sidebar-dark-primary elevation-4">
+                <a href="{{ route('dashboardRedirect') }}" class="brand-link">
+                    <img src="{{ asset('img/logo_larioja.png') }}" alt="SAGE"
+                        class="brand-image img-circle elevation-3" style="opacity: .8">
+                    <span class="brand-text font-weight-light">SAGE</span>
+                </a>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <!-- Sidebar user panel (optional) -->
+                    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                        <div class="image">
+                            @php
+                                $InfoUsuario = session('InfoUsuario');
+                            @endphp
+                            <img src="{{ asset('img/' . $InfoUsuario->avatar) }}" class="img-circle elevation-2"
+                                alt="User Image">
+                        </div>
+                        <div class="info">
+                            <a href="{{ route('perfilMulticuenta') }}" class="d-block">{{ session('Usuario') }}</a>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Menu -->
+                    <nav class="mt-2">
+                        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                            data-accordion="false">
+                            <li class="nav-item">
+                                <a href={{ route('dashboardRedirect') }} class="nav-link">
+                                    <i class="nav-icon fas fa-th"></i>
+                                    <p>
+                                        Inicio
+                                    </p>
+                                </a>
+                            </li>
+
+                            {{-- Liquidación --}}
+
+                            <li class="nav-item menu-is-opening menu-open">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-search"></i>
+                                    <p>
+                                        Consultas
+                                        <i class="fas fa-angle-left right"></i>
+                                        <span class="badge badge-info right"><!--aqui algo--></span>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="{{ route('buscar_dni_liq') }}" class="nav-link">
+                                            <i class="far fa-id-card nav-icon"></i>
+                                            <p>Buscar por DNI</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('buscar_cue_liq') }}" class="nav-link">
+                                            <i class="fas fa-school nav-icon"></i>
+                                            <p>Buscar por CUE</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item menu-is-opening menu-open">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-university"></i>
+                                    <p>
+                                        Instituciones Educativas
+                                        <i class="fas fa-angle-left right"></i>
+                                        <span class="badge badge-info right"><!--aqui algo--></span>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="{{ route('informacionInstituciones') }}" class="nav-link">
+                                            <i class="fas fa-info-circle nav-icon"></i>
+                                            <p><span style="color:yellow">Informacón Instituciones</span></p>
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </li>
+                            <li class="nav-item menu-is-opening menu-open">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-calendar-alt"></i>
+                                    <p>
+                                        Control Mensual
+                                        <i class="fas fa-angle-left right"></i>
+                                        <span class="badge badge-info right"><!--aqui algo--></span>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="{{ route('cargarExcelLiquidacion') }}" class="nav-link">
+                                            <i class="far fa-file-excel nav-icon"></i>
+                                            <p>Carga Excel</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('controlIpe') }}" class="nav-link">
+                                            <i class="fas fa-clipboard-check nav-icon"></i>
+                                            <p>Control IPE</p>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a href="{{ route('traerTodoAgenteLiq') }}" class="nav-link">
+                                            <i class="fas fa-users nav-icon"></i>
+                                            <p>Lista total de Agentes<span style="color:yellow">(Experimental)</span>
+                                            </p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+
+                            <li class="nav-header">Opciones</li>
+                            <li class="nav-item">
+                                <a href="{{ route('Salir') }}" class="nav-link">
+                                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                                    <p>
+                                        Salir
+                                        <span class="badge badge-info right"><!--aqui algo--></span>
+                                    </p>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                    <!-- /.sidebar-menu -->
+                </div>
+                <!-- /.sidebar -->
+            </aside>
+        </div>
     @else
-@endif
-
-<section class="content">
-    <div class="container-fluid">
-        @yield('ContenidoPrincipal')
-    </div>
-</section>
-
-
-
-
-<!-- Control Sidebar -->
-<aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-</aside>
-<!-- /.control-sidebar -->
-</div>
-<!-- ./wrapper -->
-
-@livewireScripts
-<!-- jQuery -->
-<script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
-<!-- jQuery UI 1.11.4 -->
-<script src="{{ asset('plugins/jquery-ui/jquery-ui.min.js') }}"></script>
-<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-<script>
-    $.widget.bridge('uibutton', $.ui.button)
-</script>
-<!-- Bootstrap 4 -->
-<script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-<!-- ChartJS -->
-<script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>
-<!-- jQuery Knob Chart -->
-<script src="{{ asset('plugins/jquery-knob/jquery.knob.min.js') }}"></script>
-<!-- daterangepicker -->
-<script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
-<script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
-<!-- Tempusdominus Bootstrap 4 -->
-<script src="{{ asset('plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
-<!-- Summernote -->
-<script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
-<!-- overlayScrollbars -->
-<script src="{{ asset('plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
-<!-- DataTables  & Plugins -->
-<script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('plugins/jszip/jszip.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
-
-<script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
-<script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>
-<script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
-<!-- AdminLTE App -->
-<script src="{{ asset('dist/js/adminlte.js') }}"></script>
-<script src="{{ asset('js/arbol.js') }}"></script>
-<script src="{{ asset('js/funcionesvarias.js') }}"></script>
-{{-- <script src="{{ asset('js/reloj.js') }}"></script> --}}
-<!-- SweetAlert2 -->
-<script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-<!-- Toastr -->
-<script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
-<!--subir doc-->
-<script src="{{ asset('plugins/dropzone/min/dropzone.min.js') }}"></script>
-<script src="{{ asset('js/subirDoc.js') }}"></script>
-<script src="{{ asset('js/barraprogreso.js') }}"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-@yield('Script')
-<script type="text/javascript">
-    $(window).on('load', function() {
-        $(".loader").fadeOut("slow")
-    })
-</script>
-<!-- Page specific script -->
-{{-- <script>
-    $(function() {
-        $("#example1").DataTable({
-            "responsive": true,
-            "lengthChange": false,
-            "autoWidth": false,
-            "order": [
-                [0, 'desc']
-            ]
-            //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)')
-
-        $("#example3").DataTable({
-            "dom": 'lBfrtip', // Muestra el control de longitud, el botón, el campo de búsqueda, la tabla, la paginación
-            "responsive": true,
-            "lengthChange": false,
-            "autoWidth": false,
-            "order": [
-                [0, 'desc']
-            ]
-        });
-        $("#examplelogs").DataTable({
-            "responsive": true,
-            "lengthChange": false,
-            "autoWidth": false,
-            "order": [
-                [0, 'desc']
-            ]
-            //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)')
-        $('#example2').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": false,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
-        })
-        $('#tablalogs').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": false,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
-            "order": [
-                [8, 'asc']
-            ] // Ordenar por la columna 9 (índice 8) en orden ascendente
-
-        })
-        $('#tecnicoSage').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": false,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
-            "order": [
-                [8, 'asc']
-            ] // Ordenar por la columna 9 (índice 8) en orden ascendente
-
-        })
-        $("#example4").DataTable({
-            "responsive": true,
-            "lengthChange": false,
-            "autoWidth": false,
-            "order": [
-                [0, 'desc']
-            ]
-            //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)')
-
-        $("#detalles99999").DataTable({
-            "responsive": true,
-            "lengthChange": false,
-            "autoWidth": false,
-            "order": [
-                [0, 'desc']
-            ]
-            //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)')
-    })
-
-
-    // Agrega un evento click al enlace de borrado
-    $('#borrarCarga').click(function(e) {
-        e.preventDefault(); // Evita que se siga el enlace automáticamente
-
-        // Muestra la ventana de alerta
-        Swal.fire({
-            title: '¿Está seguro de querer borrar toda la carga?',
-            text: 'Esta acción no se puede deshacer.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, borrar toda la carga'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Si el usuario confirma, redirige a la URL deseada
-                window.location.href = "{{ route('limpiar_carga') }}";
-            }
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Delegación para la exportación de la tabla a Excel
-        document.addEventListener('click', function(event) {
-            if (event.target && event.target.id === 'btn-exportar') {
-                const nivelSeleccionado = event.target.getAttribute('data-nivel');
-                const table = document.getElementById('tablapofs');
-
-                if (table) {
-                    const workbook = XLSX.utils.table_to_book(table, {
-                        sheet: "Hoja1"
-                    });
-                    const nombreArchivo = 'datos_pof_' + nivelSeleccionado + '.xlsx';
-                    XLSX.writeFile(workbook, nombreArchivo);
-                } else {
-                    alert('No se encontró la tabla para exportar');
-                }
-            }
-        });
-
-        // Delegación para la impresión del modal sin recargar
-        document.addEventListener('click', function(event) {
-            if (event.target && event.target.id === 'btn-imprimir') {
-                // Guarda el contenido original del body
-                const originalContents = document.body.innerHTML;
-
-                // Obtiene el contenido del modal para imprimir
-                const printContents = document.querySelector('#modal-pof .modal-body').innerHTML;
-
-                // Cambia el contenido del body al del modal
-                document.body.innerHTML = printContents;
-
-                // Ejecuta la impresión
-                window.print();
-
-                // Restaura el contenido original del body
-                document.body.innerHTML = originalContents;
-
-                // Restaura el modal y reabre el modal si se cerró
-                $('#modal-pof').modal('show');
-                // Si el overlay persiste, se elimina al cerrar
-                document.querySelector('.modal-backdrop').remove();
-            }
-        });
-    });
-</script> --}}
-{{-- <script>
-    @if (session('ActivarSplashInicial') == 'OK')
-        /*Swal.fire(
-          'Registro guardado',
-          'Se actualizó correctamente',
-          'success'
-              )*/
     @endif
 
+    <section class="content">
+        <div class="container-fluid">
+            @yield('ContenidoPrincipal')
+        </div>
+    </section>
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Obtener la URL actual
-        const currentUrl = window.location.pathname;
 
-        // Verificar si la URL contiene "verPofMhidExt"
-        if (currentUrl.includes('verPofMhidExt')) {
-            // Seleccionar el elemento <body>
-            const bodyElement = document.body;
 
-            // Agregar la clase "sidebar-collapse"
-            bodyElement.classList.add('sidebar-collapse');
-        }
-    });
 
-    $(document).ready(function() {
-        var rutaListaSupervisoraMensajes = @json(route('listaSupervisoraMensajes'));
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
 
-        // Función para actualizar el reloj cada segundo
-        function actualizarReloj() {
-            var fecha = new Date(); // Obtenemos la fecha y hora actual
-            var horas = fecha.getHours().toString().padStart(2, "0");
-            var minutos = fecha.getMinutes().toString().padStart(2, "0");
-            var segundos = fecha.getSeconds().toString().padStart(2, "0");
+    @livewireScripts
+    <!-- jQuery -->
+    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="{{ asset('plugins/jquery-ui/jquery-ui.min.js') }}"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+        $.widget.bridge('uibutton', $.ui.button)
+    </script>
+    <!-- Bootstrap 4 -->
+    <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <!-- ChartJS -->
+    <script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>
+    <!-- jQuery Knob Chart -->
+    <script src="{{ asset('plugins/jquery-knob/jquery.knob.min.js') }}"></script>
+    <!-- daterangepicker -->
+    <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="{{ asset('plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
+    <!-- Summernote -->
+    <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
+    <!-- overlayScrollbars -->
+    <script src="{{ asset('plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
+    <!-- DataTables  & Plugins -->
+    <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('plugins/jszip/jszip.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
 
-            // Mostramos la hora en el div con id "reloj"
-            $("#reloj").text(horas + ":" + minutos + ":" + segundos);
-        }
+    <script src="{{ asset('plugins/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('plugins/pdfmake/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{ asset('dist/js/adminlte.js') }}"></script>
+    <script src="{{ asset('js/arbol.js') }}"></script>
+    <script src="{{ asset('js/funcionesvarias.js') }}"></script>
+    {{-- <script src="{{ asset('js/reloj.js') }}"></script> --}}
+    <!-- SweetAlert2 -->
+    <script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+    <!-- Toastr -->
+    <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
+    <!--subir doc-->
+    <script src="{{ asset('plugins/dropzone/min/dropzone.min.js') }}"></script>
+    <script src="{{ asset('js/subirDoc.js') }}"></script>
+    <script src="{{ asset('js/barraprogreso.js') }}"></script>
 
-        // Llamamos a la función de actualización cada segundo
-        setInterval(actualizarReloj, 1000);
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    @yield('Script')
+    <script type="text/javascript">
+        $(window).on('load', function() {
+            $(".loader").fadeOut("slow")
+        })
+    </script>
 
-        function ejecutarConsultaPeriodica() {
-            // Aquí va la lógica de la consulta
-            //console.log("Ejecutando consulta a la base de datos...");
 
-            $.ajax({
-                url: "/consultaPruebaNovedad",
-                type: "GET",
-                success: function(response) {
-                    /* console.log(
-                         "Se encontraron: " +
-                             response.Cantidad +
-                             " de novedades sin procesar"
-                     );*/
-                    // Seleccionamos el li donde se agregará la alerta
-                    var alertaMensajesLi = $("#AlertaMensajes");
-                    // Verificar si hay alertas
-                    if (response.Cantidad > 0) {
-                        // Si hay alertas, agregar el contenido al li
-                        var contenidoAlertas = `
-                        <a href="${rutaListaSupervisoraMensajes}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Hay Mensajes <i class="far fa-envelope" style="color:yellow"></i><span class="badge badge-info right">${response.Cantidad}</span></p>
-                            </a>
-                        
-                    `;
-
-                        // Colocar el contenido dentro del li
-                        alertaMensajesLi.html(contenidoAlertas);
-                    } else {
-                        // Si no hay alertas, dejar el li vacío
-                        alertaMensajesLi.html("");
-                    }
-                },
-                error: function() {
-                    console.log("Error al ejecutar la consulta");
-                },
-            });
-        }
-
-        setInterval(ejecutarConsultaPeriodica, 3000);
-    });
-</script> --}}
-
-@livewireScripts
 
 </body>
 
