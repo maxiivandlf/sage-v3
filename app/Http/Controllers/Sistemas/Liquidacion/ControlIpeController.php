@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Sistemas\Liquidacion;
 use App\Exports\InconsistenciasExport;
 use App\Http\Controllers\Controller;
 use App\Models\AgenteModel;
-use App\Models\liquidacion\AgentesAgrupadosModel;
+use App\Models\Liquidacion\AgentesAgrupadosModel;
 use App\Models\Liquidacion\LiquidacionTempExcelModel;
 
 use Carbon\Carbon;
