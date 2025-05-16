@@ -23,13 +23,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh 
-            cd ${{secrets.WORK_DIR}}
+            cd ${{secrets.WORK_DIR}}}
             echo "📦 Pulling latest code..."
             git fetch 
             git checkout ${{secrets.DEPLOY_BRANCH}}
-            git pull origin
+            git pull origin  ${{secrets.DEPLOY_BRANCH}}
 
             echo "🔧 Installing dependencies..."
             composer install --no-dev --optimize-autoloader
