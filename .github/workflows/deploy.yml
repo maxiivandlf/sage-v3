@@ -23,7 +23,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd ${{secrets.WORK_DIR}}}
+            cd ${{secrets.WORK_DIR}}
             echo "📦 Pulling latest code..."
             git fetch 
             git checkout ${{secrets.DEPLOY_BRANCH}}
