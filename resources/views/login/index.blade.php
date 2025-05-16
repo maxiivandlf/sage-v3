@@ -51,7 +51,7 @@
                 <img src="{{ asset('img/seguridad.jpg') }}" alt="lock avatar" />
                 <div class="card-body">
                     <h1><strong style="color:rgb(74, 71, 71)">Sistema <strong><strong
-                                    style="color: rgb(102, 78, 78)">SAGE</strong>HOlaaaaaaaaaaaaaaaa</h1>
+                                    style="color: rgb(102, 78, 78)">SAGE</strong></h1>
                     <span class="locked">{{ $mensajeError }}</span>
                     {{-- prueba local --}}
                     @if ($activo == 'NO')
