@@ -30,8 +30,8 @@ jobs:
             git pull origin  ${{secrets.DEPLOY_BRANCH}}
 
             echo "🔧 Installing dependencies..."
-            rm -rf ${{secrets.WORK_DIR}}/composer.lock
-            composer install --no-dev --optimize-autoloader
+            # rm -rf ${{secrets.WORK_DIR}}/composer.lock
+            composer install 
 
             echo "⚙️ Running Laravel optimizations..."
             php artisan migrate --force
