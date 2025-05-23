@@ -228,8 +228,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>CUE</th>
-                                                    <th>Código LIQ</th>
-                                                    <th>Área LIQ</th>
+                                                    <th>Unidad Liquidación</th>
                                                     <th>Institución</th>
                                                     <th>Nivel</th>
                                                     <th>Zona</th>

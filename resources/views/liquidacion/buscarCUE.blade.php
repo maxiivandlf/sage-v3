@@ -171,6 +171,7 @@
             var cuesearch = null;
             // Cuando selecciona ESCU
             $('#escu').on('change', function() {
+                cuesearch = null;
                 var escuSeleccionado = $(this).val();
                 var token = $('input[name="_token"]').val(); // Si necesitás CSRF
 
@@ -201,6 +202,7 @@
 
             // Cuando selecciona AREA
             $('#area').on('change', function() {
+                cuesearch = null;
                 var escuSeleccionado = $('#escu').val();
                 var areaSeleccionada = $(this).val();
                 var token = $('input[name="_token"]').val();

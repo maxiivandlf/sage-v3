@@ -90,10 +90,9 @@ $(document).ready(function () {
                                     <tr>
                                     <td>${institucionalItem.CUE || "-"}</td>
                                     <td>${
-                                        institucionalItem.Codigo_Liq || "-"
-                                    }</td>
-                                    <td>${
-                                        institucionalItem.Area_Liq || "-"
+                                        institucionalItem.Codigo_Liq +
+                                            "-" +
+                                            institucionalItem.Area_Liq || "S/U"
                                     }</td>
                                     <td>${
                                         institucionalItem.Nombre_Institucion ||
