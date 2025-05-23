@@ -3,7 +3,7 @@ $(document).ready(function () {
         event.preventDefault();
 
         var dni = $('input[name="dni"]').val();
-        var token = $('input[name="_token"]').val();
+        var token = $('meta[name="csrf-token"]').attr("content");
 
         if (!dni) {
             alert("Por favor, ingresa un DNI.");
@@ -36,8 +36,6 @@ $(document).ready(function () {
                     alert("No se encontraron usuarios.");
                     return;
                 }
-
-                console.log("RESPOSE =>", response);
 
                 Object.entries(response).forEach(([key, value]) => {
                     if (value.personal) {
@@ -169,6 +167,7 @@ $(document).ready(function () {
                 _token: token,
                 dni: dni,
             },
+
             success: function (novedadesAgente) {
                 $("#novedadesAgente tbody").empty();
 

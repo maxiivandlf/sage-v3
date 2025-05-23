@@ -32,4 +32,5 @@ Route::controller(CargarExcelLiquidacionController::class)->prefix($baseUri)->gr
 
 Route::controller(ControlIpeController::class)->prefix($baseUri)->group(function () {
     Route::get('/controlIpe',  'index')->name('controlIpe');
+    Route::post('/verNovedadesAgente_Cue', 'verNovedadesAgente_Cue')->name('verNovedadesAgente_Cue');
 });

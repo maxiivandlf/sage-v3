@@ -7,13 +7,14 @@ use App\Http\Controllers\Controller;
 use App\Models\AgenteModel;
 use App\Models\Liquidacion\AgentesAgrupadosModel;
 use App\Models\Liquidacion\LiquidacionTempExcelModel;
-
+use App\Models\POFMH\PofmhNovedades;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Cache;
 use App\Services\IpeAsignadorService;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ControlIpeController extends Controller
@@ -59,7 +60,6 @@ class ControlIpeController extends Controller
         $asignador = new IpeAsignadorService();
 
         foreach ($datosCagadosDesdeLiquidacion as $agente) {
-
 
             $agrup = AgentesAgrupadosModel::where('docu', $agente->docu)->get();
 
@@ -112,6 +112,37 @@ class ControlIpeController extends Controller
         //  dd($inconsistencias);
 
         return view('liquidacion.controlLiquidacion', compact('datos'));
+    }
+
+    public function verNovedadesAgente_Cue(Request $request)
+    {
+
+        $dni = $request->input('dni');
+        $cuecompleto = $request->input('cuecompleto');
+
+        $novedadesAgente = PofmhNovedades::where('Agente', $dni)
+            ->where('CUECOMPLETO', $cuecompleto)
+            ->orderBy('FechaDesde', 'desc')
+            ->join('tb_novedades_extras', 'tb_novedades.idNovedadExtra', '=', 'tb_novedades_extras.idNovedadExtra')
+            ->get();
+
+
+
+        if ($novedadesAgente->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron novedades para el agente y cue seleccionados'], 200);
+        }
+
+        $motivos = DB::table('tb_motivos')->pluck('Nombre_Licencia', 'idMotivo')->toArray();
+
+        $motivosCodigo = DB::table('tb_motivos')->pluck('Codigo', 'idMotivo')->toArray();
+
+
+        foreach ($novedadesAgente as $novedad) {
+            $novedad->Motivo = isset($motivos[$novedad->Motivo]) ?
+                $motivos[$novedad->Motivo] . ' (' . $motivosCodigo[$novedad->Motivo] . ')' : 'S/D';
+        }
+
+        return response()->json($novedadesAgente, 200);
     }
 
 

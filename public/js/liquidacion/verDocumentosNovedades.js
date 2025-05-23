@@ -18,6 +18,7 @@ $(document).on("click", "#btnVerDocumentosNovedades", function (event) {
         success: function (documentosNovedades) {
             // Limpiar el contenedor de documentos
             $("#documentos-lista tbody").empty();
+            $("#modalVerNovedades").modal("hide");
 
             // Recorrer los documentos y agregarlos a la tabla
             $.each(documentosNovedades, function (index, documento) {

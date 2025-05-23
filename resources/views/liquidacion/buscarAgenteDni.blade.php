@@ -97,7 +97,7 @@
 
     <section id="container">
         <section id="main-content">
-            <section class="content-wrapper" style="height: 300px !important">
+            <section class="container-fluid" style="height: 300px !important">
                 @php
                     $dni = '';
                     if (session('AgenteDuplicadoBuscado')) {
@@ -113,14 +113,15 @@
                             method="POST">
                             @csrf
                             <div class="card-body  col-lg-12">
-                                <div class="row align-items-end col-lg-12 ">
+                                <div class="row align-items-end col-lg-12 g-3">
 
-                                    <div class="col-4">
+                                    <div class="">
                                         <label for="dni">Ingrese el DNI del agente para comenzar la busqueda:</label>
-                                        <input type="text" class="form-control" placeholder="000000000" name="dni"
+                                        <input type="text" class="form-control"
+                                            placeholder="Ingrese aquí el número de DNI" name="dni"
                                             value="{{ $dni }}">
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="">
                                         <button type="submit" class="btn btn-success btn-block" id="consultar-btn">
                                             Buscar Agente
                                             <i class="fas fa-search" id="icon-search"></i>

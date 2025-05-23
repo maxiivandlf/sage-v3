@@ -45,16 +45,12 @@
         }
 
 
-        /* .table th,
-                                                                                                                                                                                                                    .table td {
-                                                                                                                                                                                                                        border-radius: 10px;
-                                                                                                                                                                                                                    } */
+        /* .table th,.table td {border-radius: 10px;} */
     </style>
 
 @endsection
 @section('ContenidoPrincipal')
-
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
                 <div class="card card-secondary">
@@ -85,30 +81,16 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="no-cobran-ipe-tab" data-toggle="tab" href="#no-cobran-ipe"
-                                    role="tab" aria-controls="no-cobran-ipe" aria-selected="false">Agentes sin IPE</a>
+                                    role="tab" aria-controls="no-cobran-ipe" aria-selected="false">Agentes sin
+                                    IPE</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="sin-institucion-tab" data-toggle="tab" href="#sin-institucion"
                                     role="tab" aria-controls="sin-institucion" aria-selected="false">Agentes sin
                                     Institución</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="novedadesAgente-tab" data-toggle="tab" href="#novedadesAgente"
-                                    role="tab" aria-controls="aulica" aria-selected="false">Novedades Agente</a>
-                            </li>
+
                         </ul>
-
-                        {{-- <div id="feedback-inicial" class="text-center m-2">
-                            <p class="fs-3">Por favor, ingrese un DNI y presione "Buscar Agente" para
-                                comenzar.</p>
-                        </div> --}}
-
-                        {{-- <div id="skeleton-loader" class="text-center " style="height: fit-content;">
-                            <p id="text-skeleton" class="text-muted text-skeleton">Buscando agente...</p>
-                            @for ($i = 0; $i < 5; $i++)
-                                <div id="skeleton-row" class="skeleton skeleton-row"></div>
-                            @endfor
-                        </div> --}}
 
                         <!-- Contenido de las pestañas -->
                         <div class="tab-content flex-none" id="infoTabsContent">
@@ -131,6 +113,8 @@
                                     </thead>
                                     <tbody style="position: relative;">
 
+
+
                                         @foreach ($datos['inconsistencias'] as $index => $agente)
                                             <!-- Fila principal del agente -->
                                             <tr data-toggle="collapse" data-target="#collapse-{{ $index }}"
@@ -144,7 +128,8 @@
                                                     {{ $agente['agente']['escu'] }}-{{ $agente['agente']['area'] }}
 
                                                 </td>
-                                                <td>{{ $agente['agente']['lcat'] }}-{{ $agente['agente']['ncat'] }}</td>
+                                                <td>{{ $agente['agente']['lcat'] }}-{{ $agente['agente']['ncat'] }}
+                                                </td>
                                                 <td>
                                                     <button class="float-right btn btn-info">ver
                                                         cargos</button>
@@ -153,21 +138,9 @@
                                             </tr>
                                             <!-- Fila colapsable con los cargos -->
                                             <tr class="collapse" id="collapse-{{ $index }}">
+
                                                 <td colspan="8">
                                                     <table class="table table-bordered">
-                                                        <buttom type="button" id="btnEditarAgente"
-                                                            class="btn btn-warning view-agente" data-toggle="modal"
-                                                            data-target="#modalEditarAgente"
-                                                            data-docu="{{ $agente['agente']['docu'] }}"
-                                                            data-nomb="{{ $agente['agente']['nomb'] }}"
-                                                            data-trab="{{ $agente['agente']['trab'] }}"
-                                                            data-sexo="{{ $agente['agente']['sexo'] }}"
-                                                            data-escu="{{ $agente['agente']['escu'] }}"
-                                                            data-area="{{ $agente['agente']['area'] }}"
-                                                            data-lcat="{{ $agente['agente']['lcat'] }}"
-                                                            data-ncat="{{ $agente['agente']['ncat'] }}">
-                                                            <i class="fas fa-edit"></i>Editar
-                                                        </buttom>
                                                         <thead>
                                                             <tr>
                                                                 <th>Institución</th>
@@ -179,9 +152,12 @@
                                                                 <th>Condición</th>
                                                                 <th>Activo</th>
                                                                 <th>Total Horas</th>
+                                                                <th>Novedades</th>
+
                                                             </tr>
                                                         </thead>
                                                         <tbody>
+
                                                             @foreach ($agente['agrup'] as $cargo)
                                                                 <tr>
                                                                     <td>{{ $cargo['nombreInstitucion'] }}</td>
@@ -206,6 +182,17 @@
                                                                     <td>{{ $cargo['Condicion'] }}</td>
                                                                     <td>{{ $cargo['Activo'] }}</td>
                                                                     <td>{{ $cargo['TotalHoras'] }}</td>
+                                                                    <td>
+                                                                        <buttom type="button" id="btnVerNovedades"
+                                                                            class="btn btn-warning view-agente btnVerNovedades"
+                                                                            data-toggle="modal"
+                                                                            data-target="#modalVerNovedades"
+                                                                            data-docu="{{ $agente['agente']['docu'] }}"
+                                                                            data-cuecompleto="{{ $cargo['CUECOMPLETO'] }}">
+                                                                            <i class="fas fa-clipboard"></i> ver
+                                                                        </buttom>
+                                                                    </td>
+
                                                                 </tr>
                                                             @endforeach
                                                         </tbody>
@@ -223,8 +210,6 @@
                                     {{ $datos['paginacion']->links('pagination::bootstrap-4') }}
                                 </div>
                             </div>
-
-
 
                             <!-- Información agentes cobran ipe  -->
                             <div class="tab-pane fade" id="cobran-ipe" role="tabpanel" aria-labelledby="cobran-ipe-tab">
@@ -251,8 +236,10 @@
                                                 <td>{{ $agente['agente']['nomb'] }}</td>
                                                 <td>{{ $agente['agente']['trab'] }}</td>
                                                 <td>{{ $agente['agente']['sexo'] }}</td>
-                                                <td>{{ $agente['agente']['escu'] }}-{{ $agente['agente']['area'] }}</td>
-                                                <td>{{ $agente['agente']['lcat'] }}-{{ $agente['agente']['ncat'] }}</td>
+                                                <td>{{ $agente['agente']['escu'] }}-{{ $agente['agente']['area'] }}
+                                                </td>
+                                                <td>{{ $agente['agente']['lcat'] }}-{{ $agente['agente']['ncat'] }}
+                                                </td>
                                                 <td>
                                                     <button class="float-right btn btn-info">Clic para ver
                                                         cargos</button>
@@ -324,8 +311,10 @@
                                                 <td>{{ $agente['agente']['nomb'] }}</td>
                                                 <td>{{ $agente['agente']['trab'] }}</td>
                                                 <td>{{ $agente['agente']['sexo'] }}</td>
-                                                <td>{{ $agente['agente']['escu'] }}-{{ $agente['agente']['area'] }}</td>
-                                                <td>{{ $agente['agente']['lcat'] }}-{{ $agente['agente']['ncat'] }}</td>
+                                                <td>{{ $agente['agente']['escu'] }}-{{ $agente['agente']['area'] }}
+                                                </td>
+                                                <td>{{ $agente['agente']['lcat'] }}-{{ $agente['agente']['ncat'] }}
+                                                </td>
                                                 <td>
                                                     <button class="float-right btn btn-info">Clic para ver
                                                         cargos</button>
@@ -394,8 +383,10 @@
                                                 <td>{{ $agente['agente']['nomb'] }}</td>
                                                 <td>{{ $agente['agente']['trab'] }}</td>
                                                 <td>{{ $agente['agente']['sexo'] }}</td>
-                                                <td>{{ $agente['agente']['escu'] }}-{{ $agente['agente']['area'] }}</td>
-                                                <td>{{ $agente['agente']['lcat'] }}-{{ $agente['agente']['ncat'] }}</td>
+                                                <td>{{ $agente['agente']['escu'] }}-{{ $agente['agente']['area'] }}
+                                                </td>
+                                                <td>{{ $agente['agente']['lcat'] }}-{{ $agente['agente']['ncat'] }}
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -405,31 +396,6 @@
                                 </div>
                             </div>
 
-                            <!-- Novedades Agente -->
-                            <div class="tab-pane fade" id="novedadesAgente" role="tabpanel"
-                                aria-labelledby="novedadesAgente-tab">
-                                <table id="novedadesAgente" class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th rowspan="2" style="text-align:center">DNI</th>
-                                            <th colspan="3" style="text-align:center">Fecha Novedad</th>
-                                            <th rowspan="2" style="text-align:center">Tipo Novedad</th>
-                                            <th rowspan="2" style="text-align:center">Tipo Motivo</th>
-                                            <th rowspan="2" style="text-align:center">Observaciones</th>
-                                            <th rowspan="2" style="text-align:center">Ver Adjuntos</th>
-                                        </tr>
-                                        <tr>
-                                            <th style="text-align:center">Fecha Desde</th>
-                                            <th style="text-align:center">Fecha Hasta</th>
-                                            <th style="text-align:center">Total Días</th>
-
-
-
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -437,180 +403,132 @@
             </div>
         </div>
 
-        <div class="modal fade" id="modalEditarAgente" tabindex="-1" role="dialog"
-            aria-labelledby="modalEditarAgenteLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <form id="formEditarAgente">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="modalEditarAgenteLabel">Editar
-                                Información del Agente</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <input type="hidden" id="edit_docu" name="docu">
-                            <div class="form-group">
-                                <label for="edit_nomb">Apellido y
-                                    Nombre</label>
-                                <input type="text" class="form-control" id="edit_nomb" name="nomb"
-                                    value="{{ $agente['agente']['nomb'] }}">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_trab">Trabajo</label>
-                                <input type="text" class="form-control" id="edit_trab" name="trab">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_sexo">Sexo</label>
-                                <input type="text" class="form-control" id="edit_sexo" name="sexo">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_escu">Unidad de
-                                    Liquidacion de Cobro</label>
-                                <input type="text" class="form-control" id="edit_escu" name="escu">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_area">Área</label>
-                                <input type="text" class="form-control" id="edit_area" name="area">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_lcat">Categoría</label>
-                                <input type="text" class="form-control" id="edit_lcat" name="lcat">
-                            </div>
-                            <div class="form-group">
-                                <label for="edit_ncat">Subcategoría</label>
-                                <input type="text" class="form-control" id="edit_ncat" name="ncat">
-                            </div>
-                            <!-- Agrega más campos según sea necesario -->
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Guardar
-                                cambios</button>
-                        </div>
-                    </div>
-                </form>
+        <x-modal-component modalId="modalVerDocumentosNovedades" title="Documentos de Novedades">
+            <div id="documentos-lista" class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Agente</th>
+                            <th>ID Documento</th>
+                            <th>URL</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
             </div>
-        </div>
+        </x-modal-component>
 
-    @endsection
+        {{-- Ejemplo con una tabla --}}
+        <x-modal-component modalId="modalVerNovedades" title="Tabla de novedades">
+            @include('liquidacion.partials.tablaNovedades')
+        </x-modal-component>
+    </div>
+@endsection
 
 
-    @section('Script')
+@section('Script')
 
-        {{-- SCRIPT PARA CAMBIAR ESTADO --}}
-        <script type="text/javascript">
-            function cambiarEstado(id) {
-                Swal.fire({
-                    title: '¿Está seguro de cambiar el estado?',
-                    text: "¡No podrás revertir esto!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, cambiarlo!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Alert.fire({
-                            title: 'Cambiando estado...',
-                            allowOutsideClick: false,
-                            onBeforeOpen: () => {
-                                Alert.showLoading()
-                            }
-                        })
 
+    {{-- SCRIPT DATATABLES --}}
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $('#tabla-cobran-ipe').dataTable({
+                "aaSorting": [
+                    [1, "asc"]
+                ],
+                "oLanguage": {
+                    "sLengthMenu": "Agentes por página _MENU_",
+                    "sZeroRecords": "No se encontraron resultados",
+                    "sInfo": "Mostrando de _START_ a _END_ de _TOTAL_ Agentes",
+                    "sInfoEmpty": "Mostrando de 0 a 0 de 0 Agentes",
+                    "sInfoFiltered": "(filtrado de _MAX_ total Agentes)",
+
+                    "sSearch": "Buscar:",
+                    "oPaginate": {
+                        "sPrevious": "Anterior",
+                        "sNext": "Siguiente"
                     }
-                })
-            }
-        </script>
 
-        {{-- SCRIPT PARA EDITAR REGISTRO --}}
-        <script type="text/javascript">
-            function editarRegistro(id) {
-                Swal.fire({
-                    title: '¿Está seguro de editar este registro?',
-                    text: "¡No podrás revertir esto!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, editarlo!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Alert.fire({
-                            title: 'Editando registro...',
-                            allowOutsideClick: false,
-                            onBeforeOpen: () => {
-                                Alert.showLoading()
-                            }
-                        })
-                    }
-                })
-            }
-        </script>
-
-        {{-- SCRIPT DATATABLES --}}
-        <script type="text/javascript" charset="utf-8">
-            $(document).ready(function() {
-                $('#tabla-cobran-ipe').dataTable({
-                    "aaSorting": [
-                        [1, "asc"]
-                    ],
-                    "oLanguage": {
-                        "sLengthMenu": "Agentes por página _MENU_",
-                        "sZeroRecords": "No se encontraron resultados",
-                        "sInfo": "Mostrando de _START_ a _END_ de _TOTAL_ Agentes",
-                        "sInfoEmpty": "Mostrando de 0 a 0 de 0 Agentes",
-                        "sInfoFiltered": "(filtrado de _MAX_ total Agentes)",
-
-                        "sSearch": "Buscar:",
-                        "oPaginate": {
-                            "sPrevious": "Anterior",
-                            "sNext": "Siguiente"
-                        }
-
-                    }
-                });
-
-
+                }
             });
-        </script>
 
-        <script>
-            // function abrirModalEditar(agente) {
-            //     $('#edit_docu').val(agente.docu);
-            //     $('#edit_nomb').val(agente.nomb);
-            //     $('#edit_trab').val(agente.trab);
-            //     $('#edit_sexo').val(agente.sexo);
-            //     $('#edit_escu').val(agente.escu);
-            //     $('#edit_area').val(agente.area);
-            //     $('#edit_lcat').val(agente.lcat);
-            //     $('#edit_ncat').val(agente.ncat);
-            //     // Agrega más campos si es necesario
-            //     $('#modalEditarAgente').modal('show');
-            // }
 
-            // // // Opcional: Manejo del submit del formulario
-            // // $('#formEditarAgente').on('submit', function(e) {
-            // //     e.preventDefault();
-            // //     // Aquí puedes hacer un AJAX para guardar los cambios o enviar el formulario
-            // //     Swal.fire('Guardado', 'Los cambios han sido guardados.', 'success');
-            // //     $('#modalEditarAgente').modal('hide');
-            // });
+        });
+    </script>
 
-            $(document).on("click", "#btnEditarAgente", function(event) {
+    <script>
+        $(document).ready(function() {
+            $(".btnVerNovedades").on("click", function(event) {
                 event.preventDefault();
 
-                $('#edit_docu').val($(this).data('docu'));
-                $('#edit_nomb').val($(this).data('nomb'));
-                $('#edit_trab').val($(this).data('trab'));
-                $('#edit_sexo').val($(this).data('sexo'));
-                $('#edit_escu').val($(this).data('escu'));
-                $('#edit_area').val($(this).data('area'));
-                $('#edit_lcat').val($(this).data('lcat'));
-                $('#edit_ncat').val($(this).data('ncat'));
+                var dni = $(this).data("docu");
+                var cuecompleto = $(this).data("cuecompleto");
+                var token = $('meta[name="csrf-token"]').attr("content");
 
-            })
-        </script>
-    @endsection
+                $.ajax({
+                    url: "/liquidacion/verNovedadesAgente_Cue",
+                    method: "POST",
+                    data: {
+                        _token: token,
+                        dni: dni,
+                        cuecompleto: cuecompleto,
+                    },
+
+                    success: function(novedadesAgente) {
+                        $("#tb_novedadesAgente tbody").empty();
+                        if (novedadesAgente.length > 0) {
+                            $.each(novedadesAgente, function(key, novedad) {
+                                var row = `
+                                    <tr class="gradeX" data-id="${novedad.idNovedad}">
+                                        <td>${novedad.Agente || "Sin datos"}</td>
+                                        <td class="text-center">${new Date(
+                                            novedad.FechaDesde
+                                        ).toLocaleDateString("es-ES")}</td>
+                                        <td class="text-center">${new Date(
+                                            novedad.FechaHasta
+                                        ).toLocaleDateString("es-ES")}</td>
+                                        <td class="text-center">${
+                                            novedad.TotalDiasLicencia || "1"
+                                            }</td>
+                                            <td class="text-center">${
+                                                novedad.tipo_novedad || "Sin novedad"
+                                        }</td>
+                                        <td class="text-center">${novedad.Motivo}</td>
+                                        <td>${
+                                            novedad.Observaciones || "Sin observaciones"
+                                            }</td>
+                                            <td>
+                                                <buttom type="button" id="btnVerDocumentosNovedades" class="btn btn-default view-novedades" data-toggle="modal" data-target="#modal-novedades" 
+                                                data-idnovedad="${novedad.Agente}">
+                                                <i class="fas fa-paperclip"></i>
+                                                </buttom>
+                                                
+                                            </td>
+                                            </tr>`;
+                                $("#tb_novedadesAgente tbody").append(row);
+                            });
+
+                        } else {
+
+                            $("#tb_novedadesAgente tbody").append(
+                                `<tr><td colspan='7' class='text-center'>${novedadesAgente.message}</td></tr>`
+                            );
+                        }
+                    },
+                    complete: function() {},
+                    error: function(xhr) {
+                        console.error(
+                            "Hubo un error al obtener los datos de novedades del agente."
+                        );
+                    },
+                });
+            });
+        });
+    </script>
+
+
+    <script src="{{ asset('js/liquidacion/verDocumentosNovedades.js') }}"></script>
+@endsection

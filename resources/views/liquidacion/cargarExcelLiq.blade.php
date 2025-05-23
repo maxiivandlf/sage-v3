@@ -21,11 +21,27 @@
             display: none;
             z-index: 9999;
         }
+
+        #archivo {
+            height: 50px;
+        }
+
+        #archivo::-webkit-file-upload-button {
+            padding: 10px 20px;
+            background-color: #2a9995;
+            text-align: center;
+            font-weight: 600;
+            color: white;
+            font-size: .8rem;
+            border: none;
+            border-radius: 5px;
+
+        }
     </style>
 @endsection
 @section('ContenidoPrincipal')
     <div class="container">
-        <h2>Cargar archivo Excel</h2>
+        <h2>Cargar Excel </h2>
 
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
@@ -113,7 +129,7 @@
 
             xhr.onload = function() {
                 if (xhr.status === 200) {
-                    window.location.reload(); // Recarga para mostrar mensajes y datos
+                    window.location.reload();
                 } else {
                     alert('Error al subir el archivo');
                     document.getElementById('loader').style.display = 'none';

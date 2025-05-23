@@ -296,7 +296,9 @@
 
     <section class="content">
         <div class="container-fluid">
-            @yield('ContenidoPrincipal')
+            <section class="content-wrapper">
+                @yield('ContenidoPrincipal')
+            </section>
         </div>
     </section>
 

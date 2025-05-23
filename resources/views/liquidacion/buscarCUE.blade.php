@@ -22,13 +22,13 @@
 
     <section id="container">
         <section id="main-content">
-            <section class="content-wrapper" style="height: 300px !important">
+            <div class="container-fluid">
                 <div class="row">
                     <div class="card card-info  col-lg-12">
                         <div class="card-header">
-                            <h3 class="card-title">Agrupar agentes por unidad de liquidación</h3>
+                            <h3 class="card-title">Agentes por unidad de liquidación</h3>
                         </div>
-                        <form action="{{ route('buscar_cue_ajax_liq') }}" class="buscar_cue" id="buscar_cue" method="POST">
+                        <form class="buscar_cue">
                             @csrf
 
                             <div class="card-body  col-lg-12">
@@ -49,17 +49,11 @@
 
                                         </select>
                                     </div>
-                                    <div class="col-2">
-                                        <label for="CUE">Institución</label>
 
-                                        <select class="form-control" name="CUE" id="CUE">
-                                            <option value="">Seleccione</option>
-                                            {{-- aqui debe completar con el cue como val --}}
-                                        </select>
-                                    </div>
                                     <div class="col-2">
-                                        <input type="submit" class="form-control btn-success" value="Consultar CUE"
-                                            name="btnCUE">
+                                        <button class="btn btn-success" id="buscar_cue">
+                                            Consultar CUE
+                                        </button>
                                     </div>
 
 
@@ -140,7 +134,7 @@
 
                     </div>
                 </div>
-            </section>
+            </div>
             <section class="content-wrapper">
 
 
@@ -162,7 +156,7 @@
                 ],
                 "oLanguage": {
                     "sLengthMenu": "Escuelas _MENU_ por página",
-                    "search": "Buscar:",
+                    "oSearch": "Buscar:",
                     "oPaginate": {
                         "sPrevious": "Anterior",
                         "sNext": "Siguiente"
@@ -173,6 +167,8 @@
     </script>
     <script>
         $(document).ready(function() {
+
+            var cuesearch = null;
             // Cuando selecciona ESCU
             $('#escu').on('change', function() {
                 var escuSeleccionado = $(this).val();
@@ -225,6 +221,7 @@
                                 $('#CUE').append('<option value="' + cue.CUEA + '">' +
                                     cue.CUEA + ' - ' + cue.nombreInstitucion +
                                     '</option>');
+                                cuesearch = cue.CUEA;
                             });
                         },
                         error: function(xhr) {
@@ -233,8 +230,161 @@
                     });
                 }
             });
+
+
+
+            $("#buscar_cue").on("click", function(event) {
+                event.preventDefault();
+
+                var token = $('input[name="_token"]').val();
+
+                if (!cuesearch) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "Por favor, selecciona un Escu y un Area antes de buscar.",
+                    });
+                    return;
+                }
+
+                $.ajax({
+                    url: "/buscar_cue_ajax_liq",
+                    type: "POST",
+                    data: {
+                        _token: token,
+                        cue: cuesearch,
+                    },
+                    success: function(response) {
+                        console.log(response); // Ver respuesta completa en consola
+
+                        $("#tabla-completa tbody").empty();
+                        $("#botones-acciones").empty();
+
+                        if (Object.keys(response).length === 0) {
+                            alert("No se encontraron usuarios.");
+                            return;
+                        }
+
+                        // Obtener el idInstitucionExtension
+                        var idInstitucionExtension = response.idInstitucionExtension;
+
+                        if (!idInstitucionExtension) {
+                            alert("No se pudo obtener el ID de la Institución.");
+                            return;
+                        }
+
+                        // Construir los botones dinámicamente
+                        var botones = `
+                                    <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; margin-top: 10px;">
+                                        <a class="btn btn-app" href="/verPofMhidExtSuper/${idInstitucionExtension}" target="_blank">
+                                            <i class="fas fa-eye"></i> Pof Nominal
+                                        </a>
+                                        <a class="btn btn-app" href="/verCargosCreados/${idInstitucionExtension}" target="_blank">
+                                            <i class="fas fa-search"></i> Ver Cargos POF
+                                        </a>
+                                        <a class="btn btn-app" href="/verCargosPofvsNominal/${idInstitucionExtension}" target="_blank">
+                                            <i class="fas fa-list-ol"></i> Pof vs Nominal
+                                        </a>
+                                        <a class="btn btn-app" href="/ver_novedades/Todo/${idInstitucionExtension}" target="_blank">
+                                            <i class="fas fa-bell"></i> Novedades (Todas)
+                                        </a>
+                                        <a class="btn btn-app" href="/adjuntar_novedad/${idInstitucionExtension}" target="_blank">
+                                            <i class="fas fa-paperclip"></i> Adjuntar Novedades
+                                        </a>
+                                        <a class="btn btn-app" href="/agregarNovedadParticular/${idInstitucionExtension}" target="_blank">
+                                            <i class="fas fa-bell"></i> Novedades Generales
+                                        </a>
+                                        <a class="btn btn-app"  href="/controlDeIpeSuper/${idInstitucionExtension}" target="_blank">
+                                            <i class="fas fa-check-square"></i> Ver Control IPE
+                                        </a>
+                                    </div>
+                                `;
+
+                        $("#botones-acciones").html(botones);
+
+                        // Ahora iterar sobre cada grupo de datos devueltos
+                        $.each(response.datos, function(dni, datos) {
+                            if (dni === "idInstitucionExtension") {
+                                // saltar si la clave es el ID, no un agente
+                                return;
+                            }
+
+                            var institucional = datos.institucional[0] || {};
+                            var aulica = datos.aulica[0] || {};
+
+                            $.each(datos.pof, function(index, pof) {
+                                var row = `
+                                        <tr>
+                                            <!-- Información Personal -->
+                                            <td>${datos.personal?.ApeNom || "-"}</td>
+                                            <td>${datos.personal?.Documento || "-"}</td>
+                                            <td>${datos.personal?.Cuil || "-"}</td>
+                                            <td>${
+                                                datos.personal?.Sexo === "M"
+                                                    ? "MASCULINO"
+                                                    : datos.personal?.Sexo === "F"
+                                                    ? "FEMENINO"
+                                                    : "-"
+                                            }</td>
+
+                                            <!-- Información POF -->
+                                            <td>${pof?.Agente || "-"}</td>
+                                            <td>${pof?.Situacion_Revista || "-"}</td>
+                                            <td>${pof?.Antiguedad || "-"}</td>
+                                            <td>${pof?.Hora || "-"}</td>
+                                            <td>${pof?.Cargo_Salarial || "-"}</td>
+                                            <td>${pof?.Codigo_Salarial || "-"}</td>
+                                            <td>${pof?.Posesion_Cargo || "-"}</td>
+                                            <td>${pof?.Designado_Cargo || "-"}</td>
+
+                                            <!-- Información Institucional -->
+                                            <td>${institucional?.CUE || "-"}</td>
+                                            <td>${institucional?.Codigo_Liq || "-"}</td>
+                                            <td>${institucional?.Area_Liq || "-"}</td>
+                                            <td>${
+                                                institucional?.Nombre_Institucion || "-"
+                                            }</td>
+                                            <td>${institucional?.Nivel || "-"}</td>
+                                            <td>${institucional?.Zona || "-"}</td>
+                                            <td>${institucional?.Domicilio || "-"}</td>
+                                            <td>${institucional?.Localidad || "-"}</td>
+
+                                            <!-- Información Aúlica -->
+                                            <td>${aulica?.Nombre_Institucion || "-"}</td>
+                                            <td>${aulica?.Aula || "-"}</td>
+                                            <td>${aulica?.Division || "-"}</td>
+                                            <td>${aulica?.Turno || "-"}</td>
+                                            <td>${aulica?.EspCur || "-"}</td>
+                                            <td>${aulica?.Matricula || "-"}</td>
+                                            <td>${aulica?.Condicion || "-"}</td>
+                                            <td>${aulica?.EnFuncion || "-"}</td>
+                                            <td>${aulica?.observacion_cond || "-"}</td>
+                                            <td>${aulica?.AsisTotal || "-"}</td>
+                                            <td>${aulica?.AsistJust || "-"}</td>
+                                            <td>${aulica?.AsistInjust || "-"}</td>
+                                        </tr>
+                                    `;
+
+                                $("#tabla-completa tbody").append(row);
+                            });
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 404) {
+                            alert("No se encuentra cargado ese Agente con ese CUE.");
+                        } else {
+                            console.error(xhr.responseText);
+                            alert(
+                                "Error al procesar la solicitud. Inténtalo nuevamente."
+                            );
+                        }
+
+                        $("#tabla-completa tbody").empty();
+                    },
+                });
+            });
         });
     </script>
-    <script src="{{ asset('js/searchliq.js') }}"></script>
+
 
 @endsection
