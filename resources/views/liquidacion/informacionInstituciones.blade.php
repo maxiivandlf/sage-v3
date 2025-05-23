@@ -16,7 +16,7 @@
   </div> --}}
     <section id="container">
         <section id="main-content">
-            <section class="content-wrapper">
+            <section class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card card-secondary">
