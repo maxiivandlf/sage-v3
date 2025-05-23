@@ -12,10 +12,11 @@
 @endsection
 @section('ContenidoPrincipal')
 
-    <section id="container" class="col-12">
+    <section id="container" class="col-md-12">
         <section id="main-content">
             <section class="content-wrapper">
-                <div class="form-wrapper mx-auto bg-light p-4 rounded shadow-sm">                   
+               
+                <div class="form-wrapper container-fluid bg-light p-4 rounded shadow-sm">                   
                     @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul>
@@ -24,14 +25,30 @@
                                 @endforeach
                             </ul>
                         </div>
-                    @endif                   
+                    @endif             
+                    <div class="row mt-4 align-items-center">
+                        <div class="col-auto">
+                           
+                        </div>
+                        <div class="col-auto">
+                            <button style="margin-left: 5px;" type="button" class="btn btn-success btn-abrir-modal-perfil btn-mismo-ancho" data-toggle="modal" data-target="#modalPerfiles" data-opcion="">
+                                Perfil
+                            </button>
+                        </div>
+                         <div class="col-auto">                          
+                            <button id="btnVerEspacioCurricular" type="button" class="btn btn-warning">
+                               Unidad Curricular
+                            </button>
+                        </div>
+                       
+                    </div>      
                     <div id="formularioLlamado">
                         <form action="{{ route('llamados.store') }}" method="POST" id="formActualizarLlamado" enctype="multipart/form-data">
                             @csrf
-                            <h1 class="text-primary text-center mb-4">Editar Llamado:<strong> {{$llamado->idllamado}} </strong></h1>
-                            <div class="mb-3">
-                                <label for="idtb_zona">Zona:</label>
-                              
+                       <h5 class="text-dark text-center font-weight-bold mt-2 mb-2 border-bottom pb-1 bg-info">Editar Llamado:<strong> {{$llamado->idllamado}} </strong></h5>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="idtb_zona">Zona:</label>
                                     <select name="idtb_zona" id="idtb_zona" class="form-control select2" required>
                                         <option value="">Seleccione una zona</option>
                                         @foreach($zonas as $zona)
@@ -42,99 +59,107 @@
                                             @endif                                         
                                         @endforeach
                                     </select>                               
-                            </div>
+                           	    </div>
                     
-                            <div class="mb-3">
-                                <label for="id_instituto_superior">Instituto:</label>
-                                <select name="id_instituto_superior" id="id_instituto_superior" class="form-control select2" required>
-                                    <option value="">Seleccione un instituto</option>
-                                    {{-- @foreach($institutos as $instituto)
-                                        @if($instituto->id_instituto_superior == $llamado->id_instituto_superior)
-                                            <option value="{{ $instituto->id_instituto_superior }}" selected>{{ $instituto->nombre_instsup }}</option>
-                                        @else   
-                                            <option value="{{ $instituto->id_instituto_superior }}">{{ $instituto->nombre_instsup }}</option>
-                                        @endif
-                                    @endforeach --}}
-                                </select>
-                            </div>
+                                <div class="form-group col-md-4">
+                                    <label for="id_instituto_superior">Instituto:</label>
+                                        <select name="id_instituto_superior" id="id_instituto_superior" class="form-control select2" required>
+                                            <option value="">Seleccione un instituto</option>
+                                            {{-- @foreach($institutos as $instituto)
+                                                @if($instituto->id_instituto_superior == $llamado->id_instituto_superior)
+                                                    <option value="{{ $instituto->id_instituto_superior }}" selected>{{ $instituto->nombre_instsup }}</option>
+                                                @else   
+                                                    <option value="{{ $instituto->id_instituto_superior }}">{{ $instituto->nombre_instsup }}</option>
+                                                @endif
+                                            @endforeach --}}
+                                        </select>
+                                </div>
                     
-                            <div class="mb-3">
-                                <label for="idCarrera">Carrera:</label>
-                                <select name="idCarrera" id="idCarrera" class="form-control select2" required>
-                                    <option value="">Seleccione una carrera</option>
-                                    {{-- @foreach($carreras as $carrera)
-                                        @if($carrera->idCarrera == $llamado->idCarrera)
-                                            <option value="{{ $carrera->idCarrera }}" selected>{{ $carrera->nombre_carrera }}</option>
-                                        @else       
-                                            <option value="{{ $carrera->idCarrera }}">{{ $carrera->nombre_carrera }}</option>
-                                        @endif    
-                                    @endforeach --}}
-                                </select>
-                            </div>
-                    
-                            <div class="mb-3">
-                                <label for="idtipo_llamado">Tipo de llamado:</label>
-                                <select name="idtipo_llamado" id="idtipo_llamado" class="form-control" required>
-                                    <option value="">Seleccione un tipo</option>
-                                    @foreach($tiposLlamado as $tipo)
-                                        @if($tipo->idtipo_llamado == $llamado->idtipo_llamado)
-                                            <option value="{{ $tipo->idtipo_llamado }}" selected>{{ $tipo->nombre}}</option>
-                                        @else
-                                            <option value="{{ $tipo->idtipo_llamado }}">{{ $tipo->nombre}}</option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </div>
-                    
-                            <div class="mb-3">
-                                <label for="fecha_ini">Fecha Inicio:</label>
-                                @if ($llamado->fecha_ini)
-                                    <input type="datetime-local" name="fecha_ini" class="form-control" value="{{ \Carbon\Carbon::parse($llamado->fecha_ini)->format('Y-m-d\TH:i') }}" required> 
-                                    
-                                @else
-                                    <input type="datetime-local" name="fecha_ini" class="form-control" required>
-                                @endif                             
-                            </div>
-                    
-                            <div class="mb-3">
-                                <label for="fecha_fin">Fecha Fin:</label>
-                                @if ($llamado->fecha_fin)
-                                    <input type="datetime-local" name="fecha_fin" class="form-control" value="{{ \Carbon\Carbon::parse($llamado->fecha_fin)->format('Y-m-d\TH:i') }}" required>
-                                @else   
-                                    <input type="datetime-local" name="fecha_fin" class="form-control" required>
-                                @endif    
-                            </div>
-                    
-                            <div class="mb-3">
-                                <label for="descripcion">Descripción:</label>
-                                @if ($llamado->descripcion)
-                                    <textarea name="descripcion" class="form-control">{{ $llamado->descripcion }}</textarea>                                    
-                                @else
-                                     <textarea name="descripcion" class="form-control"></textarea>
-                                @endif                               
-                            </div>
-                              <!-- imagen -->
-                            <div class="form-group mb-3">                           
-                                <label for="nombre_img" class="font-weight-bold mt-3">Imagen:</label>
-                                @if ($llamado->nombre_img)
-                                    <img src="{{ asset('storage/superior/llamado/'.$llamado->mes.'/'.$llamado->nombre_img) }}" alt="Imagen" style="width: 200px;">
-                                    <p><strong> Imagen actual: </strong>{{ $llamado->nombre_img }}<strong>  <br/>Si desea cambiar la imagen, seleccione una nueva.</strong></p>    
-                                    <input type="file" name="imagen" id="imagen" class="form-control">  
-                                                               
-                                @endif                                                      
-                            </div>
-                             <!-- link-->
-                            <div class="form-group mb-3">                           
-                                <label for="url_form" class="font-weight-bold mt-3">Link Formulario:</label>
-                                @if ($llamado->url_form)
-                                    <p><strong> Link actual: </strong>{{ $llamado->url_form }}<strong>  <br/>Si desea cambiar el link, seleccione uno nuevo.</strong></p>
-                                    <input type="text" name="url_form" id="url_form" class="form-control" value="{{ $llamado->url_form }}" maxlength="255"> 
-                                   
-                                @endif                                                    
-                            </div>          
-                            <input type="hidden" name="llamado_id" id="llamado_id" value="{{ $llamado->idllamado }}">                        
-                            <button type="submit" class="btn btn-primary">Actualizar</button>
-                           
+                                <div class="form-group col-md-4">
+                                        <label for="idCarrera">Carrera:</label>
+                                        <select name="idCarrera" id="idCarrera" class="form-control select2" required>
+                                            <option value="">Seleccione una carrera</option>
+                                            {{-- @foreach($carreras as $carrera)
+                                                @if($carrera->idCarr era == $llamado->idCarrera)
+                                                    <option value="{{ $carrera->idCarrera }}" selected>{{ $carrera->nombre_carrera }}</option>
+                                                @else       
+                                                    <option value="{{ $carrera->idCarrera }}">{{ $carrera->nombre_carrera }}</option>
+                                                @endif    
+                                            @endforeach --}}
+                                        </select>
+                                </div>
+                          </div>
+                                    <div class="form-row">
+                                            <div class="form-group col-md-4">
+                                                <label for="idtipo_llamado">Tipo de llamado:</label>
+                                                <select name="idtipo_llamado" id="idtipo_llamado" class="form-control" required>
+                                                    <option value="">Seleccione un tipo</option>
+                                                    @foreach($tiposLlamado as $tipo)
+                                                        @if($tipo->idtipo_llamado == $llamado->idtipo_llamado)
+                                                            <option value="{{ $tipo->idtipo_llamado }}" selected>{{ $tipo->nombre}}</option>
+                                                        @else
+                                                            <option value="{{ $tipo->idtipo_llamado }}">{{ $tipo->nombre}}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                
+                                            <div class="form-group col-md-4">
+                                                <label for="fecha_ini">Fecha Inicio:</label>
+                                                @if ($llamado->fecha_ini)
+                                                    <input type="datetime-local" name="fecha_ini" class="form-control" value="{{ \Carbon\Carbon::parse($llamado->fecha_ini)->format('Y-m-d\TH:i') }}" required> 
+                                                
+                                                @else
+                                                    <input type="datetime-local" name="fecha_ini" class="form-control" required>
+                                                @endif                             
+                                            </div>
+                                
+                                            <div class="form-group col-md-4">
+                                                <label for="fecha_fin">Fecha Fin:</label>
+                                                @if ($llamado->fecha_fin)
+                                                    <input type="datetime-local" name="fecha_fin" class="form-control" value="{{ \Carbon\Carbon::parse($llamado->fecha_fin)->format('Y-m-d\TH:i') }}" required>
+                                                @else   
+                                                    <input type="datetime-local" name="fecha_fin" class="form-control" required>
+                                                @endif    
+                                            </div>
+                             </div>
+                                    <div class="form-row">
+                                            <label for="descripcion">Descripción:</label>
+                                            @if ($llamado->descripcion)
+                                                <textarea name="descripcion" class="form-control">{{ $llamado->descripcion }}</textarea>                                    
+                                            @else
+                                                <textarea name="descripcion" class="form-control"></textarea>
+                                            @endif                               
+                                        </div>
+                            
+                                        <!-- imagen -->
+                                        <div class="form-row">                        
+                                            <label for="nombre_img" class="font-weight-bold mt-3">Imagen:</label>
+                                            @if ($llamado->nombre_img != null)
+                                                <img src="{{ asset('storage/superior/llamado/'.$llamado->mes.'/'.$llamado->nombre_img) }}" alt="Imagen" style="width: 200px;">
+                                                <p><strong> Imagen actual: </strong>{{ $llamado->nombre_img }}<strong>  <br/>Si desea cambiar la imagen, seleccione una nueva.</strong></p>    
+                                                <input type="file" name="imagen" id="imagen" class="form-control">  
+                                            @else
+                                               <img src="{{ asset('storage/superior/llamado/imagen_prueba.jpg') }}" alt="Imagen" style="width: 200px;">
+                                                <p><strong> Imagen actual: </strong>imagen_prueba.jpg<strong>  <br/>Si desea cambiar la imagen, seleccione una nueva.</strong></p>    
+                                                <input type="file" name="imagen" id="imagen" class="form-control">                        
+                                            @endif                                                      
+                                        </div>
+                                        <!-- link-->
+                                        <div class="form-row">                         
+                                            <label for="url_form" class="font-weight-bold mt-3">Link Formulario:</label>
+                                            @if ($llamado->url_form != null)
+                                                <p><strong> Link actual: </strong>{{ $llamado->url_form }}<strong>  <br/>Si desea cambiar el link, seleccione uno nuevo.</strong></p>
+                                                <input type="text" name="url_form" id="url_form" class="form-control" value="{{ $llamado->url_form }}" maxlength="255"> 
+                                            @else
+                                                <p><strong> Link actual: </strong>Sin link<strong>  <br/>Si desea cambiar el link, seleccione uno nuevo.</strong></p>
+                                                <input type="text" name="url_form" id="url_form" class="form-control" maxlength="255">                                            
+                                            @endif                                                    
+                                        </div>          
+                            <div class="form-row">
+                                 <input type="hidden" name="llamado_id" id="llamado_id" value="{{ $llamado->idllamado }}">                        
+	                            <button type="submit" class="btn btn-primary">Actualizar</button>
+                            </div>  
                         </form>
                         <!-- Botones -->
                       
@@ -208,7 +233,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>Formulario para agregar cargo.</p>
+                  
                     <form action="{{ route('llamado.agregarCargo') }}" method="POST" id="formAgregarCargo">
                         @csrf
                         <div class="row mt-2">             
@@ -258,13 +283,17 @@
                             </div>
                         </div>                     
                         <div class="row mt-2">                      
-                            <div class="col-12">
+                            <div class="col-md-12">
                                 <label for="idtb_perfil_modal" class="font-weight-bold">Perfil:</label>
-                                <select name="idtb_perfil_modal" id="idtb_perfil_modal" class="form-control selectPerfil">
-                                    @foreach($perfil as $per)
-                                        <option value="{{ $per->idtb_perfil }}">{{ $per->nombre_perfil }}</option>
-                                    @endforeach
-                                </select>
+                                     <!-- Campo oculto donde guardamos el ID seleccionado -->
+                                     <input type="hidden" name="idtb_perfil_modal" id="idPerfilCargo">
+                                    <!-- Input visible (solo lectura) + botón -->
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="nombrePerfilCargo" placeholder="Seleccione un perfil..." readonly>
+                                        <button type="button" class="btn btn-outline-primary  btn-abrir-modal-perfil" data-toggle="modal" data-target="#modalPerfiles" data-opcion="cargo">
+                                            Buscar Perfil
+                                        </button>
+                                    </div>             
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -340,15 +369,20 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>                    
-                        <div class="row mt-2">                           
+                        </div>                                                  
+                        </div>
+                        <div class="row mt-2">
                             <div class="col-md-12">
                                 <label class="font-weight-bold">Perfil:</label>
-                                <select name="idtb_perfil_modal" class="form-control selectPerfil" id="idPerfilEditar">
-                                    @foreach($perfil as $per)
-                                        <option value="{{ $per->idtb_perfil }}">{{ $per->nombre_perfil }}</option>
-                                    @endforeach
-                                </select>
+                                   <!-- Campo oculto donde guardamos el ID seleccionado -->
+                                     <input type="hidden" name="idtb_perfil_modal" id="idPerfilCargoEditar">
+                                    <!-- Input visible (solo lectura) + botón -->
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="nombrePerfilCargoEditar" placeholder="Seleccione un perfil..." readonly>
+                                        <button type="button" class="btn btn-outline-primary btn-abrir-modal-perfil" data-toggle="modal" data-target="#modalPerfiles" data-opcion="cargoEditar">
+                                            Buscar Perfil
+                                        </button>
+                                    </div>             
                             </div>
                         </div>                    
                         <div class="modal-footer">
@@ -375,33 +409,33 @@
                     <form action="{{ route('llamado.agregarEspacio') }}" method="POST" id="formAgregarEspacio">
                         @csrf
                         <div class="row mt-2">             
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <label for="espacioSelect" class="font-weight-bold">Unidad Curricular:</label>                             
                                 <select name="idEspacioCurricular_modal" class="form-control espacioSelect" id="espacioSelect_modal">
                                     @foreach($espacios as $espacio)
                                         <option value="{{ $espacio->idEspacioCurricular }}">{{ $espacio->nombre_espacio }}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Turno:</label>
-                                <select name="idTurno_modal" class="form-control" id="idTurno_modal">
-                                    @foreach($turnos as $turno)
-                                        <option value="{{ $turno->idTurno }}">{{ $turno->nombre_turno }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            </div>                           
                         </div>                     
-                        <div class="row mt-2">                            
-                            <div class="col-md-6">
+                        <div class="row mt-3">                            
+                            <div class="col-md-4">
                                 <label class="font-weight-bold">Horas Cátedra:</label>
                                 <input type="text" name="horacat_modal" class="form-control" maxlength="20" id="horacat_modal">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="font-weight-bold">Situación de Revista:</label>
                                 <select name="idtb_situacion_revista_modal" class="form-control" id="idtb_situacion_revista_modal">
                                     @foreach($situacion_revista as $situacion)
                                         <option value="{{ $situacion->idtb_situacion_revista }}">{{ $situacion->nombre_situacion_revista }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                             <div class="col-md-4">
+                                <label class="font-weight-bold">Turno:</label>
+                                <select name="idTurno_modal" class="form-control" id="idTurno_modal">
+                                    @foreach($turnos as $turno)
+                                        <option value="{{ $turno->idTurno }}">{{ $turno->nombre_turno }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -422,12 +456,16 @@
                         </div>
                         <div class="row mt-2">                           
                             <div class="col-md-12">
-                                <label for="idtb_perfil_modal" class="font-weight-bold">Perfil:</label>
-                                <select name="idtb_perfil_modal" id="idtb_perfil_modal" class="form-control selectPerfil">
-                                    @foreach($perfil as $per)
-                                        <option value="{{ $per->idtb_perfil }}">{{ $per->nombre_perfil }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="font-weight-bold">Perfil:</label>
+                                     <!-- Campo oculto donde guardamos el ID seleccionado -->
+                                     <input type="hidden" name="idtb_perfil_modal" id="idPerfilEspacio">
+                                    <!-- Input visible (solo lectura) + botón -->
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="nombrePerfilEspacio" placeholder="Seleccione un perfil..." readonly>
+                                        <button type="button" class="btn btn-outline-primary btn-abrir-modal-perfil" data-toggle="modal" data-target="#modalPerfiles" data-opcion="espacio">
+                                            Buscar Perfil
+                                        </button>
+                                    </div>             
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -458,33 +496,34 @@
                         @csrf
                         <input type="hidden" name="idEspacioEditar" id="idEspacioEditar">            
                         <div class="row mt-2">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <label class="font-weight-bold">Unidad Curricular:</label>
                                 <select name="idEspacioCurricular_modal" class="form-control espacioSelect" id="espacioSelectEditar">
-                                @foreach($espacios as $espacio)
-                                    <option value="{{ $espacio->idEspacioCurricular }}">{{ $espacio->nombre_espacio }}</option>
-                                @endforeach
+	                                @foreach($espacios as $espacio)
+	                                    <option value="{{ $espacio->idEspacioCurricular }}">{{ $espacio->nombre_espacio }}</option>
+	                                @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label class="font-weight-bold">Turno:</label>
-                                <select name="idTurno_modal" class="form-control" id="idTurnoEditar">
-                                @foreach($turnos as $turno)
-                                    <option value="{{ $turno->idTurno }}">{{ $turno->nombre_turno }}</option>
-                                @endforeach
-                                </select>
-                            </div>
+                           
                         </div>            
-                        <div class="row mt-2">                        
-                            <div class="col-md-6">
+                        <div class="row mt-3">                        
+                            <div class="col-md-4">
                                 <label class="font-weight-bold">Horas Cátedra:</label>
-                                <input type="text" name="horacat_modal" class="form-control" id="horacatEditarEspacio" maxlength="20">
+                                <input type="text" name="horacat_modal" class="form-control" id="horacatEditar" maxlength="20">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="font-weight-bold">Situación de Revista:</label>
                                 <select name="idtb_situacion_revista_modal" class="form-control" id="idSituacionRevistaEditar">
                                 @foreach($situacion_revista as $situacion)
                                     <option value="{{ $situacion->idtb_situacion_revista }}">{{ $situacion->nombre_situacion_revista }}</option>
+                                @endforeach
+                                </select>
+                            </div>
+                             <div class="col-md-4">
+                                <label class="font-weight-bold">Turno:</label>
+                                <select name="idTurno_modal" class="form-control" id="idTurnoEditar">
+                                @foreach($turnos as $turno)
+                                    <option value="{{ $turno->idTurno }}">{{ $turno->nombre_turno }}</option>
                                 @endforeach
                                 </select>
                             </div>
@@ -506,11 +545,15 @@
                         <div class="row mt-2">                        
                             <div class="col-md-12">
                                 <label class="font-weight-bold">Perfil:</label>
-                                <select name="idtb_perfil_modal" class="form-control selectPerfil" id="idPerfilEditar">
-                                @foreach($perfil as $per)
-                                    <option value="{{ $per->idtb_perfil }}">{{ $per->nombre_perfil }}</option>
-                                @endforeach
-                                </select>
+                                     <!-- Campo oculto donde guardamos el ID seleccionado -->
+                                     <input type="hidden" name="idtb_perfil_modal" id="idPerfilEspacioEditar">
+                                    <!-- Input visible (solo lectura) + botón -->
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="nombrePerfilEspacioEditar" placeholder="Seleccione un perfil..." readonly>
+                                        <button type="button" class="btn btn-outline-primary btn-abrir-modal-perfil" data-toggle="modal" data-target="#modalPerfiles" data-opcion="espacioEditar">
+                                            Buscar Perfil
+                                        </button>
+                                    </div>             
                             </div>
                         </div>            
                         <div class="modal-footer">
@@ -521,7 +564,140 @@
                 </div>
             </div>
         </div>
-    </div>  
+    </div>
+    <!-- Modal para seleccionar perfil -->
+    <div class="modal fade" id="modalPerfiles" tabindex="-1" role="dialog" aria-labelledby="modalPerfilesLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                    <h5 class="modal-title">Seleccione un Perfil</h5>
+                      <button type="button" class="btn btn-success btn-sm ml-3" id="btnAgregarPerfil">
+                        + Agregar Perfil
+                    </button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <table class="table table-bordered table-hover" id="tablaPerfiles">
+                    <thead>
+                        <tr>
+                        <th>ID</th>
+                        <th>Nombre del Perfil</th>
+                        <th>Acción</th>
+                        </tr>
+                    </thead>
+                        <tbody>
+                            @foreach($perfil as $per)
+                                <tr>
+                                    <td>{{ $per->idtb_perfil }}</td>
+                                    <td>{{ $per->nombre_perfil }}</td>
+                                    <td>
+                                    <button type="button" class="btn btn-success btn-xs btn-seleccionar-perfil"
+                                            data-id="{{ $per->idtb_perfil }}"
+                                            data-nombre="{{ $per->nombre_perfil }}">
+                                        Seleccionar
+                                    </button>
+                                     <button type="button" class="btn btn-xs btn-warning btn-editar-perfil"
+                                            data-id="{{ $per->idtb_perfil }}"
+                                            data-nombre="{{ $per->nombre_perfil }}">
+                                        Editar
+                                    </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Agregar/Editar Perfil -->
+    <div class="modal fade" id="modalAgregarEditarPerfil" tabindex="-1" role="dialog" aria-labelledby="modalLabelPerfil" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document" style="max-width: 800px;">
+            <form id="formPerfil">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="modalLabelPerfil">Agregar Perfil</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    @csrf
+                    <input type="hidden" id="idPerfilForm">
+                    <div class="form-group">
+                        <label for="nombrePerfilForm">Nombre del Perfil</label>
+                        <textarea class="form-control" id="nombrePerfilForm" rows="4" style="resize: vertical;" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+     {{-- Modal para agregar/crear espacio curricular --}}
+    <div class="modal fade" id="modalEspacios" tabindex="-1" role="dialog" aria-labelledby="modalLabelEspacios" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabelEspacios">Espacios Curriculares</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="d-flex justify-content-end mb-3">
+                            <button id="btnAgregarEspacio" class="btn btn-success">Agregar Nuevo Espacio</button>
+                        </div>
+
+                        <table class="table table-bordered table-hover" id="tablaEspacios">
+                        <thead>
+                            <tr>
+                            <th>#</th>
+                            <th>Nombre del Espacio</th>
+                            <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Se llena por AJAX -->
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+        <div class="modal fade" id="modalFormularioEspacio" tabindex="-1" role="dialog" aria-labelledby="modalLabelFormEspacio" aria-hidden="true">
+            <div class="modal-dialog modal-md" role="document">
+                <form id="formEspacioCurricular">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalLabelFormEspacio">Agregar Espacio Curricular</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @csrf
+                            <input type="hidden" id="idEspacioForm">
+                            <div class="form-group">
+                                <label for="nombreEspacioForm">Nombre del Espacio</label>
+                                <textarea class="form-control" id="nombreEspacioForm" rows="3" required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+  
 @endsection
 
 @section('Script')     
@@ -550,49 +726,95 @@
           let filaActual = null;
           let idEspacioEditar = null; 
           let idCargoEditar = null; // Para editar el cargo
+          let formularioEnviado = false;
     $(document).ready(function () {            
 
-      
+            // $('#btnCrearLlamado').on('click', function () {
+            //     Swal.fire({
+            //         title: '¿Estás segura?',
+            //         text: "¿Querés crear un nuevo llamado?",
+            //         icon: 'question',
+            //         showCancelButton: true,
+            //         confirmButtonText: 'Sí, crear',
+            //         cancelButtonText: 'Cancelar'
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             $.ajax({
+            //                 url: '{{ route("llamado.crear") }}',
+            //                 type: 'POST',
+            //                 headers: {
+            //                     "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            //                 },
+            //                 success: function (response) {
+            //                     console.log(response);
+            //                     $('#llamado_id').val(response.id);
+            //                     $('#formularioLlamado').show();
 
-            $('#formActualizarLlamado').on('submit', function (e) {
-                e.preventDefault();
+            //                     // Agregar el ID al data-id de los botones
+            //                     $('#btnCargo').attr('data-id', response.id);
+            //                     $('#btnEspacio').attr('data-id', response.id);
 
-                Swal.fire({
-                    title: '¿Actualizar llamado?',
-                    text: "Se guardarán los cambios de este llamado.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí, actualizar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const formData = new FormData(this); // 👈 Aca usamos FormData correctamente
+            //                     Swal.fire(
+            //                         '¡Llamado creado!',
+            //                         'Se creó un nuevo llamado con ID: ' + response.id,
+            //                         'success'
+            //                     );
+            //                     llenarTablaEspacio($('#llamadoIdEspacio').val()); // <--- ACÁ
+            //                     llenarTablaCargo($('#llamadoIdCargo').val());
 
-                        $.ajax({
-                            url: '{{ route("llamado.actualizar") }}',
-                            type: 'POST',
-                            data: formData,
-                            processData: false, // 👈 Importante para que jQuery NO convierta los datos
-                            contentType: false, // 👈 Importante para que se envíe como multipart/form-data
-                            success: function () {
-                                Swal.fire(
-                                    '¡Actualizado!',
-                                    'Los datos del llamado se actualizaron correctamente.',
-                                    'success'
-                                );
+            //                 },
+            //                 error: function () {
+            //                     Swal.fire(
+            //                         'Error',
+            //                         'Hubo un problema al crear el llamado.',
+            //                         'error'
+            //                     );
+            //                 }
+            //             });
+            //         }
+            //     });
+            // });
+
+             $('#formActualizarLlamado').on('submit', function (e) {
+                 e.preventDefault();
+
+                 Swal.fire({
+                     title: '¿Actualizar llamado?',
+                     text: "Se guardarán los cambios de este llamado.",
+                     icon: 'warning',
+                     showCancelButton: true,
+                     confirmButtonText: 'Sí, actualizar',
+                     cancelButtonText: 'Cancelar'
+                 }).then((result) => {
+                     if (result.isConfirmed) {
+                         const formData = new FormData(this); // 👈 Aca usamos FormData correctamente
+
+                         $.ajax({
+                             url: '{{ route("llamado.actualizar") }}',
+                             type: 'POST',
+                             data: formData,
+                             processData: false, // 👈 Importante para que jQuery NO convierta los datos
+                             contentType: false, // 👈 Importante para que se envíe como multipart/form-data
+                             success: function () {
+                                 formularioEnviado = true;
+                                 Swal.fire(
+                                     '¡Actualizado!',
+                                     'Los datos del llamado se actualizaron correctamente.',
+                                     'success'
+                                 );
                             },
                             error: function (xhr) {
-                                console.log(xhr.responseText); // Para debug si da error
-                                Swal.fire(
+                                 console.log(xhr.responseText); // Para debug si da error
+                               Swal.fire(
                                     'Error',
-                                    'No se pudo actualizar el llamado.',
-                                    'error'
+                                     'No se pudo actualizar el llamado.',
+                                     'error'
                                 );
-                            }
-                        });
-                    }
-                });
-            });
+                           }
+                         });
+                     }
+                 });
+             });
         //para modales
      });
             // Abrir modal de Cargo
@@ -803,7 +1025,8 @@
                                         data-horario="${cargo.horario_cargo}"
                                         data-turno="${cargo.idTurno}"
                                         data-periodo="${cargo.idtb_periodo_cursado}"
-                                        data-perfil="${cargo.idtb_perfil}">
+                                        data-perfil="${cargo.idtb_perfil}"
+                                        data-nombreperfil="${cargo.nombre_perfil}">
                                         <td>${cargo.idllamado ?? ''}</td>
                                         <td>${cargo.nombre_cargo ?? ''}</td>
                                         <td>${cargo.horacat_cargo ?? ''}</td>
@@ -886,8 +1109,9 @@
                 $('#horarioEditarCargo').val(fila.data('horario'));
                 $('#idTurnoEditar').val(fila.data('turno'));
                 $('#idPeriodoEditar').val(fila.data('periodo'));
-                $('#idPerfilEditar').val(fila.data('perfil'));
-
+                $('#idPerfilCargoEditar').val(fila.data('perfil'));    
+                $('#nombrePerfilCargoEditar').val(fila.data('nombreperfil'));
+               
                 // Asegurarse de pasar el id del llamado (usamos el del botón de abrir modal original)
                 $('#llamadoIdCargo').val($('#btnCargo').data('id'));
 
@@ -977,7 +1201,8 @@
                                     data-horario="${espacio.horario_espacio}" 
                                     data-turno="${espacio.idTurno}" 
                                     data-periodo="${espacio.idtb_periodo_cursado}" 
-                                    data-perfil="${espacio.idtb_perfil}">
+                                    data-perfil="${espacio.idtb_perfil}"
+                                    data-nombreperfil="${espacio.nombre_perfil}">
                                     <td>${espacio.idllamado ?? ''}</td>
                                     <td>${espacio.nombre_espacio ?? ''}</td>
                                     <td>${espacio.horacat_espacio ?? ''}</td>
@@ -1018,7 +1243,8 @@
             $('#horarioEditarEspacio').val(fila.data('horario'));
             $('#idTurnoEditar').val(fila.data('turno'));
             $('#idPeriodoEditar').val(fila.data('periodo'));
-            $('#idPerfilEditar').val(fila.data('perfil'));
+            $('#idPerfilEspacioEditar').val(fila.data('perfil'));
+            $('#nombrePerfilEspacioEditar').val(fila.data('nombreperfil'));
             console.log({
                 idEspacio: fila.data('idespacio'),
                 idEspacioCurricular: fila.data('idespaciocurricular'),
@@ -1074,37 +1300,37 @@
             llenarTablaCargo($('#llamadoIdCargo').val());
 
             const zonaId = '{{ $llamado->idtb_zona }}';
-        const institutoId = '{{ $llamado->id_instituto_superior }}';
-        const carreraId = '{{ $llamado->idCarrera }}';
+            const institutoId = '{{ $llamado->id_instituto_superior }}';
+            const carreraId = '{{ $llamado->idCarrera }}';
 
-        if (zonaId) {
-    $('#idtb_zona').val(zonaId);
+            if (zonaId) {
+               $('#idtb_zona').val(zonaId);
 
-    $.ajax({
-        url: '{{ route("llamado.obtenerInstitutos") }}',
-        type: 'POST',
-        data: { zona_id: zonaId, _token: '{{ csrf_token() }}' },
-        success: function (institutos) {
-            const institutoSelect = $('#id_instituto_superior');
-            institutoSelect.empty().append('<option value="">Seleccione un instituto</option>');
-            institutos.forEach(inst => {
-                institutoSelect.append(`<option value="${inst.id_instituto_superior}">${inst.nombre_instsup}</option>`);
-            });
+            $.ajax({
+                url: '{{ route("llamado.obtenerInstitutos") }}',
+                type: 'POST',
+                data: { zona_id: zonaId, _token: '{{ csrf_token() }}' },
+                success: function (institutos) {
+                    const institutoSelect = $('#id_instituto_superior');
+                    institutoSelect.empty().append('<option value="">Seleccione un instituto</option>');
+                    institutos.forEach(inst => {
+                        institutoSelect.append(`<option value="${inst.id_instituto_superior}">${inst.nombre_instsup}</option>`);
+                    });
 
-            institutoSelect.val(institutoId);
+                    institutoSelect.val(institutoId);
 
-            // 🧠 Reiniciar Select2 correctamente
-            if (institutoSelect.hasClass('select2-hidden-accessible')) {
-                institutoSelect.select2('destroy');
-            }
-            institutoSelect.select2({
-                width: '100%',
-                placeholder: 'Seleccione un instituto',
-                allowClear: true
-            });
+                    // 🧠 Reiniciar Select2 correctamente
+                    if (institutoSelect.hasClass('select2-hidden-accessible')) {
+                        institutoSelect.select2('destroy');
+                    }
+                    institutoSelect.select2({
+                        width: '100%',
+                        placeholder: 'Seleccione un instituto',
+                        allowClear: true
+                    });
 
             // Cargar carreras automáticamente luego
-                $.ajax({
+            $.ajax({
                     url: '{{ route("llamado.obtenerCarreras") }}',
                     type: 'POST',
                     data: { instituto_id: institutoId, _token: '{{ csrf_token() }}' },

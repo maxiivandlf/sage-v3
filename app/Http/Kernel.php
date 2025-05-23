@@ -26,6 +26,7 @@ class Kernel extends HttpKernel
         ControlDelTiempoUsuario::class,
         SeguimientoDelUsuario::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        //\App\Http\Middleware\LimpiarInyeccionHTML::class,
         
     ];
 
@@ -69,8 +70,7 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'verificar.sesion' => \App\Http\Middleware\VerificarSesion::class, // Añadir aquí
-
+        //'verificar.sesion' => \App\Http\Middleware\VerificarSesion::class, // Añadir aquí
     ];
 
     protected function schedule(Schedule $schedule)

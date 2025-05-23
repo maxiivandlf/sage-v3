@@ -871,23 +871,45 @@ $('.formularioNovedadParticular').submit(function(e){
       @endif
 
     <script>
-        $(document).ready(function() {
-            $('#DNI').on('input', function() { // Detecta cuando el usuario sale del campo DNI
-                var dni = $(this).val(); // Obtiene el valor del campo DNI
+ $(document).ready(function () {
+    $('#DNI').on('input', function () {
+        var dni = $(this).val().trim();
 
-                $.ajax({
-                    type: 'POST', // Método HTTP utilizado
-                    url: '/buscar_agente', // URL del script PHP que manejará la búsqueda en la base de datos
-                    data: { dni: dni }, // Datos que se enviarán al servidor (en este caso, el DNI)
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr("content")
-                    },
-                    success: function(response) {
-                        $('#ApeNom').val(response.msg); // Actualiza el campo "Apellido y Nombre" con la respuesta del servidor
+        if (dni.length >= 7 && /^\d+$/.test(dni)) {
+            $.ajax({
+                type: 'POST',
+                url: '/buscar_agente',
+                data: { dni: dni },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr("content")
+                },
+                success: function (response) {
+                    // Esto solo funcionará si la respuesta es JSON puro
+                    console.log("✅ Respuesta exitosa:", response);
+                    $('#ApeNom').val(response.msg ?? "--");
+                },
+                error: function (xhr) {
+                    try {
+                        const texto = xhr.responseText;
+                        const jsonInicio = texto.indexOf('{');
+                        const jsonTexto = texto.substring(jsonInicio);
+                        const response = JSON.parse(jsonTexto);
+
+                        console.warn("⚠️ Se reparó respuesta con HTML inyectado.");
+                        $('#ApeNom').val(response.msg ?? "--");
+                    } catch (e) {
+                        // console.error("❌ Error en AJAX:");
+                        // console.error("Código de estado HTTP:", xhr.status);
+                        // console.error("Respuesta completa:", xhr.responseText);
+                        // $('#ApeNom').val("Error al consultar");
                     }
-                });
+                }
             });
-        });
+        } else {
+            $('#ApeNom').val("DNI inválido");
+        }
+    });
+});
 
 
 

@@ -150,8 +150,8 @@
                     <li class="nav-item"> <a href="#" class="nav-link" data-widget="pushmenu" role="button"><i
                                 class="fas fa-bars"></i></a></li>
                     <li class="nav-item d-none d-sm-inline-block">
-                        <marquee style="color:red;font-size:24px;">Viernes 16 - 21Hs, se cierra control de IPE para
-                            Supervisores . Gracias
+                        <marquee style="color:red;font-size:24px;">Fin de Mantenimiento, Novedad y Pof estructural en
+                            Funcionamiento . Gracias
                         </marquee>
                         <div style="display: flex; align-items: center;">
                             <div class="col-12">
@@ -178,6 +178,8 @@
                                             echo 'Sistema control SAGE - Liquidación';
                                         } elseif (session('Modo') == 3) {
                                             echo 'Sistema control SAGE - Técnicos';
+                                        } elseif (session('Modo') == 7) {
+                                            echo 'Sistema control SAGE - Registro de Títulos';
                                         } elseif (session('Modo') == 43) {
                                             echo 'Sistema control SAGE - ' . session('NombreInstitucion');
                                         } elseif (session('Modo') == 12) {
@@ -1489,11 +1491,11 @@
                                     <li class="nav-item" style="margin-left: 20px;">
                                         <a href="{{ route('llamados.create') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon text-info"></i>
-                                            <p>Cargar Llamado</p>
+                                            <p>Crear Convocatoria</p>
                                         </a>
                                     </li>
                                     <li class="nav-item" style="margin-left: 20px;">
-                                        <a href="{{ route('llamado.agregarLom') }}" class="nav-link">
+                                        <a href="{{ route('lom.formcrearLom') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon text-info"></i>
                                             <p>Cargar LOM</p>
                                         </a>
@@ -1800,7 +1802,7 @@
 <!-- /.content -->
 <!-- /.content-wrapper -->
 
-@if (session('mostrarAlertaImportante'))
+@if (session('mostrarAlertaImportante') && session('Modo') == 2)
     <!-- Modal de Alerta Importante -->
     <div class="modal fade" id="alertaImportante" tabindex="-1" role="dialog"
         aria-labelledby="alertaImportanteLabel" aria-hidden="true">
@@ -2075,77 +2077,69 @@
             bodyElement.classList.add('sidebar-collapse');
         }
     });
-
-    $(document).ready(function() {
-        var rutaListaSupervisoraMensajes = @json(route('listaSupervisoraMensajes'));
-
-        // Función para actualizar el reloj cada segundo
-        function actualizarReloj() {
-            var fecha = new Date(); // Obtenemos la fecha y hora actual
-            var horas = fecha.getHours().toString().padStart(2, "0");
-            var minutos = fecha.getMinutes().toString().padStart(2, "0");
-            var segundos = fecha.getSeconds().toString().padStart(2, "0");
-
-            // Mostramos la hora en el div con id "reloj"
-            $("#reloj").text(horas + ":" + minutos + ":" + segundos);
-        }
-
-        // Llamamos a la función de actualización cada segundo
-        setInterval(actualizarReloj, 1000);
-
-        function ejecutarConsultaPeriodica() {
-            // Aquí va la lógica de la consulta
-            //console.log("Ejecutando consulta a la base de datos...");
-
-            $.ajax({
-                url: "/consultaPruebaNovedad",
-                type: "GET",
-                success: function(response) {
-                    /* console.log(
-                         "Se encontraron: " +
-                             response.Cantidad +
-                             " de novedades sin procesar"
-                     );*/
-                    // Seleccionamos el li donde se agregará la alerta
-                    var alertaMensajesLi = $("#AlertaMensajes");
-                    // Verificar si hay alertas
-                    if (response.Cantidad > 0) {
-                        // Si hay alertas, agregar el contenido al li
-                        var contenidoAlertas = `
-                        <a href="${rutaListaSupervisoraMensajes}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Hay Mensajes <i class="far fa-envelope" style="color:yellow"></i><span class="badge badge-info right">${response.Cantidad}</span></p>
-                            </a>
-                        
-                    `;
-
-                        // Colocar el contenido dentro del li
-                        alertaMensajesLi.html(contenidoAlertas);
-                    } else {
-                        // Si no hay alertas, dejar el li vacío
-                        alertaMensajesLi.html("");
-                    }
-                },
-                error: function() {
-                    console.log("Error al ejecutar la consulta");
-                },
-            });
-        }
-
-        setInterval(ejecutarConsultaPeriodica, 3000);
-    });
 </script>
+
 
 <script>
     $(document).ready(function() {
-        // Mostrar el modal al cargar la página
-        $('#alertaImportante').modal('show');
+        // Función para actualizar el reloj cada segundo
+        function actualizarReloj() {
+            var fecha = new Date();
+            var horas = fecha.getHours().toString().padStart(2, "0");
+            var minutos = fecha.getMinutes().toString().padStart(2, "0");
+            var segundos = fecha.getSeconds().toString().padStart(2, "0");
+            $("#reloj").text(horas + ":" + minutos + ":" + segundos);
+        }
 
-        // Retardo de 5 segundos para el botón Aceptar
-        setTimeout(function() {
-            document.getElementById("btnAceptar").classList.remove("d-none");
-        }, 5000);
+        // Reloj activo siempre
+        setInterval(actualizarReloj, 1000);
+
+        @if (session('Modo') == 2 && Str::startsWith(session('CUECOMPLETO'), '8000'))
+            var rutaListaSupervisoraMensajes = @json(route('listaSupervisoraMensajes'));
+
+            function ejecutarConsultaPeriodica() {
+                $.ajax({
+                    url: "/consultaPruebaNovedad",
+                    type: "GET",
+                    success: function(response) {
+                        var alertaMensajesLi = $("#AlertaMensajes");
+                        if (response.Cantidad > 0) {
+                            var contenidoAlertas = `
+                                <a href="${rutaListaSupervisoraMensajes}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Hay Mensajes <i class="far fa-envelope" style="color:yellow"></i>
+                                    <span class="badge badge-info right">${response.Cantidad}</span></p>
+                                </a>
+                            `;
+                            alertaMensajesLi.html(contenidoAlertas);
+                        } else {
+                            alertaMensajesLi.html("");
+                        }
+                    },
+                    error: function() {
+                        console.log("Error al ejecutar la consulta");
+                    },
+                });
+            }
+
+            // Solo esta parte está condicionada
+            setInterval(ejecutarConsultaPeriodica, 3000);
+        @endif
     });
+</script>
+
+
+
+<script>
+    // $(document).ready(function () {
+    //   // Mostrar el modal al cargar la página
+    //   $('#alertaImportante').modal('show');
+
+    //   // Retardo de 5 segundos para el botón Aceptar
+    //   setTimeout(function() {
+    //     document.getElementById("btnAceptar").classList.remove("d-none");
+    //   }, 5000);
+    // });
 </script>
 
 

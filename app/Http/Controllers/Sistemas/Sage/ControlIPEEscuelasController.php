@@ -631,7 +631,7 @@ class ControlIPEEscuelasController extends Controller
         $infoAgentesMedifan = DB::connection('DB7')->table('tb_medifan')->get();
 
         //aqui voy a cargar una boleana que me sirva para saber si es editable o si es sede de control sola
-        $esEditable = true;
+        $esEditable = false;
         if(session('Modo') >= 14 && session('Modo') <= 45){
             $esEditable = false;
         }

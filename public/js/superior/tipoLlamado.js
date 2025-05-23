@@ -269,3 +269,235 @@ $('#id_instituto_superior').on('change', function () {
     }
 });
 
+//tabla perfil
+// ✅ Configuración global de CSRF para Laravel
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+
+// Guardamos de dónde vino el click
+$(document).on('click', '.btn-abrir-modal-perfil', function () {
+    const opcion = $(this).data('opcion');
+    $('#modalPerfiles').data('opcion', opcion);
+    $('#modalPerfiles').modal('show');
+     // Mostrar u ocultar los botones "Seleccionar" en TODAS las páginas
+    const tabla = $('#tablaPerfiles').DataTable();
+    tabla.rows().every(function () {
+        const row = $(this.node());
+        const botonSeleccionar = row.find('.btn-seleccionar-perfil');
+
+        if (!opcion) {
+            botonSeleccionar.hide();
+        } else {
+            botonSeleccionar.show();
+        }
+    });
+});
+
+// Al seleccionar un perfil
+$(document).on('click', '.btn-seleccionar-perfil', function () {
+    const id = $(this).data('id');
+    const nombre = $(this).data('nombre');
+    const opcion = $('#modalPerfiles').data('opcion');
+    console.log(opcion);
+    switch (opcion) {
+        case 'cargo':
+            $('#idPerfilCargo').val(id);
+            $('#nombrePerfilCargo').val(nombre);
+            break;
+        case 'cargoEditar':
+            $('#idPerfilCargoEditar').val(id);
+            $('#nombrePerfilCargoEditar').val(nombre);
+            break;
+        case 'espacio':
+            $('#idPerfilEspacio').val(id);
+            $('#nombrePerfilEspacio').val(nombre);
+            break;
+        case 'espacioEditar':
+            $('#idPerfilEspacioEditar').val(id);
+            $('#nombrePerfilEspacioEditar').val(nombre);
+            break;
+    }
+
+    $('#modalPerfiles').modal('hide');
+});
+// buscador de perfiles
+$('#tablaPerfiles').DataTable({
+    autoWidth: false,
+    columnDefs: [
+        { width: "25px", targets: 0 },  // ID
+        { width: "90px", targets: 2 }  // Acción
+    ],
+    language: {
+        search: "Buscar:",
+        lengthMenu: "Mostrar _MENU_ registros por página",
+        zeroRecords: "No se encontraron resultados",
+        info: "Mostrando página _PAGE_ de _PAGES_",
+        infoEmpty: "No hay perfiles disponibles",
+        infoFiltered: "(filtrado de _MAX_ perfiles en total)"
+    }
+});
+
+// ✅ Al hacer clic en "Agregar Perfil"
+$('#btnAgregarPerfil').on('click', function () {
+    $('#modalLabelPerfil').text('Agregar Perfil');
+    $('#idPerfilForm').val('');
+    $('#nombrePerfilForm').val('');
+    $('#modalAgregarEditarPerfil').modal('show');
+});
+
+// ✅ Al hacer clic en "Editar" en alguna fila
+$(document).on('click', '.btn-editar-perfil', function () {
+    const id = $(this).data('id');
+    const nombre = $(this).data('nombre');
+
+    $('#modalLabelPerfil').text('Editar Perfil');
+    $('#idPerfilForm').val(id);
+    $('#nombrePerfilForm').val(nombre);
+    $('#modalAgregarEditarPerfil').modal('show');
+});
+
+// ✅ Guardar perfil (crear o editar)
+$('#formPerfil').on('submit', function (e) {
+    e.preventDefault();
+
+    const id = $('#idPerfilForm').val();
+    const nombre = $('#nombrePerfilForm').val();
+
+    $.ajax({
+        url: id ? '/perfil/' + id : '/perfil',
+        type: id ? 'PUT' : 'POST',
+        data: { nombre_perfil: nombre },
+        success: function (response) {
+            $('#modalAgregarEditarPerfil').modal('hide');
+              recargarPerfiles();
+              Swal.fire('Éxito', 'Perfil guardado correctamente.', 'success');
+        },
+        error: function (xhr) {
+            console.error(xhr.responseText);
+            alert('Error al guardar perfil.');
+        }
+    });
+});
+
+//agregar y editar espacio curricular
+
+
+    $(document).ready(function () {
+        let tablaEspacios;
+
+        // Botón principal: abre el modal con la tabla
+        $('#btnVerEspacioCurricular').on('click', function () {
+            $('#modalEspacios').modal('show');
+            cargarEspacios();
+        });
+
+        // Función que carga los espacios curriculares en la tabla
+        function cargarEspacios() {
+            $.get('/espacios/listar', function (data) {
+                if ($.fn.DataTable.isDataTable('#tablaEspacios')) {
+                    tablaEspacios.clear().destroy();
+                }
+
+                $('#tablaEspacios tbody').empty();
+
+                data.forEach((espacio, i) => {
+                    $('#tablaEspacios tbody').append(`
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>${espacio.nombre_espacio}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info btnEditarEspacio"
+                                    data-id="${espacio.idEspacioCurricular}"
+                                    data-nombre="${espacio.nombre_espacio}">
+                                    Editar
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+                });
+
+                tablaEspacios = $('#tablaEspacios').DataTable({
+                    responsive: true,
+                    destroy: true,
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+                    }
+                });
+            });
+        }
+
+        // Abrir modal para agregar
+        $('#btnAgregarEspacio').on('click', function () {
+            $('#idEspacioForm').val('');
+            $('#nombreEspacioForm').val('');
+            $('#modalLabelFormEspacio').text('Agregar Espacio Curricular');
+            $('#modalFormularioEspacio').modal('show');
+        });
+
+        // Abrir modal para editar (desde botón en tabla)
+        $(document).on('click', '.btnEditarEspacio', function () {
+            const id = $(this).data('id');
+            const nombre = $(this).data('nombre');
+
+            $('#idEspacioForm').val(id);
+            $('#nombreEspacioForm').val(nombre);
+            $('#modalLabelFormEspacio').text('Editar Espacio Curricular');
+            $('#modalFormularioEspacio').modal('show');
+        });
+
+        // Guardar (nuevo o editado)
+        $('#formEspacioCurricular').on('submit', function (e) {
+            e.preventDefault();
+
+            const id = $('#idEspacioForm').val();
+            const nombre = $('#nombreEspacioForm').val().trim();
+
+            if (!nombre) {
+                Swal.fire('Error', 'El nombre del espacio es obligatorio.', 'warning');
+                return;
+            }
+
+            $.ajax({
+                url: id ? `/espacio/editar/${id}` : '/espacio/nuevo',
+                method: id ? 'PUT' : 'POST',
+                data: {
+                    nombre_espacio: nombre,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (res) {
+                    $('#modalFormularioEspacio').modal('hide');
+                    cargarEspacios();
+                    recargarEspacios();
+                    Swal.fire('Éxito', res.mensaje, 'success');
+                },
+                error: function (xhr) {
+                    console.error(xhr.responseText);
+                    Swal.fire('Error', 'No se pudo guardar el espacio', 'error');
+                }
+            });
+        });
+    });
+
+    function recargarPerfiles() {
+        $.get('/perfil/listar', function (perfiles) {
+            const selectPerfil = $('#idPerfilCargo');
+            selectPerfil.empty();
+            selectPerfil.append('<option value="">Seleccione un perfil</option>');
+            perfiles.forEach(p => {
+                selectPerfil.append(`<option value="${p.idtb_perfil}">${p.nombre_perfil}</option>`);
+            });
+        });
+    }
+    function recargarEspacios() {
+        $.get('/espacios/listar', function (espacios) {
+            const selectEspacio = $('#idEspacioCurricular'); // ajustalo a tu selector real
+            selectEspacio.empty();
+            selectEspacio.append('<option value="">Seleccione un espacio</option>');
+            espacios.forEach(e => {
+                selectEspacio.append(`<option value="${e.idEspacioCurricular}">${e.nombre_espacio}</option>`);
+            });
+        });
+    }

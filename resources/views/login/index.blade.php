@@ -39,9 +39,8 @@
       $activo = "SI";
     @endphp
  <div class="row" style="position: absolute;top:10px; left:150px;z-index:0;">
-  <marquee style="color:red;font-size:24px;">Viernes 16 - 21Hs, se cierra control de IPE para Supervisores  . Gracias
+  <marquee style="color:red;font-size:24px;">Fin de Mantenimiento, Novedad y Pof estructural en Funcionamiento  . Gracias
         </marquee>
-
 </div>
     <div class="card text-center bg-op-1 margin-bottom" style="width: 420px">
       <img src="{{ asset('img/seguridad.jpg');}}" alt="lock avatar"/>

@@ -192,6 +192,8 @@
     border-radius: 10px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
+    margin-top: -20px; /* Espacio superior */
+    margin-bottom: 10px; /* Espacio inferior */
 }
 
 .row > .col-md-4 {
@@ -308,17 +310,62 @@ table.dataTable tbody td.child {
     height: 36px !important; /* o ajustá según tus necesidades */
     display: flex !important;
     align-items: center !important;
+  
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
     font-size: 0.95rem !important;/* Afecta el texto del select visible */
     padding-top: 0px !important; /* bajá este número si querés menos espacio arriba */
     padding-bottom: 3px !important;
-    line-height: 1.5 !important;
-    vertical-align: middle !important;
+    /* line-height: 1.5 !important; */
+ 
+    /* vertical-align: middle !important; */
    
 }
 
+ select {
+    width: auto;
+    min-width: 200px; /* poné un mínimo para evitar que quede muy chico */
+    padding: 5px;
+}
+select option {
+         
+    line-height: 1.4em;         /* Altura de línea más generosa */
+    padding: 6px 10px;          /* Relleno interno */
+    background-color: white;
+    color: black;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#idtb_perfil_modal #idPerfilEditar option {
+    white-space: normal;        /* Permite saltos de línea */
+    line-height: 1.4em;         /* Altura de línea más generosa */
+    padding: 6px 10px;          /* Relleno interno */
+    background-color: white;
+    color: black;
+}
+
+/* Botones más compactos */
+.btn-xs {
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    line-height: 1;
+    border-radius: 4px;
+    margin-bottom: 2px;
+}
+
+.btn-mismo-ancho {
+    min-width: 180px;
+}
+.row.mt-4.align-items-center {
+    margin-top: -5px !important;
+}
+#btn-actualizar {
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
 
 @media screen and (max-width: 768px) {
     .alert {

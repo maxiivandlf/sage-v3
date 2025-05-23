@@ -2697,22 +2697,21 @@ public function cambiarEstadoRechazar(Request $request)
              session(['ruta' => $ruta]);
          return view('bandeja.AG.Servicios.verNovedadesParticulares',$datos);
      }
-    public function buscar_agente(Request $request){
-       
-
+    public function buscar_agente(Request $request)
+    {
         $dni = $request->input('dni');
 
-        // Realiza la búsqueda en la base de datos utilizando el modelo Agente
         $agente = AgenteModel::where('Documento', $dni)->first();
 
         if ($agente) {
-            // Si se encuentra un agente con el DNI especificado, devuelve el Apellido y Nombre
-            return response()->json(array('status' => 200, 'msg' => $agente->ApeNom), 200);
+            return response()->json(['status' => 200, 'msg' => $agente->ApeNom])
+                            ->header('Content-Type', 'application/json');
         } else {
-            // Si no se encuentra ningún agente, devuelve un mensaje indicando que no se encontró ningún agente con ese DNI
-            return response()->json(array('status' => 200, 'msg' => "--"), 200);
+            return response()->json(['status' => 400, 'msg' => "--"], 400)
+                            ->header('Content-Type', 'application/json');
         }
     }
+
     
     
 

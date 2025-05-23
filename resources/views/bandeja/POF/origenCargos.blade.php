@@ -396,66 +396,13 @@
                     },
                     method: 'GET',
                     success: function(data) {
-                        if ($.fn.DataTable.isDataTable('#example')) {
-                            $('#example').DataTable()
-                                .destroy(); // Destruye la instancia previa si existe
-                        }
-                        $('#example tbody').empty();
-                        if (data.CargosCreados && Array.isArray(data.CargosCreados)) {
-                            // Lleno la tabla con los datos cargados
-                            data.CargosCreados.forEach(function(cargo) {
-                                let infoExisteCargo = data.AulasCargosCreados.some(o => o
-                                    .idOrigenCargo === cargo.idOrigenCargo);
-                                let rowContent = `
-                                    <tr>
-                                        <td>${cargo.idCargos_Pof_Origen}</td>
-                                        <td>${cargo.nombre_cargo_origen}</td>
-                                        <td>
-                                            ${infoExisteCargo ? '<i class="fas fa-lock text-danger" title="Bloqueado"></i>':
-                                              permiteEditarTodo === 0 ?
-                                                `<button onclick="deleteCargo(${cargo.idOrigenCargo})" style="border:none; background:none;">
-                                                            <i class="fas fa-trash text-danger"></i>
-                                                        </button>` :
-                                                modo === true? `<button onclick="deleteCargo(${cargo.idOrigenCargo})" style="border:none; background:none;">
-                                                            <i class="fas fa-trash text-danger"></i>
-                                                        </button>` : '<i class="fas fa-lock text-danger" title="Bloqueado"></i>' 
-                                                
-                                            }
-                                        </td>
-                                    </tr>
-                                `;
-                                $('#example tbody').append(rowContent);
-                            });
-
-                            $('#combocargoSelect').empty();
-                            data.CargosCreados.forEach(function(cargo) {
-                                $('#combocargoSelect').append(`
-                                    <option value="${cargo.idOrigenCargo}">${cargo.nombre_cargo_origen}</option>
-                                `);
-                            });
-
-                            // Inicializa el DataTable después de cargar los datos
-                            $('#example').DataTable({
-                                paging: true,
-                                searching: true,
-                                ordering: true
-                            });
-
-                        } else {
-                            console.error("CargosCreados no está definido o no es un array");
-                        }
+                        loadCargosRender(data);
                     },
-                    error: function() {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Hubo un problema al cargar los cargos.',
-                            icon: 'error',
-                            confirmButtonText: 'Aceptar'
-                        });
+                    error: function(xhr) {
+                        procesarRespuestaRecuperada(xhr, 'Cargos');
                     }
                 });
             }
-
 
             function loadAulas() {
                 $.ajax({
@@ -465,68 +412,127 @@
                     },
                     method: 'GET',
                     success: function(data) {
-                        if ($.fn.DataTable.isDataTable('#example4')) {
-                            $('#example4').DataTable()
-                                .destroy(); // Destruye la instancia previa si existe
-                        }
-                        $('#example4 tbody').empty();
-
-                        if (data.AulasCargosCreados && Array.isArray(data.AulasCargosCreados)) {
-                            // Llena la tabla con los datos cargados
-                            data.AulasCargosCreados.forEach(function(cargo) {
-                                let aulaInfo = data.Aulas.find(aula => aula.idAula === cargo
-                                    .idAula);
-                                let divisionInfo = data.Divisiones.find(division => division
-                                    .idDivision === cargo.idDivision);
-                                let cargoInfo = data.CargosCreados.find(c => c.idOrigenCargo ===
-                                    cargo.idOrigenCargo);
-                                let turnoInfo = data.TurnosTodos.find(turno => turno.idTurno ===
-                                    cargo.idTurno);
-                                let infoCue = data.Extensiones.find(ext => ext.CUECOMPLETO ===
-                                    cargo.CUECOMPLETO);
-                                $('#example4 tbody').append(`
-                                    <tr>
-                                        <td>${cargoInfo ? cargoInfo.nombre_cargo_origen : 'N/A'}</td>
-                                        <td>${aulaInfo ? aulaInfo.nombre_aula : 'N/A'}</td>
-                                        <td>${divisionInfo ? divisionInfo.nombre_division : 'N/A'}</td>
-                                         <td>${turnoInfo ? turnoInfo.nombre_turno : 'N/A'}</td>
-                                        <td>${infoCue.CUECOMPLETO}-${infoCue.Nombre_Institucion}-${infoCue.Localidad}</td>
-                                        <td>
-                                            ${permiteEditarTodo === 0? 
-                                                `<button onclick="deleteAulaCargo(${cargo.idPadt})" style="border:none; background:none;">
-                                                            <i class="fas fa-trash text-danger"></i>
-                                                        </button>`:
-                                                modo===true? `<button onclick="deleteAulaCargo(${cargo.idPadt})" style="border:none; background:none;">
-                                                            <i class="fas fa-trash text-danger"></i>
-                                                        </button>`:'<i class="fas fa-lock text-danger" title="Bloqueado"></i>'
-                                            }
-                                        </td>
-                                    </tr>
-                                `);
-                            });
-
-                            // Inicializa el DataTable después de cargar los datos
-                            $('#example4').DataTable({
-                                paging: true,
-                                searching: true,
-                                ordering: true
-                            });
-
-                        } else {
-                            console.error("AulasCargosCreados no está definido o no es un array");
-                        }
+                        loadAulasRender(data);
                     },
-                    error: function() {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Hubo un problema al cargar las Aulas.',
-                            icon: 'error',
-                            confirmButtonText: 'Aceptar'
-                        });
+                    error: function(xhr) {
+                        procesarRespuestaRecuperada(xhr, 'AulasCargos');
                     }
                 });
             }
 
+            function procesarRespuestaRecuperada(xhr, tipo) {
+                try {
+                    const texto = xhr.responseText;
+                    const jsonInicio = texto.indexOf('{');
+                    if (jsonInicio === -1) throw new Error("No se encontró JSON");
+                    const jsonTexto = texto.substring(jsonInicio);
+                    const response = JSON.parse(jsonTexto);
+
+                    console.warn("⚠️ Se reparó respuesta con HTML inyectado.");
+
+                    if (tipo === 'Cargos' && response.CargosCreados) {
+                        loadCargosRender(response);
+                    } else if (tipo === 'AulasCargos' && response.AulasCargosCreados) {
+                        loadAulasRender(response);
+                    } else {
+                        throw new Error("Estructura de datos no válida");
+                    }
+
+                } catch (e) {
+                    console.error("❌ No se pudo recuperar la respuesta:", e);
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Hubo un problema al procesar los datos.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+            }
+
+            function loadCargosRender(data) {
+                if ($.fn.DataTable.isDataTable('#example')) {
+                    $('#example').DataTable().destroy();
+                }
+                $('#example tbody').empty();
+
+                data.CargosCreados.forEach(function(cargo) {
+                    let infoExisteCargo = data.AulasCargosCreados.some(o => o.idOrigenCargo === cargo
+                        .idOrigenCargo);
+                    let rowContent = `
+                        <tr>
+                            <td>${cargo.idCargos_Pof_Origen}</td>
+                            <td>${cargo.nombre_cargo_origen}</td>
+                            <td>
+                                ${infoExisteCargo ? '<i class="fas fa-lock text-danger" title="Bloqueado"></i>':
+                                permiteEditarTodo === 0 ?
+                                    `<button onclick="deleteCargo(${cargo.idOrigenCargo})" style="border:none; background:none;">
+                                            <i class="fas fa-trash text-danger"></i>
+                                        </button>` :
+                                    modo === true? `<button onclick="deleteCargo(${cargo.idOrigenCargo})" style="border:none; background:none;">
+                                            <i class="fas fa-trash text-danger"></i>
+                                        </button>` : '<i class="fas fa-lock text-danger" title="Bloqueado"></i>' 
+                                }
+                            </td>
+                        </tr>
+                    `;
+                    $('#example tbody').append(rowContent);
+                });
+
+                $('#combocargoSelect').empty();
+                data.CargosCreados.forEach(function(cargo) {
+                    $('#combocargoSelect').append(`
+                        <option value="${cargo.idOrigenCargo}">${cargo.nombre_cargo_origen}</option>
+                    `);
+                });
+
+                $('#example').DataTable({
+                    paging: true,
+                    searching: true,
+                    ordering: true
+                });
+            }
+
+
+            function loadAulasRender(data) {
+                if ($.fn.DataTable.isDataTable('#example4')) {
+                    $('#example4').DataTable().destroy();
+                }
+                $('#example4 tbody').empty();
+
+                data.AulasCargosCreados.forEach(function(cargo) {
+                    let aulaInfo = data.Aulas.find(aula => aula.idAula === cargo.idAula);
+                    let divisionInfo = data.Divisiones.find(division => division.idDivision === cargo
+                        .idDivision);
+                    let cargoInfo = data.CargosCreados.find(c => c.idOrigenCargo === cargo.idOrigenCargo);
+                    let turnoInfo = data.TurnosTodos.find(turno => turno.idTurno === cargo.idTurno);
+                    let infoCue = data.Extensiones.find(ext => ext.CUECOMPLETO === cargo.CUECOMPLETO);
+                    $('#example4 tbody').append(`
+                        <tr>
+                            <td>${cargoInfo ? cargoInfo.nombre_cargo_origen : 'N/A'}</td>
+                            <td>${aulaInfo ? aulaInfo.nombre_aula : 'N/A'}</td>
+                            <td>${divisionInfo ? divisionInfo.nombre_division : 'N/A'}</td>
+                            <td>${turnoInfo ? turnoInfo.nombre_turno : 'N/A'}</td>
+                            <td>${infoCue.CUECOMPLETO}-${infoCue.Nombre_Institucion}-${infoCue.Localidad}</td>
+                            <td>
+                                ${permiteEditarTodo === 0? 
+                                    `<button onclick="deleteAulaCargo(${cargo.idPadt})" style="border:none; background:none;">
+                                            <i class="fas fa-trash text-danger"></i>
+                                        </button>`:
+                                    modo===true? `<button onclick="deleteAulaCargo(${cargo.idPadt})" style="border:none; background:none;">
+                                            <i class="fas fa-trash text-danger"></i>
+                                        </button>`:'<i class="fas fa-lock text-danger" title="Bloqueado"></i>'
+                                }
+                            </td>
+                        </tr>
+                    `);
+                });
+
+                $('#example4').DataTable({
+                    paging: true,
+                    searching: true,
+                    ordering: true
+                });
+            }
             // Función para eliminar un cargo con confirmación SweetAlert
             window.deleteCargo = function(idCargo) {
                 Swal.fire({
@@ -599,6 +605,8 @@
                     }
                 });
             }
+
+
             // Cargar cargos cuando se carga la página
             loadCargos();
             loadAulas();

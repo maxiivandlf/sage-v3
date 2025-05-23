@@ -16,13 +16,19 @@ Route::post('/crear-llamado', [LlamadosController::class, 'crearllamado'])->name
 Route::post('/actualizar-llamado', [LlamadosController::class, 'actualizarLlamado'])->name('llamado.actualizar');
 Route::get('/llamado.editar/{id}', [LlamadosController::class, 'editarLlamado'])->name('llamado.editar');
 //rutas para lom
-Route::get('/agregarLom', [LlamadosController::class, 'agregarLom'])->name('llamado.agregarLom');//formulario
-Route::post('/guardarLom', [LlamadosController::class, 'guardarLom'])->name('llamado.guardarLom');
-Route::get('/editarLom/{id}', [LlamadosController::class, 'editarLom'])->name('llamado.editarLom');
-Route::post('/eliminarLom', [LlamadosController::class, 'eliminarLom'])->name('llamado.eliminarLom');
+Route::post('/agregarLom', [LlamadosController::class, 'agregarLom'])->name('lom.agregarLom');//formulario inserta
+Route::get('/formcrearLom', [LlamadosController::class, 'formcrearLom'])->name('lom.formcrearLom'); //formulario vista
+Route::post('/obtenerLom', [LlamadosController::class, 'obtenerLom'])->name('lom.obtenerLom');
+Route::get('/editarLom/{id}', [LlamadosController::class, 'editarLom'])->name('lom.editarLom');
+Route::post('/eliminarLom', [LlamadosController::class, 'eliminarLom'])->name('lom.eliminarLom');
+
+// rutas para cargar/editar espacios curriculares
+Route::get('/espacios/listar', [LlamadosController::class, 'listarEspaciosCurriculares']);
+Route::post('/espacio/nuevo', [LlamadosController::class, 'nuevoEspacioCurricular'])->name('espacio.nuevo');
+Route::put('/espacio/editar/{id}', [LlamadosController::class, 'editarEspacioCurricular'])->name('espacio.editar');
 
 
-//rutas para espacios
+//rutas para espacios por llamado
 Route::post('/agregarEspacio', [LlamadosController::class, 'agregarEspacio'])->name('llamado.agregarEspacio');
 Route::post('/obtenerEspacios', [LlamadosController::class, 'obtenerEspaciosPorLlamado'])->name('llamado.obtenerEspacios');
 Route::post('/eliminarEspacio', [LlamadosController::class, 'eliminarEspacio'])->name('llamado.eliminarEspacio');
@@ -34,11 +40,16 @@ Route::post('/eliminarCargo', [LlamadosController::class, 'eliminarCargo'])->nam
 Route::post('/editarCargo', [LlamadosController::class, 'editarCargo'])->name('llamado.editarCargo');
 // cambio de estado
 Route::post('/llamado/estado', [LlamadosController::class, 'cambiarEstado'])->name('llamado.cambiar.estado');
+Route::post('/lom/estado', [LlamadosController::class, 'cambiarEstadoLom'])->name('lom.cambiar.estado');
 
 // filtros zona, institutos y carreras
 Route::post('/superior/obtener-institutos', [LlamadosController::class, 'obtenerInstitutosPorZona'])->name('llamado.obtenerInstitutos');
 Route::post('/superior/obtener-carreras', [LlamadosController::class, 'obtenerCarrerasPorInstituto'])->name('llamado.obtenerCarreras');
 
+//perfil
+Route::get('/perfil/listar', [LlamadosController::class, 'listarPerfiles']);
+Route::post('/perfil', [LlamadosController::class, 'nuevoPerfil'])->name('perfil.nuevo');
+Route::put('/perfil/{id}', [LlamadosController::class, 'editarPerfil'])->name('perfil.editar');
 
 
 // //crear llamado AJAX

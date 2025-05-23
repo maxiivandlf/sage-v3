@@ -2113,7 +2113,7 @@ public function pofmhNovedades($dni, $cue)
             return response()->json(['status' => 'error', 'message' => 'Error al eliminar el documento.']);
         }
     }
-
+    //dssd
     public function verCargosCreados($idExt){
                   //obtengo el usuario que es la escuela a trabajar
                 /*$idReparticion = session('idReparticion');
@@ -2173,7 +2173,7 @@ public function pofmhNovedades($dni, $cue)
                             'Turnos' => $Turnos,
                             'Extensiones'=>$cantidadInstituciones,
                             'TurnosTodos'=>$TurnosTodosArray
-                        ]);
+                        ])->header('Content-Type', 'application/json');
                     } elseif ($tipo === 'Cargos') {
                         return response()->json([
                             'CargosCreados' => $CargosCreados,
@@ -2181,7 +2181,7 @@ public function pofmhNovedades($dni, $cue)
                             'Turnos' => $Turnos,
                             'Extensiones'=>$cantidadInstituciones,
                             'TurnosTodos'=>$TurnosTodosArray
-                        ]);
+                        ])->header('Content-Type', 'application/json');
                     }
                 }
                 
@@ -2206,6 +2206,7 @@ public function pofmhNovedades($dni, $cue)
                     'mensajeNAV'=>'Panel de Configuración de Cursos y Divisiones'
         
                 );
+                //dd($datos);
                 $ruta ='
                 <li class="breadcrumb-item active"><a href="#">LEGAJO UNICO INSTITUCIONAL</a></li>
                 <li class="breadcrumb-item active"><a href="'.route('verCargosCreados',$idExt).'">Cargos Institucionales</a></li>

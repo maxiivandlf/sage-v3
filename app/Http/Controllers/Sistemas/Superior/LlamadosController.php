@@ -14,6 +14,8 @@ use App\Models\Superior\Zona;
 use App\Models\Superior\InstitutoSuperior;
 use App\Models\Superior\Carrera;
 use App\Models\Superior\EspacioCurricular;
+use App\Models\Superior\Lom;
+use App\Models\Superior\Perfil;
 use App\Models\Superior\RelInstSupCarrera;
 use App\Models\Superior\TipoLlamado;
 use App\Models\Superior\TipoEstado;
@@ -119,7 +121,7 @@ class LlamadosController extends Controller
 
         ->values();
        // dd($llamados);
-        $tipoestado = TipoEstado::all();
+        $tipoestado = TipoEstado::whereIn('idtb_tipoestado', [2,8,9])->get();
         // Usá $llamados para no tocar tu blade
         return view('aegis.sistemas.superior.llamados.index', compact('llamados', 'tipoestado'));
     }
@@ -136,7 +138,7 @@ class LlamadosController extends Controller
         ->join('tb_cargos', 'tb_lom.idtb_cargo', '=', 'tb_cargos.idtb_cargos')
         ->join('tb_espacioscurriculares', 'tb_lom.idEspacioCurricular', '=', 'tb_espacioscurriculares.idEspacioCurricular')
         ->join('tb_tipoestado', 'tb_lom.idtb_tipoestado', '=', 'tb_tipoestado.idtb_tipoestado')
-        ->whereIn('tb_lom.idtb_tipoestado', [4]) // finalizado
+        ->whereIn('tb_lom.idtb_tipoestado', [4,2]) // finalizado
         ->select(
             'tb_lom.*',
             'tb_zona.nombre_zona',
@@ -148,20 +150,26 @@ class LlamadosController extends Controller
             'tb_tipoestado.nombre_tipoestado'
         )
         ->get();
-
-        return view('aegis.sistemas.superior.llamados.ver_lom', compact('llamados'));
+        $tipoestado = TipoEstado::whereIn('idtb_tipoestado', [4,2])->get();
+        $zona = Zona::all();
+        return view('aegis.sistemas.superior.llamados.ver_lom', compact('llamados', 'tipoestado','zona'));
     }
-    // cargar lom
-    public function agregarLom()
+
+    //ver lom formulario
+    public function formcrearLom()
     {
-       //datos tabla lom
-       $zonas = Zona::all(); 
-       $tiposLlamado = TipoLlamado::all();
-       $institutos = InstitutoSuperior::all();
-       $carreras = Carrera::all();
-       $estados = TipoEstado::where('nombre_tipoestado', 'En Proceso')->first(); // Estado reservado
-       $cargos = DB::connection('DB4')->table('tb_cargos')->select('idtb_cargos', 'nombre_cargo')->get();
-       $espacios = DB::connection('DB4')->table('tb_espacioscurriculares')->select('idEspacioCurricular', 'nombre_espacio')->get();           
+        //datos tabla lom
+        $institutos = [];
+        $carreras = [];
+        $relInstCarr=RelInstSupCarrera::all();
+        $zonas = Zona::all(); 
+        $tiposLlamado = TipoLlamado::all();
+        $lom = Lom::all();
+        // $institutos = InstitutoSuperior::all();
+        // $carreras = Carrera::all();
+        $estados = TipoEstado::where('nombre_tipoestado', 'En Proceso')->first(); // Estado reservado
+        $cargos = DB::connection('DB4')->table('tb_cargos')->select('idtb_cargos', 'nombre_cargo')->get();
+        $espacios = DB::connection('DB4')->table('tb_espacioscurriculares')->select('idEspacioCurricular', 'nombre_espacio')->get();           
 
         return view('aegis.sistemas.superior.lom.crearLom', compact(
             'zonas', 
@@ -170,10 +178,163 @@ class LlamadosController extends Controller
             'carreras', 
             'estados',
             'cargos',
-            'espacios', 
-            'cargos'
+            'espacios',
+            'relInstCarr',
+            'lom'
         ));
     }
+    // cargar lom inserta en la tabla tb_lom con el form
+    public function agregarLom (Request $request)
+{
+    // // Validación
+    // $request->validate([
+    //     'idtb_zona' => 'required|integer',
+    //     'id_instituto_superior' => 'required|integer',
+    //     'idCarrera' => 'required|integer',
+    //     'idtipo_llamado' => 'required|integer',
+    //     'imagen' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    //     'pdf' => 'nullable|mimes:pdf|max:5120',
+    // ]);
+
+    // Manejo de archivos
+    $rutaImagen = null;
+    $rutaPdf = null;
+
+    if ($request->hasFile('imagen')) {
+        $rutaImagen = $request->file('imagen')->store('lom', 'public');
+    }
+
+    if ($request->hasFile('pdf')) {
+        $rutaPdf = $request->file('pdf')->store('lom', 'public');
+    }
+
+    // Insertar en DB
+    // DB::connection('DB4')->table('tb_lom')->insert([
+    //     'idtb_zona' => $request->idtb_zona,
+    //     'id_instituto_superior' => $request->id_instituto_superior,
+    //     'idCarrera' => $request->idCarrera,
+    //     'idtipo_llamado' => $request->idtipo_llamado,
+    //     'imagen' => $rutaImagen,
+    //     'pdf' => $rutaPdf,
+    //     'idtb_tipoestado' => 4, // En Proceso, o el valor que corresponda
+    //     'created_at' => now(),
+    //     'updated_at' => now(),
+    // ]);
+    $lom= new Lom();
+    $lom->idtb_zona = 8;
+    $lom->id_instituto_superior = 1;
+    $lom->idCarrera = 171;
+    $lom->idtipo_llamado =1;
+    $lom->idtb_tipoestado = 2; // En Proceso, o el valor que corresponda
+    $lom->imglom = 'imagen_prueba.jpg';
+    $lom->pdf = 'pdf-prueba.pdf';
+    $lom->idtb_cargo = 13;
+    $lom->idEspacioCurricular = 1;
+    $lom->idUsuarioCrear =  session('idUsuario'); // Cambia esto por el ID del usuario que crea el LOM
+    $lom->idUsuarioEditar =  session('idUsuario'); // Cambia esto por el ID del usuario que edita el LOM
+    $lom->mes = null; // Cambia esto por el mes que corresponda
+    $lom->CUE = $request->CUE; // Cambia esto por el CUE que corresponda
+      
+    $lom->save();
+
+    return response()->json(['id' => $lom->idtb_lom]);
+
+   // return redirect()->route('aegis.sistemas.superior.lom.agregarLom')->with('success', 'LOM creado correctamente.');
+}
+    // traer lom
+    public function obtenerLom(Request $request)
+    {
+         $lom = Lom::findOrFail($request->lom_id);
+             //para imagen
+            if ($request->hasFile('imagen')) {
+                $file = $request->file('imagen');
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME); // Solo nombre sin extensión
+                $extension = $file->getClientOriginalExtension();
+                $timestamp = Carbon::now()->format('Ymd_His');            
+                $newFileName = $originalName . '_' . $timestamp . '.' . $extension;
+                // Nombre del mes en español
+                $mesActual = Carbon::now()->locale('es')->isoFormat('MMMM'); // ej: "abril"            
+                // Definir la carpeta destino dentro de 'storage/app/public/superior/llamado'
+                $destinationPath = storage_path('app/public/superior/lom/' . ucfirst($mesActual) . '/');
+            
+                // Crear la carpeta si no existe
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true);
+                }            
+                // Mover el archivo a la carpeta del mes actual
+                $file->move($destinationPath, $newFileName);            
+                // Guardar la ruta relativa en la base de datos si querés (opcional)
+                $lom->imglom =$newFileName;
+                $lom->mes= ucfirst($mesActual); // Guardar el mes en la base de datos (opcional)
+            }
+
+             //para pdf
+            if ($request->hasFile('pdf')) {
+                $file = $request->file('pdf');
+                $originalName2 = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME); // Solo nombre sin extensión
+                $extension = $file->getClientOriginalExtension();
+                $timestamp = Carbon::now()->format('Ymd_His');            
+                $newFileName2 = $originalName2 . '_' . $timestamp . '.' . $extension;
+                // Nombre del mes en español
+                $mesActual = Carbon::now()->locale('es')->isoFormat('MMMM'); // ej: "abril"            
+                // Definir la carpeta destino dentro de 'storage/app/public/superior/llamado'
+                $destinationPath = storage_path('app/public/superior/lom/' . ucfirst($mesActual) . '/');
+            
+                // Crear la carpeta si no existe
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true);
+                }            
+                // Mover el archivo a la carpeta del mes actual
+                $file->move($destinationPath, $newFileName2);            
+                // Guardar la ruta relativa en la base de datos si querés (opcional)
+                $lom->pdf =$newFileName2;
+                $lom->mes= ucfirst($mesActual); // Guardar el mes en la base de datos (opcional)
+            }
+
+            //$llamado->nombre_img = $newFileName; // Guardar el nuevo nombre de la imagen en la base de datos
+            $lom->idtb_zona = $request->idtb_zona;
+            $lom->id_instituto_superior = $request->id_instituto_superior;
+            $lom->idtipo_llamado = $request->idtipo_llamado;
+            $lom->idCarrera = $request->idCarrera;
+            $lom->idtb_tipoestado = 2;
+            $lom->idtb_cargo = 13;
+            $lom->idEspacioCurricular = 1;
+          
+           
+            $lom->CUE = $request->CUE; // Cambia esto por el CUE que corresponda
+             $lom->idUsuarioEditar =  session('idUsuario');
+            $lom->save();
+            return response()->json(['success' => true]);
+       }
+    //editar lom
+    public function editarLom($id)
+    {
+        $lom = Lom::findOrFail($id);
+        $zonas = Zona::all(); 
+     
+        $relInstCarr=RelInstSupCarrera::all();
+        $tiposLlamado = TipoLlamado::all();
+        $institutos = InstitutoSuperior::where('idtb_zona', $lom->idtb_zona)->get();
+        $carreras = Carrera::whereIn('idCarrera', function($query) use ($lom) {
+        $query->select('idCarrera')
+            ->from('rel_instsup_carrera')
+            ->where('id_instituto_superior', $lom->id_instituto_superior);
+          })->get();
+        $estados = TipoEstado::where('nombre_tipoestado', 'En Proceso')->first(); // Estado reservado
+        $cargos = DB::connection('DB4')->table('tb_cargos')->select('idtb_cargos', 'nombre_cargo')->get();
+        $espacios = DB::connection('DB4')->table('tb_espacioscurriculares')->select('idEspacioCurricular', 'nombre_espacio')->get();           
+        //dd($lom);
+        return view('aegis.sistemas.superior.lom.editarLom', compact(
+            'zonas', 
+            'tiposLlamado', 
+            'institutos', 
+            'carreras', 
+            'estados',
+            'cargos',
+            'espacios',
+            'lom'
+        ));
+    }   
   
     // TODO LLAMADOS
     public function create()
@@ -230,65 +391,7 @@ class LlamadosController extends Controller
             'perfil',
             'periodo_cursado'));
     }
-
-    
-    // public function store(Request $request)
-    // {
-    //         /*  $validated = $request->validate([
-    //         //         'idtb_zona' => [
-    //         //             'required',
-    //         //             Rule::exists('DB4.tb_zona', 'idtb_zona'),
-    //         //         ],
-    //         //         'id_instituto_superior' => [
-    //         //             'required',
-    //         //             Rule::exists('DB4.tb_instituto_superior', 'id_instituto_superior'),
-    //         //         ],
-    //         //         'idCarrera' => [
-    //         //             'required',
-    //         //             Rule::exists('DB4.tb_carreras', 'idCarrera'),
-    //         //         ],
-    //         //         'idtipo_llamado' => [
-    //         //             'required',
-    //         //             Rule::exists('DB4.tipo_llamado', 'idtipo_llamado'),
-    //         //         ],
-    //         //         'fecha_ini' => 'required|date',
-    //         //         'fecha_fin' => 'required|date|after_or_equal:fecha_ini',
-    //         //         'descripcion' => 'nullable|string',
-    //         //         'url_form' => 'nullable|url',
-    //         //         'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validación de imagen
-    //         //     ]);*/
-
-           
-    //         $validated = $request->validate([
-    //             'idtb_zona'             => ['required', Rule::exists('DB4.tb_zona','idtb_zona')],
-    //             'id_instituto_superior' => ['required', Rule::exists('DB4.tb_instituto_superior','id_instituto_superior')],
-    //             'idCarrera'             => ['required', Rule::exists('DB4.tb_carreras','idCarrera')],
-    //             'idtipo_llamado'        => ['required', Rule::exists('DB4.tipo_llamado','idtipo_llamado')],
-    //             'fecha_ini'             => 'required|date',
-    //             'fecha_fin'             => 'required|date|after_or_equal:fecha_ini',
-    //             'descripcion'           => 'nullable|string',
-    //             'url_form'              => 'nullable|url',
-    //             'imagen'                => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    //         ]);
-    //         if ($request->hasFile('imagen')) {
-             
-                               
-    //             // ahora $path = "superior/llamado/nombre_20250426_123456.jpg"
-    //             $validated['nombre_img'] =   $request->file('imagen') ->store('superior/llamado', 'public');
-    //         }
-    //         // Establecer estado "reservado"
-    //         $estadoReservado = TipoEstado::where('nombre_tipoestado', 'En Proceso')->first();
-    //         $validated['idtb_tipoestado'] = $estadoReservado->idtb_tipoestado;
-    //         $llamado = Llamado::create($validated);
-    //         // $llamado = Llamado::create([
-    //         //     ...$validated,
-    //         //     'idtb_tipoestado' => $estadoReservado->idtb_tipoestado,
-    //         //     'url_form'        => null, // Si no hay formulario aún
-    //         // ]);
-
-    //         return redirect()->route('aegis.sistemas.superior.llamados.edit', $llamado->idllamado)
-    //                      ->with('success', 'Llamado creado correctamente.');
-    // }
+  
     
     public function editarLlamado($id)
     {   
@@ -357,7 +460,23 @@ class LlamadosController extends Controller
     public function crearLlamado(Request $request)
     {
         $llamado = new Llamado();
-         $llamado->idtb_tipoestado = 2; //en proceso
+        $llamado->idtb_tipoestado = 2; //en proceso
+        $llamado->fecha_ini=Carbon::now();
+        $llamado->fecha_fin=Carbon::now();
+        $llamado->idtb_zona = 8;
+        $llamado->id_instituto_superior = 1;
+        $llamado->idtipo_llamado = 1;
+        $llamado->idCarrera = 171;
+       // $llamado->descripcion = 'Llamado de prueba';
+        $llamado->url_form = 'https://example.com/formulario';
+        $llamado->nombre_img = 'imagen_prueba.jpg'; // Cambia esto por el nombre de la imagen que subiste
+        $llamado->mes = null; // Cambia esto por el mes actual
+        $llamado->idUsuarioCrear = session('idUsuario'); // Cambia esto por el ID del usuario que crea el llamado
+        $llamado->idUsuarioEditar=session('idUsuario');// Cambia esto por el ID del estado que quieras asignar
+        
+
+
+
         $llamado->save();
 
         return response()->json(['id' => $llamado->idllamado]);
@@ -403,6 +522,7 @@ class LlamadosController extends Controller
             $llamado->url_form = $request->url_form;
             //$llamado->nombre_img = $request->nombre_img;   
             $llamado->descripcion = $request->descripcion;       
+            $llamado->idUsuarioEditar=session('idUsuario');
             $llamado->save();
 
             return response()->json(['success' => true]);
@@ -414,12 +534,15 @@ class LlamadosController extends Controller
         $nuevoEspacio = new EspacioPorLlamado();
         $nuevoEspacio->idLlamado = $request->llamado_id;
         $nuevoEspacio->idEspacioCurricular = $request->idEspacioCurricular_modal;
-        $nuevoEspacio->idTurno = $request->idTurno_modal;
-        $nuevoEspacio->horacat_espacio = $request->horacat_modal;
+        $nuevoEspacio->idTurno = $request->idTurno?$request->idTurno:6;
+        $nuevoEspacio->horacat_espacio = $request->horacat_modal?$request->horacat_modal: 0;
         $nuevoEspacio->idtb_situacion_revista = $request->idtb_situacion_revista_modal;
-        $nuevoEspacio->idtb_periodo_cursado = $request->idtb_periodo_cursado_modal;
+        $nuevoEspacio->idtb_periodo_cursado = $request->idtb_periodo_cursado?$request->idtb_periodo_cursado:4;
         $nuevoEspacio->horario_espacio = $request->horario_modal;
-        $nuevoEspacio->idtb_perfil = $request->idtb_perfil_modal;
+       // $nuevoEspacio->idtb_perfil = $request->idtb_perfil_modal;
+        $nuevoEspacio->idtb_perfil = $request->idtb_perfil_modal!=null?$request->idtb_perfil_modal:3; // perfil por defecto
+        $nuevoEspacio->idUsuarioCrear = session('idUsuario'); // Cambia esto por el ID del usuario que crea el llamado
+        $nuevoEspacio->idUsuarioEditar=session('idUsuario');// Cambia esto por el ID del estado que quieras asignar
         $nuevoEspacio->save();
 
         return response()->json(['success' => true, 'message' => 'Espacio curricular agregado correctamente.']);
@@ -470,8 +593,8 @@ class LlamadosController extends Controller
         $espacio->idtb_situacion_revista = $request->idtb_situacion_revista_modal;
         $espacio->idtb_periodo_cursado = $request->idtb_periodo_cursado_modal? $request->idtb_periodo_cursado_modal: 4;
         $espacio->horario_espacio = $request->horario_modal;
-        $espacio->idtb_perfil = $request->idtb_perfil_modal;
-        
+        $espacio->idtb_perfil = $request->idtb_perfil_modal;         
+        $espacio->idUsuarioEditar=session('idUsuario');// Cam
         // Guardamos cambios
         $espacio->save();
 
@@ -501,6 +624,9 @@ class LlamadosController extends Controller
         $nuevoCargo->idtb_periodo_cursado = $request->idtb_periodo_cursado_modal;
         $nuevoCargo->horario_cargo = $request->horario_modal;
         $nuevoCargo->idtb_perfil = $request->idtb_perfil_modal;
+        $nuevoCargo->idUsuarioCrear = session('idUsuario'); // Cambia esto por el ID del usuario que crea el llamado
+        $nuevoCargo->idUsuarioEditar=session('idUsuario');// Cam
+        $nuevoCargo->idtb_perfil = $request->idtb_perfil_modal!=null?$request->idtb_perfil_modal:3; // perfil por defecto
         $nuevoCargo->save();
 
         return response()->json(['success' => true, 'message' => 'Cargo agregado correctamente.']);
@@ -550,7 +676,7 @@ class LlamadosController extends Controller
         $Cargo->idtb_periodo_cursado = $request->idtb_periodo_cursado_modal;
         $Cargo->horario_cargo = $request->horario_modal;
         $Cargo->idtb_perfil = $request->idtb_perfil_modal;
-        
+        $Cargo->idUsuarioEditar=session('idUsuario');// Cam
         // Guardamos cambios
         $Cargo->save();
 
@@ -568,12 +694,13 @@ class LlamadosController extends Controller
         return response()->json(['success' => true, 'message' => 'Cargo eliminado correctamente.']);
     }
 
-    //cambio estado
+    //cambio estado para el llamado
     public function cambiarEstado(Request $request)
     {
         try {
             $llamado = Llamado::findOrFail($request->idllamado);
             $llamado->idtb_tipoestado = $request->idtb_tipoestado;
+            $llamado->idUsuarioEditar = session('idUsuario'); // Cambia esto por el ID del usuario que edita el llamado
             $llamado->save();
     
             return response()->json(['success' => true]);
@@ -581,6 +708,23 @@ class LlamadosController extends Controller
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
+
+    //cambio estado para el LOM
+    // En LlamadosController o LomController
+    public function cambiarEstadoLom(Request $request)
+    {
+        try {
+            $lom = Lom::findOrFail($request->idllamado); // el ID viene del select con data-id
+            $lom->idtb_tipoestado = $request->idtb_tipoestado;
+            $lom->idUsuarioEditar = session('idUsuario'); // Cambia esto por el ID del usuario que edita el LOM
+            $lom->save();
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
+
      // instituto por zona
     public function obtenerInstitutosPorZona(Request $request)
     {
@@ -605,26 +749,113 @@ class LlamadosController extends Controller
     }
     // carrera por instituto
     public function obtenerCarrerasPorInstituto(Request $request)
-{
-    try {
-        $institutoId = $request->input('instituto_id');
+    {
+        try {
+            $institutoId = $request->input('instituto_id');
 
-        if (!$institutoId) {
-            return response()->json(['error' => 'ID de instituto no proporcionado'], 400);
+            if (!$institutoId) {
+                return response()->json(['error' => 'ID de instituto no proporcionado'], 400);
+            }
+
+            $carreras = DB::connection('DB4')->table('tb_carreras')
+                ->join('rel_instsup_carrera', 'tb_carreras.idCarrera', '=', 'rel_instsup_carrera.idCarrera')
+                ->where('rel_instsup_carrera.id_instituto_superior', $institutoId)
+                ->select('tb_carreras.idCarrera', 'tb_carreras.nombre_carrera')
+                ->orderBy('tb_carreras.nombre_carrera')
+                ->get();
+
+            return response()->json($carreras);
+        } catch (\Throwable $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        $carreras = DB::connection('DB4')->table('tb_carreras')
-            ->join('rel_instsup_carrera', 'tb_carreras.idCarrera', '=', 'rel_instsup_carrera.idCarrera')
-            ->where('rel_instsup_carrera.id_instituto_superior', $institutoId)
-            ->select('tb_carreras.idCarrera', 'tb_carreras.nombre_carrera')
-            ->orderBy('tb_carreras.nombre_carrera')
-            ->get();
-
-        return response()->json($carreras);
-    } catch (\Throwable $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
     }
-}
+    public function eliminarLlamado($id)
+    {
+        $llamado = Llamado::findOrFail($id);
+        $llamado->delete();
+
+        return redirect()->route('aegis.sistemas.superior.llamados.index')
+            ->with('success', 'Llamado eliminado correctamente.');
+    }
+    
+    //perfil por espacio y por cargo
+    public function listarPerfiles() {
+        return Perfil::all();
+    }
+    public function nuevoPerfil(Request $request)
+    {
+        $request->validate([
+            'nombre_perfil' => 'required|string|max:255'
+        ]);
+
+        $perfil = new Perfil(); // Modelo: Perfil
+        $perfil->nombre_perfil = $request->nombre_perfil;
+       
+        $perfil->save();
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => 'Perfil creado correctamente',
+            'perfil' => $perfil
+        ]);
+    }
+
+    public function editarPerfil(Request $request, $id)
+    {
+        $request->validate([
+            'nombre_perfil' => 'required|string|max:255'
+        ]);
+
+        $perfil = Perfil::findOrFail($id);
+        $perfil->nombre_perfil = $request->nombre_perfil;
+        $perfil->save();
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => 'Perfil actualizado correctamente',
+            'perfil' => $perfil
+        ]);
+    }
+    //listar espacios curriculares
+    public function listarEspaciosCurriculares()
+    {
+        return EspacioCurricular::all(); // ajustá el modelo si es otro
+    }
+    //espacio curricular agregar/editar
+
+    public function nuevoEspacioCurricular(Request $request)
+    {
+        $request->validate([
+            'nombre_espacio' => 'required|string|max:255'
+        ]);
+
+        $espacio = new EspacioCurricular(); // tu modelo
+        $espacio->nombre_espacio = $request->nombre_espacio;
+        $espacio->save();
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => 'Espacio Curricular creado correctamente',
+            'espacio' => $espacio
+        ]);
+    }
+
+    public function editarEspacioCurricular(Request $request, $id)
+    {
+        $request->validate([
+            'nombre_espacio' => 'required|string|max:255'
+        ]);
+
+        $espacio = EspacioCurricular::findOrFail($id);
+        $espacio->nombre_espacio = $request->nombre_espacio;
+        $espacio->save();
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => 'Espacio Curricular actualizado correctamente',
+            'espacio' => $espacio
+        ]);
+    }
 
 
 }
